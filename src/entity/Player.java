@@ -5,7 +5,7 @@ package entity;
  * the countries he conquered and it can be updated anytime. It also holds list
  * of continents the he has conquered.
  * @author shareenali
- * @version 0.0.1
+ * @version 0.1
  */
 
 public class Player {
