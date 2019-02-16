@@ -4,7 +4,7 @@ package entity;
  * This entity class holds all the information about the continent.
  * It also includes the methods to manipulate the information of the continent
  * @author shareenali
- * @version 0.0.1
+ * @version 0.1
  */
 
 public class Continent {

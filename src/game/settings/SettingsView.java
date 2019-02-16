@@ -2,8 +2,12 @@ package game.settings;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
+/**
+ * It initializes the view for Game Settings
+ * @author shareenali
+ * @version 0.1
+ */
 
 public class SettingsView {
     private JPanel panel_settings;

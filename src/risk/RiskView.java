@@ -4,6 +4,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+/**
+ * The view component for the entry point in game.
+ * @author shareenali
+ * @version 0.1
+ */
+
 public class RiskView {
     private JPanel panel_risk;
     private JPanel panel_title;
@@ -11,6 +17,10 @@ public class RiskView {
     private JPanel panel_content;
     private JButton button_new_game;
 
+    /**
+     * Binds the useful listeners to newGameButton
+     * @param listener onClick listener
+     */
     void bindNewGameListener(ActionListener listener) {
         this.button_new_game.addActionListener(listener);
     }
@@ -55,6 +65,12 @@ public class RiskView {
     }
 
     /**
+     * It retrieves font from the system.
+     * @param fontName name of the font to retrieve
+     * @param style style identifier of the font
+     * @param size size of the font
+     * @param currentFont existing font attached to target component
+     * @return returns desired font
      * @noinspection ALL
      */
     private Font $$$getFont$$$(String fontName, int style, int size, Font currentFont) {
@@ -74,6 +90,7 @@ public class RiskView {
     }
 
     /**
+     * @return the top most panel
      * @noinspection ALL
      */
     public JComponent $$$getRootComponent$$$() {
