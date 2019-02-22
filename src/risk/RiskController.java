@@ -1,6 +1,9 @@
 package risk;
 
+import game.settings.SettingsController;
+
 import javax.swing.JFrame;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -14,7 +17,7 @@ import java.awt.event.ActionListener;
 
 class RiskController {
     private RiskView riskView;
-    private ActionListener newGameListener;
+    private ActionListener newGameListener, newMapListener, editMapListener;
     private JFrame frame = new JFrame();
 
     /**
@@ -34,6 +37,11 @@ class RiskController {
      * It wraps the entire view into a frame and prepares to display
      */
     void initUi() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screenSize.width - this.frame.getWidth()) / 2;
+        int y = (screenSize.height - this.frame.getHeight()) / 2;
+        this.frame.setLocation(x, y);
+
         this.frame.setContentPane(this.riskView.$$$getRootComponent$$$());
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -53,14 +61,28 @@ class RiskController {
      */
     private void bindListeners() {
         this.riskView.bindNewGameListener(this.newGameListener);
+        this.riskView.bindNewMapListener(this.newMapListener);
+        this.riskView.bindEditMapListener(this.editMapListener);
     }
 
     /**
      * It initializes the useful listeners for the view.
      */
     private void initListeners() {
-        this.newGameListener = (ActionEvent e) -> {
-            System.out.println("Naya game start hoga!");
+        this.newGameListener = (ActionEvent e) -> this.openSettings();
+
+        this.editMapListener = (ActionEvent e) -> {
+            System.out.println("Dillo me tum apni betabiya le ke chal rhe ho");
         };
+
+        this.newMapListener = (ActionEvent e) -> {
+            System.out.println("toh zinda ho tum");
+        };
+    }
+
+    private void openSettings() {
+        SettingsController controller = new SettingsController();
+        controller.initializeUi();
+        controller.displayUi();
     }
 }
