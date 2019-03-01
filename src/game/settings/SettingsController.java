@@ -16,7 +16,7 @@ import java.awt.event.ActionListener;
 public class SettingsController {
     private SettingsView view;
     private JFrame frame = new JFrame();
-    private ActionListener comboNoPlayersLs;
+    private ActionListener comboNoPlayersLs, buttonStartLs;
 
     /**
      * It initializes the controller
@@ -39,18 +39,35 @@ public class SettingsController {
         this.prepareView();
     }
 
+    /**
+     * Initializes the view with custom values and listeners
+     */
     private void prepareView() {
         this.view.initializeValues();
-        this.initComboListeners();
+        this.initListeners();
         this.bindListeners();
     }
 
+    /**
+     * Bind the appropriate listeners into the UI
+     */
     private void bindListeners() {
-
+        this.view.bindComboNoPlayersListeners(this.comboNoPlayersLs);
+        this.view.bindButtonStartListeners(this.buttonStartLs);
     }
 
-    private void initComboListeners() {
-        this.comboNoPlayersLs = (ActionEvent e) -> this.view.createPlayerInfoPanels();
+    /**
+     * Initialize the action listeners for UI
+     */
+    private void initListeners() {
+        this.comboNoPlayersLs = (ActionEvent e) -> {
+            this.view.createPlayerInfoPanels();
+            this.frame.pack();
+        };
+
+        this.buttonStartLs = (ActionEvent e) -> {
+            this.view.collectData();
+        };
     }
 
     /**

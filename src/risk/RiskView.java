@@ -20,6 +20,8 @@ public class RiskView {
     private JButton button_edit_map;
     private JButton button_new_map;
 
+    RiskView() { }
+
     /**
      * Binds the useful listeners to newGameButton
      *

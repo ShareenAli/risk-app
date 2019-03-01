@@ -46,36 +46,25 @@
               </component>
             </children>
           </grid>
-          <grid id="d3f6d" binding="panelPlayers" layout-manager="BorderLayout" hgap="0" vgap="0">
+          <grid id="d3f6d" binding="panelPlayers" layout-manager="GridBagLayout">
             <constraints border-constraint="Center"/>
             <properties/>
             <border type="none"/>
-            <children>
-              <grid id="3370" binding="panelPlayer" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
-                <constraints border-constraint="Center"/>
-                <properties/>
-                <border type="none"/>
-                <children>
-                  <component id="f9264" class="javax.swing.JLabel" binding="labelName">
-                    <constraints/>
-                    <properties>
-                      <text value="Name:"/>
-                    </properties>
-                  </component>
-                  <component id="64b42" class="javax.swing.JTextField" binding="textName">
-                    <constraints/>
-                    <properties>
-                      <preferredSize width="164" height="27"/>
-                    </properties>
-                  </component>
-                  <component id="ce1dc" class="javax.swing.JComboBox" binding="comboType">
-                    <constraints/>
-                    <properties/>
-                  </component>
-                </children>
-              </grid>
-            </children>
+            <children/>
           </grid>
+        </children>
+      </grid>
+      <grid id="f7237" binding="panelActions" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="e2bf1" class="javax.swing.JButton" binding="buttonStart">
+            <constraints/>
+            <properties>
+              <text value="Start"/>
+            </properties>
+          </component>
         </children>
       </grid>
     </children>

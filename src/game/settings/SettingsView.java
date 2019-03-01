@@ -2,6 +2,7 @@ package game.settings;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 /**
  * It initializes the view for Game Settings
@@ -19,12 +20,12 @@ public class SettingsView {
     private JLabel labelNoPlayers;
     private JComboBox comboNoPlayers;
     private JPanel panelPlayers;
-    private JPanel panelPlayer;
-    private JLabel labelName;
-    private JTextField textName;
-    private JComboBox comboType;
+    private JPanel panelActions;
+    private JButton buttonStart;
 
     private DefaultComboBoxModel<Integer> modelNoPlayers = new DefaultComboBoxModel<>();
+
+    private SettingsModel model = SettingsModel.getInstance();
 
     /**
      * Initializes the default values in UI.
@@ -38,12 +39,73 @@ public class SettingsView {
         }
 
         this.comboNoPlayers.setModel(this.modelNoPlayers);
+        this.createPlayerInfoPanels();
     }
 
+    /**
+     * Binds the useful listeners to combo box of the number of players
+     *
+     * @param listener onItemSelected listener
+     */
+    void bindComboNoPlayersListeners(ActionListener listener) {
+        this.comboNoPlayers.addActionListener(listener);
+    }
+
+    /**
+     * Binds the useful listeners to start game button
+     * @param listener onClick listener
+     */
+    void bindButtonStartListeners(ActionListener listener) {
+        this.buttonStart.addActionListener(listener);
+    }
+
+    /**
+     * It runs through all the UI components and collects the information
+     */
+    void collectData() {
+        Component[] components = this.panelPlayers.getComponents();
+        this.model.clearPlayers();
+
+        for (Component component : components) {
+            Component[] children = ((JPanel) component).getComponents();
+            JTextField name = (JTextField) children[1];
+            JComboBox type = (JComboBox) children[2];
+
+            this.model.addPlayer(name.getText(), type.getSelectedIndex());
+        }
+    }
+
+    /**
+     * Creates a new panel of the player w.r.t number of players
+     */
+    @SuppressWarnings("unchecked")
     void createPlayerInfoPanels() {
         int noOfPlayers = this.modelNoPlayers.getElementAt(this.comboNoPlayers.getSelectedIndex());
+        this.panelPlayers.removeAll();
 
+        for (int i = 0; i < noOfPlayers; i++) {
+            JPanel panelPlayer = new JPanel();
+            panelPlayer.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+            JLabel labelName = new JLabel();
+            labelName.setText("Name:");
+            panelPlayer.add(labelName);
+            JTextField textName = new JTextField();
+            textName.setPreferredSize(new Dimension(164, 27));
+            panelPlayer.add(textName);
+            JComboBox comboType = new JComboBox();
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+            model.addElement("Human");
+            model.addElement("Computer");
+            comboType.setModel(model);
+            panelPlayer.add(comboType);
 
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = i;
+            gbc.fill = GridBagConstraints.BOTH;
+
+            panelPlayers.add(panelPlayer, gbc);
+        }
     }
 
     {
@@ -90,19 +152,14 @@ public class SettingsView {
         comboNoPlayers = new JComboBox();
         panelNoPlayers.add(comboNoPlayers);
         panelPlayers = new JPanel();
-        panelPlayers.setLayout(new BorderLayout(0, 0));
+        panelPlayers.setLayout(new GridBagLayout());
         panelContent.add(panelPlayers, BorderLayout.CENTER);
-        panelPlayer = new JPanel();
-        panelPlayer.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-        panelPlayers.add(panelPlayer, BorderLayout.CENTER);
-        labelName = new JLabel();
-        labelName.setText("Name:");
-        panelPlayer.add(labelName);
-        textName = new JTextField();
-        textName.setPreferredSize(new Dimension(164, 27));
-        panelPlayer.add(textName);
-        comboType = new JComboBox();
-        panelPlayer.add(comboType);
+        panelActions = new JPanel();
+        panelActions.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        panelSettings.add(panelActions, BorderLayout.SOUTH);
+        buttonStart = new JButton();
+        buttonStart.setText("Start");
+        panelActions.add(buttonStart);
     }
 
     /**
