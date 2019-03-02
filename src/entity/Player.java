@@ -1,5 +1,8 @@
 package entity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * This holds the player entity and the runtime entity collected for player It holds
  * the countries he conquered and it can be updated anytime. It also holds list
@@ -16,6 +19,8 @@ public class Player {
 
     private String name;
     private int type;
+    private HashMap<String, Integer> countries = new HashMap<>();
+    private ArrayList<String> cards = new ArrayList<>();
 
     /**
      * It initializes the runtime player

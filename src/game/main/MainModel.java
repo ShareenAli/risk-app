@@ -1,5 +1,7 @@
 package game.main;
 
+import entity.Continent;
+import entity.Country;
 import entity.Player;
 
 import java.util.ArrayList;
@@ -8,7 +10,10 @@ import java.util.Observable;
 
 @SuppressWarnings("deprecation")
 public class MainModel extends Observable {
+    private ArrayList<String> playerNames = new ArrayList<>();
     private HashMap<String, Player> players = new HashMap<>();
+    private HashMap<String, Country> countries = new HashMap<>();
+    private HashMap<String, Continent> continents = new HashMap<>();
 
     public MainModel() { }
 
