@@ -1,4 +1,4 @@
-package entity;
+package build1;
 
 import java.util.ArrayList;
 
@@ -79,6 +79,14 @@ public class Country {
     public void addNeighbour(String name) {
         if (this.neighbours.indexOf(name) == -1)
             this.neighbours.add(name);
+    }
+    
+    /**
+     * Adds a list of neighbors to the country
+     * @return neighbours of the country
+     */
+    public void setNeighbours(ArrayList<String> neighbours) {
+    	this.neighbours = neighbours;
     }
 
     /**
