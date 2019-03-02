@@ -15,11 +15,9 @@ import java.awt.event.ActionListener;
  * @author shareenali
  * @version 0.1
  */
-
-class RiskController implements ActivityController {
+class RiskController extends ActivityController {
     private RiskView riskView;
     private ActionListener newGameListener, newMapListener, editMapListener;
-    private JFrame frame = new JFrame();
 
     /**
      * It initializes the controller.
@@ -34,27 +32,13 @@ class RiskController implements ActivityController {
     }
 
     /**
-     * It initializes the view component.
-     * It wraps the entire view into a frame and prepares to display
+     * It initializes the user defined view component.
+     * It binds the listeners to the view.
      */
-    public void initUi() {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screenSize.width - this.frame.getWidth()) / 2;
-        int y = (screenSize.height - this.frame.getHeight()) / 2;
-        this.frame.setLocation(x, y);
-
+    @Override
+    protected void prepareUi() {
         this.frame.setContentPane(this.riskView.$$$getRootComponent$$$());
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         this.bindListeners();
-    }
-
-    /**
-     * It displays view to the standard output device.
-     */
-    public void displayUi() {
-        this.frame.pack();
-        this.frame.setVisible(true);
     }
 
     /**
