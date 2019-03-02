@@ -1,6 +1,7 @@
 package risk;
 
 import game.settings.SettingsController;
+import support.ActivityController;
 
 import javax.swing.JFrame;
 import java.awt.*;
@@ -15,7 +16,7 @@ import java.awt.event.ActionListener;
  * @version 0.1
  */
 
-class RiskController {
+class RiskController implements ActivityController {
     private RiskView riskView;
     private ActionListener newGameListener, newMapListener, editMapListener;
     private JFrame frame = new JFrame();
@@ -36,7 +37,7 @@ class RiskController {
      * It initializes the view component.
      * It wraps the entire view into a frame and prepares to display
      */
-    void initUi() {
+    public void initUi() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screenSize.width - this.frame.getWidth()) / 2;
         int y = (screenSize.height - this.frame.getHeight()) / 2;
@@ -51,7 +52,7 @@ class RiskController {
     /**
      * It displays view to the standard output device.
      */
-    void displayUi() {
+    public void displayUi() {
         this.frame.pack();
         this.frame.setVisible(true);
     }
@@ -69,7 +70,7 @@ class RiskController {
      * It initializes the useful listeners for the view.
      */
     private void initListeners() {
-        this.newGameListener = (ActionEvent e) -> this.openSettings();
+        this.newGameListener = (ActionEvent e) -> RiskApp.ChangeActivityController(new SettingsController());
 
         this.editMapListener = (ActionEvent e) -> {
             System.out.println("Dillo me tum apni betabiya le ke chal rhe ho");
@@ -78,11 +79,5 @@ class RiskController {
         this.newMapListener = (ActionEvent e) -> {
             System.out.println("toh zinda ho tum");
         };
-    }
-
-    private void openSettings() {
-        SettingsController controller = new SettingsController();
-        controller.initializeUi();
-        controller.displayUi();
     }
 }

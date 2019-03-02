@@ -1,5 +1,7 @@
 package game.settings;
 
+import support.ActivityController;
+
 import javax.swing.JFrame;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,7 +15,7 @@ import java.awt.event.ActionListener;
  * @version 0.1
  */
 
-public class SettingsController {
+public class SettingsController implements ActivityController {
     private SettingsView view;
     private JFrame frame = new JFrame();
     private ActionListener comboNoPlayersLs, buttonStartLs;
@@ -28,7 +30,7 @@ public class SettingsController {
     /**
      * It initializes the view, and wraps it to a frame.
      */
-    public void initializeUi() {
+    public void initUi() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screenSize.width - this.frame.getWidth()) / 2;
         int y = (screenSize.height - this.frame.getHeight()) / 2;
