@@ -1,8 +1,10 @@
-package build1;
+package map;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import entity.Continent;
+import entity.Country;
 
 public class MapfileWriter {
 

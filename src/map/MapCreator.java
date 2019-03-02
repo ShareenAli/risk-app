@@ -1,9 +1,10 @@
-package build1;
+package map;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
-
+import entity.Country;
+import entity.Continent;
 public class MapCreator {
 
 	Scanner scan = new Scanner(System.in);

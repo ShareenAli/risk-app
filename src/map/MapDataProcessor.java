@@ -1,4 +1,4 @@
-package build1;
+package map;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+import entity.Country;
+import entity.Continent;
 
 public class MapDataProcessor {
 	

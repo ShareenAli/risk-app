@@ -1,11 +1,11 @@
-package build1;
+package entity;
 
 import java.util.ArrayList;
 
 /**
  * This entity class holds all the information about the country in the map.
  * It also includes the methods to manipulate the information of the country.
- * @author shareenali
+ * @author shareenali, farhan
  * @version 0.1
  */
 
