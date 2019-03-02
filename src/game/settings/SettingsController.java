@@ -1,5 +1,7 @@
 package game.settings;
 
+import game.main.MainController;
+import risk.RiskApp;
 import support.ActivityController;
 
 import javax.swing.JFrame;
@@ -14,10 +16,8 @@ import java.awt.event.ActionListener;
  * @author shareenali
  * @version 0.1
  */
-
-public class SettingsController implements ActivityController {
+public class SettingsController extends ActivityController {
     private SettingsView view;
-    private JFrame frame = new JFrame();
     private ActionListener comboNoPlayersLs, buttonStartLs;
 
     /**
@@ -28,23 +28,11 @@ public class SettingsController implements ActivityController {
     }
 
     /**
-     * It initializes the view, and wraps it to a frame.
+     * It initializes the view with custom values and listeners
      */
-    public void initUi() {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screenSize.width - this.frame.getWidth()) / 2;
-        int y = (screenSize.height - this.frame.getHeight()) / 2;
-        this.frame.setLocation(x, y);
-
+    @Override
+    protected void prepareUi() {
         this.frame.setContentPane(this.view.$$$getRootComponent$$$());
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.prepareView();
-    }
-
-    /**
-     * Initializes the view with custom values and listeners
-     */
-    private void prepareView() {
         this.view.initializeValues();
         this.initListeners();
         this.bindListeners();
@@ -69,14 +57,7 @@ public class SettingsController implements ActivityController {
 
         this.buttonStartLs = (ActionEvent e) -> {
             this.view.collectData();
+            RiskApp.ChangeActivityController(new MainController(SettingsModel.getInstance().getPlayers()));
         };
-    }
-
-    /**
-     * It displays the view to standard output device
-     */
-    public void displayUi() {
-        this.frame.pack();
-        this.frame.setVisible(true);
     }
 }
