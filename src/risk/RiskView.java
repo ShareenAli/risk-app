@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 
 /**
  * The view component for the entry point in game.
+ *
  * @author shareenali
  * @version 0.1
  */
@@ -16,13 +17,34 @@ public class RiskView {
     private JLabel label_title;
     private JPanel panel_content;
     private JButton button_new_game;
+    private JButton button_edit_map;
+    private JButton button_new_map;
+
+    RiskView() { }
 
     /**
      * Binds the useful listeners to newGameButton
+     *
      * @param listener onClick listener
      */
     void bindNewGameListener(ActionListener listener) {
         this.button_new_game.addActionListener(listener);
+    }
+
+    /**
+     * Binds the useful listeners to new map button
+     * @param listener onClick listener
+     */
+    void bindNewMapListener(ActionListener listener) {
+        this.button_new_map.addActionListener(listener);
+    }
+
+    /**
+     * Binds the useful listeners to edit map button
+     * @param listener onClick listener
+     */
+    void bindEditMapListener(ActionListener listener) {
+        this.button_edit_map.addActionListener(listener);
     }
 
     {
@@ -57,20 +79,31 @@ public class RiskView {
         gbc.ipady = 10;
         panel_title.add(label_title, gbc);
         panel_content = new JPanel();
-        panel_content.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        panel_content.setLayout(new GridBagLayout());
         panel_risk.add(panel_content, BorderLayout.CENTER);
         button_new_game = new JButton();
         button_new_game.setText("New Game");
-        panel_content.add(button_new_game);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel_content.add(button_new_game, gbc);
+        button_edit_map = new JButton();
+        button_edit_map.setText("Edit Map");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel_content.add(button_edit_map, gbc);
+        button_new_map = new JButton();
+        button_new_map.setText("New Map");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel_content.add(button_new_map, gbc);
     }
 
     /**
-     * It retrieves font from the system.
-     * @param fontName name of the font to retrieve
-     * @param style style identifier of the font
-     * @param size size of the font
-     * @param currentFont existing font attached to target component
-     * @return returns desired font
      * @noinspection ALL
      */
     private Font $$$getFont$$$(String fontName, int style, int size, Font currentFont) {
@@ -90,7 +123,6 @@ public class RiskView {
     }
 
     /**
-     * @return the top most panel
      * @noinspection ALL
      */
     public JComponent $$$getRootComponent$$$() {
