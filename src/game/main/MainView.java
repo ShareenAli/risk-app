@@ -7,6 +7,10 @@ import java.util.Observer;
 
 @SuppressWarnings("deprecation")
 public class MainView implements Observer {
+    private JPanel mainPanel;
+    private JPanel leftPanel;
+    private JPanel rightPanel;
+
     @Override
     public void update(Observable o, Object arg) {
 
@@ -27,7 +31,20 @@ public class MainView implements Observer {
      * @noinspection ALL
      */
     private void $$$setupUI$$$() {
-        final JPanel panel1 = new JPanel();
-        panel1.setLayout(new BorderLayout(0, 0));
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout(0, 0));
+        leftPanel = new JPanel();
+        leftPanel.setLayout(new GridBagLayout());
+        mainPanel.add(leftPanel, BorderLayout.WEST);
+        rightPanel = new JPanel();
+        rightPanel.setLayout(new GridBagLayout());
+        mainPanel.add(rightPanel, BorderLayout.CENTER);
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    public JComponent $$$getRootComponent$$$() {
+        return mainPanel;
     }
 }

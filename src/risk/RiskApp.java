@@ -1,5 +1,7 @@
 package risk;
 
+import support.ActivityController;
+
 /**
  * The Main Application Class.
  * It is the entry point of the game.
@@ -9,9 +11,13 @@ package risk;
  */
 
 public class RiskApp {
-    public static void main(String[] args) {
-        RiskController controller = new RiskController();
+    public static void ChangeActivityController(ActivityController controller) {
         controller.initUi();
         controller.displayUi();
+    }
+
+    public static void main(String[] args) {
+        RiskController controller = new RiskController();
+        ChangeActivityController(controller);
     }
 }
