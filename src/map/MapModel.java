@@ -68,6 +68,7 @@ public class MapModel {
 		this.TERRITORIES = TERRITORIES;
 		this.COUNTRYMAPPER = COUNTRYMAPPER;
 		this.CONTINENTMAPPER = CONTINENTMAPPER;
+		TERRITORIES.sort((o1, o2) -> o1.getContinent().compareTo(o2.getContinent()));
 	}
 	
 	/**

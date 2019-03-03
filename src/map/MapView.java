@@ -94,27 +94,47 @@ public class MapView {
 		System.out.println("********************");
 		System.out.println("Press 4 to remove Country");
 		System.out.println("********************");
+		System.out.println("Press 5 to add neighbors");
+		System.out.println("********************");
+		System.out.println("Press 6 to remove neighbors");
+		System.out.println("********************");
 		
 		int choice = scan.nextInt();
 		scan.nextLine();
 		
 		switch(choice)
 		{
-			case 1:
-				controller.countryPrinter();
+			case 1:				
+				controller.continentPrinter();
 				controller.editModeAddContinent();
 				break;
 			case 2:
-				controller.countryPrinter();
+				controller.continentPrinter();
 				controller.editModeRemoveContinent();
 				break;
 			case 3:
-				controller.continentPrinter();
+				controller.countryPrinter();
 				controller.editModeAddCountry();
 				break;
 			case 4:
-				controller.continentPrinter();
+				controller.countryPrinter();
 				controller.editModeRemoveCountry();
+				break;
+			case 5:
+				controller.countryPrinter();
+				System.out.println("Enter name of country to add neighbours to");
+				String source = scan.nextLine();
+				System.out.println("Enter name of neighbors to add (Space separated)");
+				String destination = scan.nextLine();
+				controller.addNeighbours(source, destination);
+				break;
+			case 6:
+				controller.countryPrinter();
+				System.out.println("Enter name of country to remove neighbours from");
+				String source2 = scan.nextLine();
+				System.out.println("Enter name of neighbors to remove (Space separated)");
+				String destination2 = scan.nextLine();
+				controller.removeNeighbours(source2, destination2);
 				break;
 		}
 		

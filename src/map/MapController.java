@@ -225,6 +225,7 @@ public class MapController {
 		Continent c = new Continent(continent, control);
 		CONTINENTS.add(c);
 		CONTINENTMAPPER.put(c.getName(), c);
+		MAP.updateMap(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
 	}
 	
 	/**
@@ -253,6 +254,7 @@ public class MapController {
 		c.setNeighbours(neighborList);
 		TERRITORIES.add(c);
 		COUNTRYMAPPER.put(c.getName(), c);
+		MAP.updateMap(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
 	}
 
 	/**
@@ -311,8 +313,19 @@ public class MapController {
 			if(CONTINENTS.get(i).getName().equalsIgnoreCase(toBeRemoved))
 			{
 				CONTINENTS.remove(i);
+				i--;
 			}
 		}
+		
+		for(int i=0;i<TERRITORIES.size();i++)
+		{
+			if(TERRITORIES.get(i).getContinent().equalsIgnoreCase(toBeRemoved))
+			{
+				TERRITORIES.remove(i);
+				i--;
+			}
+		}
+		
 		MAP.updateMap(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
 	}
 	
@@ -495,6 +508,82 @@ public class MapController {
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	public void addNeighbours(String source, String destination)
+	{
+		String neighbors[] = destination.split(",");
+		Country c;
+		
+		for(int i = 0; i<TERRITORIES.size();i++)
+		{
+			if(TERRITORIES.get(i).getName().equalsIgnoreCase(source))
+			{
+				c = TERRITORIES.get(i);
+				TERRITORIES.remove(i);
+				for(int k=0;k<neighbors.length;k++)
+				{
+					c.addNeighbour(neighbors[k]);
+				}
+				TERRITORIES.add(c);
+				break;
+			}
+		}
+		
+		for(int i=0;i<neighbors.length;i++) 
+		{
+			for(int j=0;j<TERRITORIES.size();j++)
+			{
+				if(TERRITORIES.get(j).getName().equalsIgnoreCase(neighbors[i]))
+				{
+					c = TERRITORIES.get(j);
+					TERRITORIES.remove(j);
+					c.addNeighbour(source);
+					TERRITORIES.add(c);
+					break;
+				}
+			}
+		}
+		MAP.updateMap(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
+		checkForErrors();
+	}
+	
+	public void removeNeighbours(String source, String destination)
+	{
+		String neighbors[] = destination.split(",");
+		Country c;
+		
+		for(int i = 0; i<TERRITORIES.size();i++)
+		{
+			if(TERRITORIES.get(i).getName().equalsIgnoreCase(source))
+			{
+				c = TERRITORIES.get(i);
+				TERRITORIES.remove(i);
+				for(int k=0;k<neighbors.length;k++)
+				{
+					c.removeNeighbour(neighbors[k]);
+				}
+				TERRITORIES.add(c);
+				break;
+			}
+		}
+		
+		for(int i=0;i<neighbors.length;i++) 
+		{
+			for(int j=0;j<TERRITORIES.size();j++)
+			{
+				if(TERRITORIES.get(j).getName().equalsIgnoreCase(neighbors[i]))
+				{
+					c = TERRITORIES.get(j);
+					TERRITORIES.remove(j);
+					c.removeNeighbour(source);
+					TERRITORIES.add(c);
+					break;
+				}
+			}
+		}
+		MAP.updateMap(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
+		checkForErrors();
 	}
 	
 }
