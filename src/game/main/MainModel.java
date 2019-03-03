@@ -22,6 +22,7 @@ public class MainModel extends Observable {
     private HashMap<String, Continent> continents = new HashMap<>();
     private Country country;
     private int armiesToAssign;
+    private double armiesAvailableToAssign = -1;
 
     /**
      * Constructor used to extract the data from the map
@@ -181,5 +182,42 @@ public class MainModel extends Observable {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+    }
+
+    /**
+     * Reinforcement phase to assign the armies to the country selected by the player
+     *
+     * @param playerName  Name of the player
+     * @param countryName Name of the country to which armies are to be assigned
+     * @param armiesToAdd Number of armies to be assigned
+     */
+    public void reinforcementPhase(String playerName, String countryName, int armiesToAdd) {
+        Player player = this.players.get(playerName);
+
+        if (this.armiesAvailableToAssign == 0) {
+            System.out.println("NO ARMIES AVAILABLE TO ASSIGN");
+        } else if (this.armiesAvailableToAssign == -1) {
+            this.setArmiesToAssign();
+        } else {
+            player.reinforcementPhase(countryName, armiesToAdd);
+            this.armiesAvailableToAssign -= armiesToAdd;
+            System.out.println("ARMIES ASSIGNED SUCESSFULLY");
+        }
+    }
+
+    /**
+     * Calculate the number of armies to assign in the reinforcement phase
+     */
+    @SuppressWarnings("IntegerDivisionInFloatingPointContext")
+    public void setArmiesToAssign() {
+        int countriesConquered = this.countries.size();
+        this.armiesAvailableToAssign = Math.floor(countriesConquered / 3) < 3 ? 3 : Math.floor(countriesConquered / 3);
+    }
+
+    /**
+     * It is used to reset the counter back to default for a fresh computation
+     */
+    public void resetArmyCounter() {
+        armiesAvailableToAssign = -1;
     }
 }
