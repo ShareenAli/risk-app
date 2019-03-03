@@ -16,9 +16,10 @@ public class MainView implements Observer {
 
     }
 
-    void prepareView(JPanel panelPhase, JPanel panelLogs) {
+    void prepareView(JPanel panelPhase, JPanel panelLogs, JPanel panelWorld) {
         this.addPhaseView(panelPhase);
         this.addLogsView(panelLogs);
+        this.addWorldView(panelWorld);
     }
 
     private void addPhaseView(JPanel panel) {
@@ -37,6 +38,15 @@ public class MainView implements Observer {
         gbc.fill = GridBagConstraints.BOTH;
 
         leftPanel.add(panel, gbc);
+    }
+
+    private void addWorldView(JPanel panel) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+
+        rightPanel.add(panel, gbc);
     }
 
     {

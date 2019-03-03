@@ -3,6 +3,7 @@ package game.main;
 import entity.Player;
 import game.main.logs.LogsController;
 import game.main.phases.PhaseController;
+import game.main.world.WorldController;
 import support.ActivityController;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ public class MainController extends ActivityController {
     private MainModel model = new MainModel();
     private PhaseController phaseController;
     private LogsController logsController;
+    private WorldController worldController;
 
     public MainController(ArrayList<Player> players) {
         this.view = new MainView();
@@ -23,10 +25,11 @@ public class MainController extends ActivityController {
      */
     @Override
     protected void prepareUi() {
-        startupPhase();
+//        startupPhase();
         this.frame.setContentPane(this.view.$$$getRootComponent$$$());
         this.prepControllers();
-        this.view.prepareView(this.phaseController.getRootPanel(), this.logsController.getRootPanel());
+        this.view.prepareView(this.phaseController.getRootPanel(), this.logsController.getRootPanel(),
+            this.worldController.getRootPanel());
         this.attachObservers();
 
         this.startGame();
@@ -35,6 +38,7 @@ public class MainController extends ActivityController {
     private void prepControllers() {
         this.prepPhaseController();
         this.prepLogsController();
+        this.prepWorldController();
     }
 
     private void prepPhaseController() {
@@ -45,6 +49,11 @@ public class MainController extends ActivityController {
     private void prepLogsController() {
         this.logsController = new LogsController();
         this.logsController.initializeValues();
+    }
+
+    private void prepWorldController() {
+        this.worldController = new WorldController();
+        this.worldController.initializeValues();
     }
 
     /**
@@ -64,6 +73,7 @@ public class MainController extends ActivityController {
         this.model.addObserver(this.view);
         this.model.addObserver(this.phaseController.getView());
         this.model.addObserver(this.logsController.getView());
+        this.model.addObserver(this.worldController.getView());
     }
 
     private void startGame() {

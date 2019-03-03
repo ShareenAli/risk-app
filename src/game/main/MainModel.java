@@ -27,7 +27,7 @@ public class MainModel extends Observable {
      * Constructor used to extract the data from the map
      */
     public MainModel() {
-        readMapFile();
+//        readMapFile();
     }
 
     /**

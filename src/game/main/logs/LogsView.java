@@ -11,6 +11,7 @@ public class LogsView implements Observer {
     private JList listLogs;
     private JPanel panelTitle;
     private JLabel labelTitle;
+    private JScrollPane scrollList;
 
     private DefaultListModel<String> modelLogs = new DefaultListModel<>();
 
@@ -53,14 +54,16 @@ public class LogsView implements Observer {
     private void $$$setupUI$$$() {
         panelMain = new JPanel();
         panelMain.setLayout(new BorderLayout(0, 0));
-        listLogs = new JList();
-        panelMain.add(listLogs, BorderLayout.CENTER);
         panelTitle = new JPanel();
         panelTitle.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         panelMain.add(panelTitle, BorderLayout.NORTH);
         labelTitle = new JLabel();
         labelTitle.setText("Gameplay");
         panelTitle.add(labelTitle);
+        scrollList = new JScrollPane();
+        panelMain.add(scrollList, BorderLayout.CENTER);
+        listLogs = new JList();
+        scrollList.setViewportView(listLogs);
     }
 
     /**

@@ -7,10 +7,6 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="7d18f" class="javax.swing.JList" binding="listLogs">
-        <constraints border-constraint="Center"/>
-        <properties/>
-      </component>
       <grid id="8407d" binding="panelTitle" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
         <constraints border-constraint="North"/>
         <properties/>
@@ -24,6 +20,17 @@
           </component>
         </children>
       </grid>
+      <scrollpane id="1f8d5" binding="scrollList">
+        <constraints border-constraint="Center"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="fc4e9" class="javax.swing.JList" binding="listLogs">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </scrollpane>
     </children>
   </grid>
 </form>
