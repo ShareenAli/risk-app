@@ -21,10 +21,29 @@ public class MainController extends ActivityController {
      */
     @Override
     protected void prepareUi() {
+        assignCountries();
+        assignArmies();
         this.frame.setContentPane(this.view.$$$getRootComponent$$$());
         this.attachObservers();
     }
 
+    /**
+     * The function assigns the countries to the players
+     */
+    private void assignCountries() {
+        this.model.assignCountry();
+    }
+
+    /**
+     * The function assigns the armies to the assigned countries to the players
+     */
+    private void assignArmies() {
+        this.model.assignArmies();
+    }
+
+    /**
+     * Attach the observers for the model
+     */
     private void attachObservers() {
         this.model.addObserver(this.view);
     }
