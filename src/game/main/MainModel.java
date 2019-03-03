@@ -22,25 +22,27 @@ public class MainModel extends Observable {
     private HashMap<String, Continent> continents = new HashMap<>();
     private Country country;
     private int armiesToAssign;
+    private double armiesAvailableToAssign = -1;
 
     /**
      * Constructor used to extract the data from the map
      */
-    MainModel() { }
+    public MainModel() {
+    }
 
     /**
      * To initialize all the players playing the game
      *
      * @param playerList list of players
      */
-    void setPlayers(ArrayList<Player> playerList) {
+    public void setPlayers(ArrayList<Player> playerList) {
         for (Player player : playerList) {
             this.players.put(player.getName(), player);
             this.playerNames.add(player.getName());
         }
     }
 
-    void setMapContent(ArrayList<Country> countries, ArrayList<Continent> continents) {
+    public void setMapContent(ArrayList<Country> countries, ArrayList<Continent> continents) {
         for (Country country : countries) {
             this.countries.put(country.getName(), country);
         }
@@ -57,10 +59,26 @@ public class MainModel extends Observable {
      * Fetch the Player object by feeding in a name
      *
      * @param name name of the player
-     * @return player
+     * @return player player object representing the player
      */
     public Player getPlayer(String name) {
         return this.players.get(name);
+    }
+
+    /**
+     * It is used to get the List of countries
+     * @return countries List of all the countries
+     */
+    public HashMap<String, Country> getCountries() {
+        return countries;
+    }
+
+    /**
+     * It is used to get all the armies available to assign
+     * @return armiesAvailableToAssign returns the number of armies to assign
+     */
+    public double getArmiesAvailableToAssign() {
+        return armiesAvailableToAssign;
     }
 
     /**
@@ -78,7 +96,7 @@ public class MainModel extends Observable {
     /**
      * Assign Country to each player in the game
      */
-    void assignCountry() {
+    public void assignCountry() {
         int playerIndex = 0;
 
         for (Map.Entry<String, Country> entry : countries.entrySet()) {
@@ -132,5 +150,40 @@ public class MainModel extends Observable {
                 this.players.put(thePlayer, player);
             }
         }
+    }
+
+    /**
+     * Reinforcement phase to assign the armies to the country selected by the player
+     *
+     * @param playerName  Name of the player
+     * @param countryName Name of the country to which armies are to be assigned
+     * @param armiesToAdd Number of armies to be assigned
+     */
+    public void reinforcementPhase(String playerName, String countryName, int armiesToAdd) {
+        Player player = this.players.get(playerName);
+
+        if (this.armiesAvailableToAssign == 0) {
+        } else if (this.armiesAvailableToAssign == -1) {
+            this.setArmiesToAssign();
+        } else {
+            player.reinforcementPhase(countryName, armiesToAdd);
+            this.armiesAvailableToAssign -= armiesToAdd;
+        }
+    }
+
+    /**
+     * Calculate the number of armies to assign in the reinforcement phase
+     */
+    @SuppressWarnings("IntegerDivisionInFloatingPointContext")
+    private void setArmiesToAssign() {
+        int countriesConquered = this.countries.size();
+        this.armiesAvailableToAssign = Math.floor(countriesConquered / 3) < 3 ? 3 : Math.floor(countriesConquered / 3);
+    }
+
+    /**
+     * It is used to reset the counter back to default for a fresh computation
+     */
+    public void resetArmyCounter() {
+        armiesAvailableToAssign = -1;
     }
 }
