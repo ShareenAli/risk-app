@@ -1,10 +1,8 @@
 package game.main.phases;
 
-import support.ActivityController;
+import javax.swing.*;
 
-import javax.swing.JPanel;
-
-public class PhaseController extends ActivityController {
+public class PhaseController {
     private PhaseView view;
     private PhaseModel model = new PhaseModel();
 
@@ -15,16 +13,6 @@ public class PhaseController extends ActivityController {
     public JPanel getRootPanel() {
         return (JPanel) this.view.$$$getRootComponent$$$();
     }
-
-    @Override
-    protected void prepareUi() {
-
-    }
-
-    private void attachObservers(){
-        this.model.addObserver(this.view);
-    }
-
 
 
 }

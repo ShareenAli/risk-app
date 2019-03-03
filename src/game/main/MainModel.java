@@ -21,8 +21,6 @@ public class MainModel extends Observable {
     private HashMap<String, Country> countries = new HashMap<>();
     private HashMap<String, Continent> continents = new HashMap<>();
     private Country country;
-    private FileReader fileReader;
-    private Scanner scanner;
     private int armiesToAssign;
 
     /**
@@ -48,7 +46,7 @@ public class MainModel extends Observable {
      * Fetch the Player object by feeding in a name
      *
      * @param name
-     * @return
+     * @return player
      */
     public Player getPlayer(String name) {
         return this.players.get(name);
@@ -131,8 +129,8 @@ public class MainModel extends Observable {
     public void readMapFile() {
         int continentFlag = 0, territoryFlag = 0;
         try {
-            fileReader = new FileReader("D:\\Courses\\Soen 6441\\Project\\maps\\Empire of Alexander.map");
-            scanner = new Scanner(fileReader);
+            FileReader fileReader = new FileReader("D:\\Courses\\Soen 6441\\Project\\maps\\Empire of Alexander.map");
+            Scanner scanner = new Scanner(fileReader);
 
             while (scanner.hasNext()) {
                 String line;
