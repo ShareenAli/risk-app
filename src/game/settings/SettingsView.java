@@ -84,20 +84,7 @@ public class SettingsView {
         this.panelPlayers.removeAll();
 
         for (int i = 0; i < noOfPlayers; i++) {
-            JPanel panelPlayer = new JPanel();
-            panelPlayer.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-            JLabel labelName = new JLabel();
-            labelName.setText("Name:");
-            panelPlayer.add(labelName);
-            JTextField textName = new JTextField();
-            textName.setPreferredSize(new Dimension(164, 27));
-            panelPlayer.add(textName);
-            JComboBox comboType = new JComboBox();
-            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-            model.addElement("Human");
-            model.addElement("Computer");
-            comboType.setModel(model);
-            panelPlayer.add(comboType);
+            JPanel panelPlayer = getPlayerPanel(i);
 
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.gridx = 0;
@@ -106,6 +93,54 @@ public class SettingsView {
 
             panelPlayers.add(panelPlayer, gbc);
         }
+    }
+
+    /**
+     * Construct and return the player panel for multiple players input.
+     * @param index index of the view to set to
+     * @return panel of the player
+     */
+    @SuppressWarnings("unchecked")
+    private JPanel getPlayerPanel(int index) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        JLabel labelName = new JLabel();
+        labelName.setText("Name:");
+        panel.add(labelName);
+        JTextField textName = new JTextField();
+        textName.setText(this.getName(index));
+        textName.setPreferredSize(new Dimension(164, 27));
+        panel.add(textName);
+        JComboBox comboType = new JComboBox();
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("Human");
+        model.addElement("Computer");
+        comboType.setModel(model);
+        panel.add(comboType);
+
+        return panel;
+    }
+
+    /**
+     * Get the name for the default value in players' name input box
+     * @param i index of the box
+     * @return name of the player
+     */
+    private String getName(int i) {
+        switch (i) {
+            case 0:
+                return "shareen";
+            case 1:
+                return "dhaval";
+            case 2:
+                return "yashash";
+            case 3:
+                return "farhan";
+            case 4:
+                return "jasmeet";
+        }
+
+        return "player" + i;
     }
 
     {

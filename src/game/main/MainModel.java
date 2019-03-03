@@ -15,12 +15,17 @@ public class MainModel extends Observable {
     private HashMap<String, Country> countries = new HashMap<>();
     private HashMap<String, Continent> continents = new HashMap<>();
 
-    public MainModel() { }
+    MainModel() { }
 
-    public void setPlayers(ArrayList<Player> playerList) {
+    void setPlayers(ArrayList<Player> playerList) {
         for (Player player : playerList) {
             this.players.put(player.getName(), player);
+            this.playerNames.add(player.getName());
         }
+    }
+
+    ArrayList<String> getPlayerNames() {
+        return this.playerNames;
     }
 
     public Player getPlayer(String name) {
@@ -30,6 +35,6 @@ public class MainModel extends Observable {
     public void updatePlayer(String name, Player player) {
         this.players.put(name, player);
         setChanged();
-        notifyObservers(player);
+        notifyObservers(Player.CHANGE_PLAYER);
     }
 }
