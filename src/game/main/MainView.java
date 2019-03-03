@@ -16,14 +16,24 @@ public class MainView implements Observer {
 
     }
 
-    public void prepareView(JPanel panelPhase) {
+    void prepareView(JPanel panelPhase, JPanel panelLogs) {
         this.addPhaseView(panelPhase);
+        this.addLogsView(panelLogs);
     }
 
     private void addPhaseView(JPanel panel) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+
+        leftPanel.add(panel, gbc);
+    }
+
+    private void addLogsView(JPanel panel) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         gbc.fill = GridBagConstraints.BOTH;
 
         leftPanel.add(panel, gbc);

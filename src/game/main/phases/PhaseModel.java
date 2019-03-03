@@ -15,7 +15,7 @@ public class PhaseModel extends Observable {
 
     private String[] phaseNames = {"Card", "Reinforcement", "Attack", "Fortification"};
     private int phase = -1;
-    private int playerIndex = 0;
+    private int playerIndex = -1;
     private int totalPlayers;
     private ArrayList<String> players;
 
@@ -37,12 +37,12 @@ public class PhaseModel extends Observable {
     }
 
     void nextPlayer() {
-        this.playerIndex = (this.playerIndex < this.totalPlayers - 1) ? this.totalPlayers + 1 : 0;
+        this.playerIndex = (this.playerIndex < this.totalPlayers - 1) ? this.playerIndex + 1 : 0;
         setChanged();
         notifyObservers(CHANGE_PLAYER);
     }
 
-    public String getActivePlayer() {
+    String getActivePlayer() {
         return this.players.get(this.playerIndex);
     }
 
@@ -50,7 +50,7 @@ public class PhaseModel extends Observable {
         return this.phase;
     }
 
-    public String getActivePhaseName() {
+    String getActivePhaseName() {
         return this.phaseNames[this.phase];
     }
 }

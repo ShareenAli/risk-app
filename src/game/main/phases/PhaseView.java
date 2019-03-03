@@ -47,19 +47,31 @@ public class PhaseView implements Observer {
         this.tablePlayers.setModel(this.modelPlayers);
     }
 
+    /**
+     * It executes set of actions when the phase has been changed
+     * @param model the model which had been changed
+     */
     private void onPhaseChanged(PhaseModel model) {
         this.labelPhase.setText(model.getActivePhaseName() + " Phase");
+    }
+
+    /**
+     * It executes set of actions when the player has been changed
+     * @param model the model which had been changed
+     */
+    private void onPlayerChanged(PhaseModel model) {
+        this.labelPlayer.setText(model.getActivePlayer() + "'s turn");
     }
 
     @Override
     public void update(Observable o, Object arg) {
         if (arg instanceof String) {
-            System.out.println(arg);
             switch ((String) arg) {
                 case PhaseModel.CHANGE_PHASE:
                     this.onPhaseChanged((PhaseModel) o);
                     break;
                 case PhaseModel.CHANGE_PLAYER:
+                    this.onPlayerChanged((PhaseModel) o);
                     break;
             }
         }

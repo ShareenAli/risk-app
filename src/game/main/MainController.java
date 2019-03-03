@@ -1,6 +1,7 @@
 package game.main;
 
 import entity.Player;
+import game.main.logs.LogsController;
 import game.main.phases.PhaseController;
 import support.ActivityController;
 
@@ -10,6 +11,7 @@ public class MainController extends ActivityController {
     private MainView view;
     private MainModel model = new MainModel();
     private PhaseController phaseController;
+    private LogsController logsController;
 
     public MainController(ArrayList<Player> players) {
         this.view = new MainView();
@@ -22,24 +24,36 @@ public class MainController extends ActivityController {
     @Override
     protected void prepareUi() {
         this.frame.setContentPane(this.view.$$$getRootComponent$$$());
-        this.prepPhaseController();
+        this.prepControllers();
+        this.view.prepareView(this.phaseController.getRootPanel(), this.logsController.getRootPanel());
         this.attachObservers();
 
         this.startGame();
     }
 
+    private void prepControllers() {
+        this.prepPhaseController();
+        this.prepLogsController();
+    }
+
     private void prepPhaseController() {
         this.phaseController = new PhaseController();
-        this.view.prepareView(this.phaseController.getRootPanel());
         this.phaseController.initializeValues(this.model.getPlayerNames());
+    }
+
+    private void prepLogsController() {
+        this.logsController = new LogsController();
+        this.logsController.initializeValues();
     }
 
     private void attachObservers() {
         this.model.addObserver(this.view);
         this.model.addObserver(this.phaseController.getView());
+        this.model.addObserver(this.logsController.getView());
     }
 
     private void startGame() {
+        this.phaseController.changePlayer();
         this.phaseController.changePhase();
     }
 }

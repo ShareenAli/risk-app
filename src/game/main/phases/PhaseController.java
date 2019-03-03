@@ -23,6 +23,10 @@ public class PhaseController {
         this.model.nextPhase();
     }
 
+    public void changePlayer() {
+        this.model.nextPlayer();
+    }
+
     public JPanel getRootPanel() {
         return (JPanel) this.view.$$$getRootComponent$$$();
     }
