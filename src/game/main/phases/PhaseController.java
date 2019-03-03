@@ -1,9 +1,10 @@
 package game.main.phases;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 public class PhaseController {
     private PhaseView view;
+    private PhaseModel model = new PhaseModel();
 
     public PhaseController() {
         this.view = new PhaseView();
@@ -12,4 +13,6 @@ public class PhaseController {
     public JPanel getRootPanel() {
         return (JPanel) this.view.$$$getRootComponent$$$();
     }
+
+
 }
