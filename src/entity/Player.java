@@ -13,9 +13,8 @@ import java.util.HashMap;
  */
 
 public class Player {
-    /**
-     * A human player. It can be used as player type
-     */
+    public static final String CHANGE_PLAYER = "change:player";
+    /** A human player. It can be used as player type */
     public static final int TYPE_HUMAN = 0;
     /**
      * A computer player. It can be used as player type

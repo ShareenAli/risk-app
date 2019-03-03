@@ -27,7 +27,7 @@ public class MainModel extends Observable {
      * Constructor used to extract the data from the map
      */
     public MainModel() {
-        readMapFile();
+//        readMapFile();
     }
 
     /**
@@ -40,6 +40,10 @@ public class MainModel extends Observable {
             this.players.put(player.getName(), player);
             this.playerNames.add(player.getName());
         }
+    }
+
+    ArrayList<String> getPlayerNames() {
+        return this.playerNames;
     }
 
     /**
@@ -61,7 +65,7 @@ public class MainModel extends Observable {
     public void updatePlayer(String name, Player player) {
         this.players.put(name, player);
         setChanged();
-        notifyObservers(player);
+        notifyObservers(Player.CHANGE_PLAYER);
     }
 
     /**
