@@ -7,13 +7,43 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
+/**
+ * MapModel, has all the relevant information related to the .map file that is being loaded
+ * 
+ * @author Farhan Rahman Wasee
+ * @version 1.0.0
+ */
+
 public class MapModel {
 	
+	/**
+	 * Stores all the continents inside it
+	 */
+	
 	private static ArrayList<Continent> CONTINENTS = new ArrayList<Continent>();
+	
+	/**
+	 * Stores all the countries inside it
+	 */
+	
 	private static ArrayList<Country> TERRITORIES = new ArrayList<Country>();
+	
+	/**
+	 * Created, for a mapping for countries and strings, will be used on alter builds.
+	 */
+	
 	private static HashMap<String, Country> COUNTRYMAPPER = new HashMap<String, Country>();
 	private static HashMap<String, Continent> CONTINENTMAPPER = new HashMap<String, Continent>();
 
+	
+	/**
+	 * Constructor for creating a MapModel
+	 * @param CONTINENTS list of continents 
+	 * @param TERRITORIES list of countries
+	 * @param COUNTRYMAPPER hashmap using string to countries
+	 * @param CONTINENTMAPPER hashmap using string to continents
+	 */
+	
 	public MapModel(ArrayList<Continent> CONTINENTS, ArrayList<Country> TERRITORIES, HashMap<String, Country> COUNTRYMAPPER
 			, HashMap<String, Continent> CONTINENTMAPPER)
 	{
@@ -23,7 +53,15 @@ public class MapModel {
 		this.CONTINENTMAPPER = CONTINENTMAPPER;
 	}
 	
-	public void loadedMap(ArrayList<Continent> CONTINENTS, ArrayList<Country> TERRITORIES, HashMap<String, Country> COUNTRYMAPPER
+	/**
+	 * Model updater, that can update the data in the MAP object
+	 * @param CONTINENTS list of continents 
+	 * @param TERRITORIES list of countries
+	 * @param COUNTRYMAPPER hashmap using string to countries
+	 * @param CONTINENTMAPPER hashmap using string to continents
+	 */
+	
+	public void updateMap(ArrayList<Continent> CONTINENTS, ArrayList<Country> TERRITORIES, HashMap<String, Country> COUNTRYMAPPER
 			, HashMap<String, Continent> CONTINENTMAPPER)
 	{
 		this.CONTINENTS = CONTINENTS;
@@ -32,100 +70,74 @@ public class MapModel {
 		this.CONTINENTMAPPER = CONTINENTMAPPER;
 	}
 	
+	/**
+	 * Gets the list of continents in the map model
+	 */
+	
 	public static ArrayList<Continent> getCONTINENTS() {
 		return CONTINENTS;
 	}
 
+	/**
+	 * Sets the list of continents in the map model
+	 * @param cONTINENTS ArrayList of Continents
+	 */
+	
 	public static void setCONTINENTS(ArrayList<Continent> cONTINENTS) {
 		CONTINENTS = cONTINENTS;
 	}
 
+	/**
+	 * Gets the list of countries in the map model
+	 */
+	
 	public static ArrayList<Country> getTERRITORIES() {
 		return TERRITORIES;
 	}
 
+	/**
+	 * Sets the list of countries in the map model
+	 * @param tERRITORIES ArrayList of Countries
+	 */
+	
 	public static void setTERRITORIES(ArrayList<Country> tERRITORIES) {
 		TERRITORIES = tERRITORIES;
 	}
 
+	/**
+	 * Returns the hashmap that does string to country mapping
+	 */
+	
 	public static HashMap<String, Country> getCOUNTRYMAPPER() {
 		return COUNTRYMAPPER;
 	}
 
+	/**
+	 * Sets the hashmap that does string to country mapping
+	 * @param cOUNTRYMAPPER Hashmap of String, Country pairs
+	 */
+	
 	public static void setCOUNTRYMAPPER(HashMap<String, Country> cOUNTRYMAPPER) {
 		COUNTRYMAPPER = cOUNTRYMAPPER;
 	}
 
+	/**
+	 * Returns the hashmap that does string to continent mapping
+	 */
+	
 	public static HashMap<String, Continent> getCONTINENTMAPPER() {
 		return CONTINENTMAPPER;
 	}
 
+	/**
+	 * Sets the hashmap that does string to continent mapping
+	 * @param cONTINENTMAPPER Hashmap of String, Continent pairs
+	 */
+	
 	public static void setCONTINENTMAPPER(HashMap<String, Continent> cONTINENTMAPPER) {
 		CONTINENTMAPPER = cONTINENTMAPPER;
 	}
 	
-	static ArrayList<Continent> CONTINENTS2;
-	static ArrayList<Country> TERRITORIES2;
-	static HashMap<String, Country> COUNTRYMAPPER2;
-	static HashMap<String, Continent> CONTINENTMAPPER2;
 	
-	public void writeToFile(String filename)
-	{
-		//getDetails();
-		//getListsOfUser();
-		FileWriter fileWriter; 
-		try {
-			System.out.println("Size is " + CONTINENTS.size());
-			fileWriter = new FileWriter(filename);
-			writeContinents(fileWriter);
-			writeCountries(fileWriter);
-			fileWriter.close();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	 }
-	
-	public void writeContinents(FileWriter fileWriter)
-	{
-		try 
-		{
-			fileWriter.write("[CONTINENTS]\n");
-			
-			for(Continent c:CONTINENTS)
-			{
-				fileWriter.write(c.getName() + "=" + c.getControlValue() + "\n");
-			}
-			
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public void writeCountries(FileWriter fileWriter)
-	{
-		try 
-		{
-			fileWriter.write("\n[COUNTRIES]\n");
-			
-			for(Country c:TERRITORIES)
-			{
-				fileWriter.write(c.getName() + "," + c.getLatitude() + "," +c.getLongitude() + "," + c.getContinent());
-				for(int i=0;i<c.getNeighbours().size();i++)
-				{
-					fileWriter.write(","+c.getNeighbours().get(i));
-				}
-				fileWriter.write("\n");
-			}
-			
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
 	
 }

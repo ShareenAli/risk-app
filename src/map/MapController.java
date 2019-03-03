@@ -2,10 +2,18 @@ package map;
 import entity.Country;
 import entity.Continent;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
+
+/**
+ * Controller class for a map object
+ * 
+ * @author Farhan Rahman Wasee
+ * @version 1.0.0
+ */
 
 public class MapController {
 
@@ -15,13 +23,28 @@ public class MapController {
 	private static ArrayList<Country> TERRITORIES = new ArrayList<Country>();
 	private static HashMap<String, Country> COUNTRYMAPPER = new HashMap<String, Country>();
 	private static HashMap<String, Continent> CONTINENTMAPPER = new HashMap<String, Continent>();
+	String errorMessage = "";
+	
+	/**
+	 * Starts map editor pipeline
+	 */
+		
+	public void init()
+	{
+		MapView newmap = new MapView();
+		newmap.showMenu();
+	}
+	
+	/**
+	 * Loads existing map file
+	 * @param filename Name of the map file, ending with .map
+	 */
 	
 	public void loadExistingMap(String filename) {
 		// TODO Auto-generated method stub
 		FileReader file1;
 		Scanner sn;
 		boolean continentsIncoming = false, territoriesIncoming = false;
-		int mapperTracker = 0;
 		
 		try 
 		{
@@ -55,7 +78,6 @@ public class MapController {
 					Continent tempContinent = new Continent(words[0], Integer.parseInt(words[1])); 
 					getCONTINENTS().add(tempContinent);
 					getCONTINENTMAPPER().put(words[0], tempContinent);
-					mapperTracker++;
 				}
 				else if(territoriesIncoming && !s.equals(""))
 				{
@@ -82,12 +104,16 @@ public class MapController {
 			e.printStackTrace();
 		}
 		
+		checkForErrors();
 		MAP = new MapModel(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
 		
 	}
 
+	/**
+	 * Creates a new map from user
+	 */
+	
 	public void initiateMapCreation() {
-		// TODO Auto-generated method stub
 		int choice;
 		do
 		{
@@ -111,42 +137,83 @@ public class MapController {
 		}
 		while(choice!=3);
 		
+		checkForErrors();
 		MAP = new MapModel(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
 		
 	}
 
+	/**
+	 * Gets the list of continents
+	 * @return CONTINENTS the list of continents
+	 */
 	
 	public static ArrayList<Continent> getCONTINENTS() {
 		return CONTINENTS;
 	}
 
+	/**
+	 * Sets the list of continents in the map model
+	 * @param cONTINENTS ArrayList of Continents
+	 */
+	
 	public static void setCONTINENTS(ArrayList<Continent> cONTINENTS) {
 		CONTINENTS = cONTINENTS;
 	}
 
+	/**
+	 * Gets the list of countries in the map model
+	 */
+	
 	public static ArrayList<Country> getTERRITORIES() {
 		return TERRITORIES;
 	}
+	
+	/**
+	 * Sets the list of countries in the map model
+	 * @param tERRITORIES ArrayList of Countries
+	 */
 
 	public static void setTERRITORIES(ArrayList<Country> tERRITORIES) {
 		TERRITORIES = tERRITORIES;
 	}
 
+	/**
+	 * Returns the hashmap that does string to country mapping
+	 */
+	
 	public static HashMap<String, Country> getCOUNTRYMAPPER() {
 		return COUNTRYMAPPER;
 	}
+	
+	/**
+	 * Sets the hashmap that does string to country mapping
+	 * @param cOUNTRYMAPPER Hashmap of String, Country pairs
+	 */
 
 	public static void setCOUNTRYMAPPER(HashMap<String, Country> cOUNTRYMAPPER) {
 		COUNTRYMAPPER = cOUNTRYMAPPER;
 	}
 
+	/**
+	 * Returns the hashmap that does string to continent mapping
+	 */
+	
 	public static HashMap<String, Continent> getCONTINENTMAPPER() {
 		return CONTINENTMAPPER;
 	}
 
+	/**
+	 * Sets the hashmap that does string to continent mapping
+	 * @param cONTINENTMAPPER Hashmap of String, Continent pairs
+	 */
+	
 	public static void setCONTINENTMAPPER(HashMap<String, Continent> cONTINENTMAPPER) {
 		CONTINENTMAPPER = cONTINENTMAPPER;
 	}
+	
+	/**
+	 * Add another continent in create mode
+	 */
 	
 	public void addContinent()
 	{
@@ -159,6 +226,10 @@ public class MapController {
 		CONTINENTS.add(c);
 		CONTINENTMAPPER.put(c.getName(), c);
 	}
+	
+	/**
+	 * Add another country in create mode
+	 */
 
 	public void addCountry()
 	{
@@ -184,9 +255,246 @@ public class MapController {
 		COUNTRYMAPPER.put(c.getName(), c);
 	}
 
+	/**
+	 * stores the map model to file
+	 * @param filename Target filename in which map will be saved
+	 */
+	
 	public void storeToFile(String filename) {
 		// TODO Auto-generated method stub
-		MAP.writeToFile(filename);
+		writeToFile(filename);
+		checkForErrors();
+	}
+	
+	/**
+	 * Prints list of countries
+	 */
+	
+	public void countryPrinter()
+	{
+		for(Country c:TERRITORIES)
+		{
+			System.out.println(c.getName());
+		}
 	}
 
+	/**
+	 * Prints list of continents
+	 */
+	
+	public void continentPrinter()
+	{
+		for(Continent c:CONTINENTS)
+		{
+			System.out.println(c.getName());
+		}
+	}
+	
+	/**
+	 * Add another continent in edit mode
+	 */
+
+	public void editModeAddContinent() {
+		addContinent();
+	}
+	
+	/**
+	 * Remove continent in edit mode
+	 */
+
+	public void editModeRemoveContinent() {
+		System.out.println("Which continent you want to remove");
+		String toBeRemoved = scan.nextLine();
+		
+		for(int i = 0; i<CONTINENTS.size();i++)
+		{
+			if(CONTINENTS.get(i).getName().equalsIgnoreCase(toBeRemoved))
+			{
+				CONTINENTS.remove(i);
+			}
+		}
+		MAP.updateMap(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
+	}
+	
+	/**
+	 * Add another country in edit mode
+	 */
+	
+	public void editModeAddCountry() {
+		addCountry();
+	}
+	
+	/**
+	 * Checks if each continent has at least one country
+	 * @return True If there is no error
+	 */
+	
+	public void editModeRemoveCountry() {
+		System.out.println("Which country you want to remove");
+		String toBeRemoved = scan.nextLine();
+		
+		for(int i = 0; i<TERRITORIES.size();i++)
+		{
+			if(TERRITORIES.get(i).getName().equalsIgnoreCase(toBeRemoved))
+			{
+				TERRITORIES.remove(i);
+			}
+		}
+		MAP.updateMap(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
+	}
+	
+	/**
+	 * Checks if each continent has at least one neighbouring country
+	 * @return True If there is no error
+	 */
+	
+	public boolean hasAdjacentCountry()
+	{
+		boolean signal = true;
+		for(Country c:TERRITORIES)
+		{
+			if(c.getNeighbours().size()<1)
+			{
+				signal = false;
+				errorMessage.concat(c.getName() + " does not have any neighbor");
+			}
+		}
+		return signal;
+	}
+
+	/**
+	 * Checks if each country belongs to one continent
+	 * @return True If there is no error
+	 */
+	
+	public boolean hasContinent()
+	{
+		boolean signal = true;
+		for(Country c:TERRITORIES)
+		{
+			if(c.getContinent().equals("") || c.getContinent().equals(null) )
+			{
+				signal = false;
+				errorMessage.concat(c.getName() + " does not have a valid continent");
+			}
+		}
+		return signal;
+	}
+	
+	/**
+	 * Checks if each continent has at least one country
+	 * @return True If there is no error
+	 */
+	
+	public boolean hasCountry()
+	{
+		boolean signal = true;
+		for(Continent c:CONTINENTS)
+		{
+			boolean flag=false;
+			for(Country ctry:TERRITORIES)
+			{
+				if(ctry.getContinent().equalsIgnoreCase(c.getName()))
+				{
+					flag= true;
+				}
+			}
+			if(!flag)
+			{
+				errorMessage.concat(c.getName() + " has no country.");
+				signal = false;
+			}
+		}
+		return signal;
+	}
+	
+	/**
+	 * Combines all the error checks and returns a combined result
+	 * @return True There is no errors, based on the checks
+	 */
+	
+	public boolean checkForErrors() 
+	{
+		boolean noNeighbours, noContinent, noCountryInContinent;
+
+		noContinent = hasContinent();
+		noNeighbours = hasAdjacentCountry();
+		noCountryInContinent = hasCountry();
+		
+		return noContinent && noNeighbours && noCountryInContinent;
+	}
+	
+	/**
+	 * Writes the current map to a .map file
+	 * @param filename Name of the file, ending with .map
+	 */
+	
+	public void writeToFile(String filename)
+	{
+		//getDetails();
+		//getListsOfUser();
+		FileWriter fileWriter; 
+		try {
+			fileWriter = new FileWriter(filename);
+			writeContinents(fileWriter);
+			writeCountries(fileWriter);
+			fileWriter.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	 }
+	
+	/**
+	 * Writes the continents to the file
+	 * @param fileWriter The filewriter object
+	 */
+	
+	public void writeContinents(FileWriter fileWriter)
+	{
+		try 
+		{
+			fileWriter.write("[CONTINENTS]\n");
+			
+			for(Continent c:CONTINENTS)
+			{
+				fileWriter.write(c.getName() + "=" + c.getControlValue() + "\n");
+			}
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Writes the countries to the file
+	 * @param fileWriter The filewriter object
+	 */
+	
+	public void writeCountries(FileWriter fileWriter)
+	{
+		try 
+		{
+			fileWriter.write("\n[COUNTRIES]\n");
+			
+			for(Country c:TERRITORIES)
+			{
+				fileWriter.write(c.getName() + "," + c.getLatitude() + "," +c.getLongitude() + "," + c.getContinent());
+				for(int i=0;i<c.getNeighbours().size();i++)
+				{
+					fileWriter.write(","+c.getNeighbours().get(i));
+				}
+				fileWriter.write("\n");
+			}
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 }
