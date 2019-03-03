@@ -25,7 +25,6 @@ public class MainController extends ActivityController {
      */
     @Override
     protected void prepareUi() {
-//        startupPhase();
         this.frame.setContentPane(this.view.$$$getRootComponent$$$());
         this.prepControllers();
         this.view.prepareView(this.phaseController.getRootPanel(), this.logsController.getRootPanel(),
@@ -77,6 +76,8 @@ public class MainController extends ActivityController {
     }
 
     private void startGame() {
+        this.startupPhase();
+
         this.phaseController.changePlayer();
         this.phaseController.changePhase();
     }

@@ -26,19 +26,26 @@ public class MainModel extends Observable {
     /**
      * Constructor used to extract the data from the map
      */
-    public MainModel() {
-//        readMapFile();
-    }
+    MainModel() { }
 
     /**
      * To initialize all the players playing the game
      *
-     * @param playerList
+     * @param playerList list of players
      */
-    public void setPlayers(ArrayList<Player> playerList) {
+    void setPlayers(ArrayList<Player> playerList) {
         for (Player player : playerList) {
             this.players.put(player.getName(), player);
             this.playerNames.add(player.getName());
+        }
+    }
+
+    void setMapContent(ArrayList<Country> countries, ArrayList<Continent> continents) {
+        for (Country country : countries) {
+            this.countries.put(country.getName(), country);
+        }
+        for (Continent continent : continents) {
+            this.continents.put(continent.getName(), continent);
         }
     }
 
@@ -49,7 +56,7 @@ public class MainModel extends Observable {
     /**
      * Fetch the Player object by feeding in a name
      *
-     * @param name
+     * @param name name of the player
      * @return player
      */
     public Player getPlayer(String name) {
@@ -71,7 +78,7 @@ public class MainModel extends Observable {
     /**
      * Assign Country to each player in the game
      */
-    public void assignCountry() {
+    void assignCountry() {
         int playerIndex = 0;
 
         for (Map.Entry<String, Country> entry : countries.entrySet()) {
@@ -88,7 +95,7 @@ public class MainModel extends Observable {
     /**
      * Assign armies to the countries owned by the player
      */
-    public void assignArmies() {
+    void assignArmies() {
         int noOfPlayers = this.playerNames.size();
         Random random = new Random();
 
@@ -124,62 +131,6 @@ public class MainModel extends Observable {
                 player.setArmies(randomCountry, ++noOfArmies);
                 this.players.put(thePlayer, player);
             }
-        }
-    }
-
-    /**
-     * Parse the map file into the data structures of the application
-     */
-    public void readMapFile() {
-        int continentFlag = 0, territoryFlag = 0;
-        try {
-            FileReader fileReader = new FileReader("D:\\Courses\\Soen 6441\\Project\\maps\\Empire of Alexander.map");
-            Scanner scanner = new Scanner(fileReader);
-
-            while (scanner.hasNext()) {
-                String line;
-                String temp[];
-
-                line = scanner.nextLine();
-
-                switch (line) {
-                    case "[Continents]":
-                        continentFlag = 1;
-                        break;
-
-                    case "[Territories]":
-                        territoryFlag = 1;
-                        continentFlag = 0;
-                        break;
-                }
-
-                if (line.equals("") || line.equals(" "))
-                    continue;
-
-                if (continentFlag == 1) {
-                    if (line.equals("[Continents]"))
-                        line = scanner.nextLine();
-
-                    temp = line.split("=");
-                    this.continents.put(temp[0].trim(), new Continent(temp[0].trim(), Integer.parseInt(temp[1])));
-                }
-
-                if (territoryFlag == 1) {
-                    if (line.equals("[Territories]"))
-                        line = scanner.nextLine();
-
-                    temp = line.split(",");
-                    country = new Country(temp[0].trim(), temp[3].trim(), Double.parseDouble(temp[1].trim()), Double.parseDouble(temp[2].trim()));
-
-                    for (int i = 4; i < temp.length - 1; i++) {
-                        country.addNeighbour(temp[i]);
-                    }
-
-                    this.countries.put(temp[0], country);
-                }
-            }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
         }
     }
 }
