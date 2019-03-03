@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="game.settings.SettingsView">
   <grid id="27dc6" binding="panelSettings" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="20" y="20" width="586" height="146"/>
+      <xy x="20" y="20" width="586" height="233"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -51,6 +51,63 @@
             <properties/>
             <border type="none"/>
             <children/>
+          </grid>
+          <grid id="ad9d5" binding="panelFiles" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints border-constraint="South"/>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <grid id="8fedf" binding="panelMapFile" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                <constraints border-constraint="North"/>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="eec63" class="javax.swing.JLabel" binding="labelMapFile">
+                    <constraints/>
+                    <properties>
+                      <text value="Map File:"/>
+                    </properties>
+                  </component>
+                  <component id="8906c" class="javax.swing.JLabel" binding="labelMapFileName">
+                    <constraints/>
+                    <properties>
+                      <text value="&lt;no file&gt;"/>
+                    </properties>
+                  </component>
+                  <component id="44848" class="javax.swing.JButton" binding="buttonMap">
+                    <constraints/>
+                    <properties>
+                      <text value="Change Map"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="f998f" binding="panelBmpFile" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                <constraints border-constraint="Center"/>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="fa597" class="javax.swing.JLabel" binding="labelBmpFile">
+                    <constraints/>
+                    <properties>
+                      <text value="Bmp File:"/>
+                    </properties>
+                  </component>
+                  <component id="34092" class="javax.swing.JLabel" binding="labelBmpFileName">
+                    <constraints/>
+                    <properties>
+                      <text value="&lt;no file&gt;"/>
+                    </properties>
+                  </component>
+                  <component id="c0cee" class="javax.swing.JButton" binding="buttonBmp">
+                    <constraints/>
+                    <properties>
+                      <text value="Change Bmp"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+            </children>
           </grid>
         </children>
       </grid>
