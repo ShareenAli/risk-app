@@ -23,6 +23,7 @@ public class MainController extends ActivityController {
      */
     @Override
     protected void prepareUi() {
+        startupPhase();
         this.frame.setContentPane(this.view.$$$getRootComponent$$$());
         this.prepControllers();
         this.view.prepareView(this.phaseController.getRootPanel(), this.logsController.getRootPanel());
@@ -46,6 +47,19 @@ public class MainController extends ActivityController {
         this.logsController.initializeValues();
     }
 
+    /**
+     * Perform the startup Phase operations
+     * Assign the countries to the players
+     * Assign the armies to the assigned countries
+     */
+    private void startupPhase() {
+        this.model.assignCountry();
+        this.model.assignArmies();
+    }
+
+    /**
+     * Attach the observers for the model
+     */
     private void attachObservers() {
         this.model.addObserver(this.view);
         this.model.addObserver(this.phaseController.getView());
