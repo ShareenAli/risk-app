@@ -22,18 +22,18 @@ public class MainModel extends Observable {
     private HashMap<String, Continent> continents = new HashMap<>();
     private Country country;
     private int armiesToAssign;
+    private double armiesAvailableToAssign = -1;
 
     /**
      * Constructor used to extract the data from the map
      */
     public MainModel() {
-        readMapFile();
     }
 
     /**
      * To initialize all the players playing the game
      *
-     * @param playerList
+     * @param playerList list of players
      */
     public void setPlayers(ArrayList<Player> playerList) {
         for (Player player : playerList) {
@@ -42,14 +42,43 @@ public class MainModel extends Observable {
         }
     }
 
+    public void setMapContent(ArrayList<Country> countries, ArrayList<Continent> continents) {
+        for (Country country : countries) {
+            this.countries.put(country.getName(), country);
+        }
+        for (Continent continent : continents) {
+            this.continents.put(continent.getName(), continent);
+        }
+    }
+
+    ArrayList<String> getPlayerNames() {
+        return this.playerNames;
+    }
+
     /**
      * Fetch the Player object by feeding in a name
      *
-     * @param name
-     * @return player
+     * @param name name of the player
+     * @return player player object representing the player
      */
     public Player getPlayer(String name) {
         return this.players.get(name);
+    }
+
+    /**
+     * It is used to get the List of countries
+     * @return countries List of all the countries
+     */
+    public HashMap<String, Country> getCountries() {
+        return countries;
+    }
+
+    /**
+     * It is used to get all the armies available to assign
+     * @return armiesAvailableToAssign returns the number of armies to assign
+     */
+    public double getArmiesAvailableToAssign() {
+        return armiesAvailableToAssign;
     }
 
     /**
@@ -61,7 +90,7 @@ public class MainModel extends Observable {
     public void updatePlayer(String name, Player player) {
         this.players.put(name, player);
         setChanged();
-        notifyObservers(player);
+        notifyObservers(Player.CHANGE_PLAYER);
     }
 
     /**
@@ -84,7 +113,7 @@ public class MainModel extends Observable {
     /**
      * Assign armies to the countries owned by the player
      */
-    public void assignArmies() {
+    void assignArmies() {
         int noOfPlayers = this.playerNames.size();
         Random random = new Random();
 
@@ -124,58 +153,37 @@ public class MainModel extends Observable {
     }
 
     /**
-     * Parse the map file into the data structures of the application
+     * Reinforcement phase to assign the armies to the country selected by the player
+     *
+     * @param playerName  Name of the player
+     * @param countryName Name of the country to which armies are to be assigned
+     * @param armiesToAdd Number of armies to be assigned
      */
-    public void readMapFile() {
-        int continentFlag = 0, territoryFlag = 0;
-        try {
-            FileReader fileReader = new FileReader("D:\\Courses\\Soen 6441\\Project\\maps\\Empire of Alexander.map");
-            Scanner scanner = new Scanner(fileReader);
+    public void reinforcementPhase(String playerName, String countryName, int armiesToAdd) {
+        Player player = this.players.get(playerName);
 
-            while (scanner.hasNext()) {
-                String line;
-                String temp[];
-
-                line = scanner.nextLine();
-
-                switch (line) {
-                    case "[Continents]":
-                        continentFlag = 1;
-                        break;
-
-                    case "[Territories]":
-                        territoryFlag = 1;
-                        continentFlag = 0;
-                        break;
-                }
-
-                if (line.equals("") || line.equals(" "))
-                    continue;
-
-                if (continentFlag == 1) {
-                    if (line.equals("[Continents]"))
-                        line = scanner.nextLine();
-
-                    temp = line.split("=");
-                    this.continents.put(temp[0].trim(), new Continent(temp[0].trim(), Integer.parseInt(temp[1])));
-                }
-
-                if (territoryFlag == 1) {
-                    if (line.equals("[Territories]"))
-                        line = scanner.nextLine();
-
-                    temp = line.split(",");
-                    country = new Country(temp[0].trim(), temp[3].trim(), Double.parseDouble(temp[1].trim()), Double.parseDouble(temp[2].trim()));
-
-                    for (int i = 4; i < temp.length - 1; i++) {
-                        country.addNeighbour(temp[i]);
-                    }
-
-                    this.countries.put(temp[0], country);
-                }
-            }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+        if (this.armiesAvailableToAssign == 0) {
+        } else if (this.armiesAvailableToAssign == -1) {
+            this.setArmiesToAssign();
+        } else {
+            player.reinforcementPhase(countryName, armiesToAdd);
+            this.armiesAvailableToAssign -= armiesToAdd;
         }
+    }
+
+    /**
+     * Calculate the number of armies to assign in the reinforcement phase
+     */
+    @SuppressWarnings("IntegerDivisionInFloatingPointContext")
+    private void setArmiesToAssign() {
+        int countriesConquered = this.countries.size();
+        this.armiesAvailableToAssign = Math.floor(countriesConquered / 3) < 3 ? 3 : Math.floor(countriesConquered / 3);
+    }
+
+    /**
+     * It is used to reset the counter back to default for a fresh computation
+     */
+    public void resetArmyCounter() {
+        armiesAvailableToAssign = -1;
     }
 }

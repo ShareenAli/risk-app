@@ -22,6 +22,15 @@ public class SettingsView {
     private JPanel panelPlayers;
     private JPanel panelActions;
     private JButton buttonStart;
+    private JPanel panelFiles;
+    private JPanel panelMapFile;
+    private JPanel panelBmpFile;
+    private JLabel labelMapFile;
+    private JLabel labelMapFileName;
+    private JButton buttonMap;
+    private JLabel labelBmpFile;
+    private JLabel labelBmpFileName;
+    private JButton buttonBmp;
 
     private DefaultComboBoxModel<Integer> modelNoPlayers = new DefaultComboBoxModel<>();
 
@@ -43,6 +52,22 @@ public class SettingsView {
     }
 
     /**
+     * Modifies the file name label for bmp
+     * @param name name of the file
+     */
+    void updateBmpFileName(String name) {
+        this.labelBmpFileName.setText(name);
+    }
+
+    /**
+     * Modifies the file name label for map.
+     * @param name name of the file.
+     */
+    void updateMapFileName(String name) {
+        this.labelMapFileName.setText(name);
+    }
+
+    /**
      * Binds the useful listeners to combo box of the number of players
      *
      * @param listener onItemSelected listener
@@ -53,10 +78,21 @@ public class SettingsView {
 
     /**
      * Binds the useful listeners to start game button
+     *
      * @param listener onClick listener
      */
     void bindButtonStartListeners(ActionListener listener) {
         this.buttonStart.addActionListener(listener);
+    }
+
+    /**
+     * Binds useful listeners to map and bmp file buttons
+     * @param mapListener listener for map file
+     * @param bmpListener listener for bmp file
+     */
+    void bindMapButtonsListeners(ActionListener mapListener, ActionListener bmpListener) {
+        this.buttonMap.addActionListener(mapListener);
+        this.buttonBmp.addActionListener(bmpListener);
     }
 
     /**
@@ -84,20 +120,7 @@ public class SettingsView {
         this.panelPlayers.removeAll();
 
         for (int i = 0; i < noOfPlayers; i++) {
-            JPanel panelPlayer = new JPanel();
-            panelPlayer.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-            JLabel labelName = new JLabel();
-            labelName.setText("Name:");
-            panelPlayer.add(labelName);
-            JTextField textName = new JTextField();
-            textName.setPreferredSize(new Dimension(164, 27));
-            panelPlayer.add(textName);
-            JComboBox comboType = new JComboBox();
-            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-            model.addElement("Human");
-            model.addElement("Computer");
-            comboType.setModel(model);
-            panelPlayer.add(comboType);
+            JPanel panelPlayer = getPlayerPanel(i);
 
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.gridx = 0;
@@ -106,6 +129,56 @@ public class SettingsView {
 
             panelPlayers.add(panelPlayer, gbc);
         }
+    }
+
+    /**
+     * Construct and return the player panel for multiple players input.
+     *
+     * @param index index of the view to set to
+     * @return panel of the player
+     */
+    @SuppressWarnings("unchecked")
+    private JPanel getPlayerPanel(int index) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        JLabel labelName = new JLabel();
+        labelName.setText("Name:");
+        panel.add(labelName);
+        JTextField textName = new JTextField();
+        textName.setText(this.getName(index));
+        textName.setPreferredSize(new Dimension(164, 27));
+        panel.add(textName);
+        JComboBox comboType = new JComboBox();
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("Human");
+        model.addElement("Computer");
+        comboType.setModel(model);
+        panel.add(comboType);
+
+        return panel;
+    }
+
+    /**
+     * Get the name for the default value in players' name input box
+     *
+     * @param i index of the box
+     * @return name of the player
+     */
+    private String getName(int i) {
+        switch (i) {
+            case 0:
+                return "shareen";
+            case 1:
+                return "dhaval";
+            case 2:
+                return "yashash";
+            case 3:
+                return "farhan";
+            case 4:
+                return "jasmeet";
+        }
+
+        return "player" + i;
     }
 
     {
@@ -154,6 +227,33 @@ public class SettingsView {
         panelPlayers = new JPanel();
         panelPlayers.setLayout(new GridBagLayout());
         panelContent.add(panelPlayers, BorderLayout.CENTER);
+        panelFiles = new JPanel();
+        panelFiles.setLayout(new BorderLayout(0, 0));
+        panelContent.add(panelFiles, BorderLayout.SOUTH);
+        panelMapFile = new JPanel();
+        panelMapFile.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        panelFiles.add(panelMapFile, BorderLayout.NORTH);
+        labelMapFile = new JLabel();
+        labelMapFile.setText("Map File:");
+        panelMapFile.add(labelMapFile);
+        labelMapFileName = new JLabel();
+        labelMapFileName.setText("<no file>");
+        panelMapFile.add(labelMapFileName);
+        buttonMap = new JButton();
+        buttonMap.setText("Change Map");
+        panelMapFile.add(buttonMap);
+        panelBmpFile = new JPanel();
+        panelBmpFile.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        panelFiles.add(panelBmpFile, BorderLayout.CENTER);
+        labelBmpFile = new JLabel();
+        labelBmpFile.setText("Bmp File:");
+        panelBmpFile.add(labelBmpFile);
+        labelBmpFileName = new JLabel();
+        labelBmpFileName.setText("<no file>");
+        panelBmpFile.add(labelBmpFileName);
+        buttonBmp = new JButton();
+        buttonBmp.setText("Change Bmp");
+        panelBmpFile.add(buttonBmp);
         panelActions = new JPanel();
         panelActions.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         panelSettings.add(panelActions, BorderLayout.SOUTH);

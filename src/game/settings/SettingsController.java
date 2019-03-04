@@ -3,11 +3,13 @@ package game.settings;
 import game.main.MainController;
 import risk.RiskApp;
 import support.ActivityController;
+import support.DisplayFileChooser;
 
 import javax.swing.JFrame;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 /**
  * It initializes the game settings.
@@ -18,7 +20,8 @@ import java.awt.event.ActionListener;
  */
 public class SettingsController extends ActivityController {
     private SettingsView view;
-    private ActionListener comboNoPlayersLs, buttonStartLs;
+    private ActionListener comboNoPlayersLs, buttonStartLs, buttonMapLs, buttonBmpLs;
+    private DisplayFileChooser fileChooser = new DisplayFileChooser("~");
 
     /**
      * It initializes the controller
@@ -44,6 +47,7 @@ public class SettingsController extends ActivityController {
     private void bindListeners() {
         this.view.bindComboNoPlayersListeners(this.comboNoPlayersLs);
         this.view.bindButtonStartListeners(this.buttonStartLs);
+        this.view.bindMapButtonsListeners(this.buttonMapLs, this.buttonBmpLs);
     }
 
     /**
@@ -57,7 +61,28 @@ public class SettingsController extends ActivityController {
 
         this.buttonStartLs = (ActionEvent e) -> {
             this.view.collectData();
+
             RiskApp.ChangeActivityController(new MainController(SettingsModel.getInstance().getPlayers()));
+        };
+
+        this.buttonMapLs = (ActionEvent e) -> {
+            this.fileChooser.updateExtension("map");
+            File file = this.fileChooser.openFile();
+
+            if (file != null) {
+                SettingsModel.getInstance().setMapFile(file);
+                this.view.updateMapFileName(file.getName());
+            }
+        };
+
+        this.buttonBmpLs = (ActionEvent e) -> {
+            this.fileChooser.updateExtension("bmp");
+            File file = this.fileChooser.openFile();
+
+            if (file != null) {
+                SettingsModel.getInstance().setBmpFile(file);
+                this.view.updateBmpFileName(file.getName());
+            }
         };
     }
 }

@@ -13,6 +13,7 @@ import java.util.HashMap;
  */
 
 public class Player {
+    public static final String CHANGE_PLAYER = "change:player";
     /**
      * A human player. It can be used as player type
      */
@@ -94,5 +95,12 @@ public class Player {
         int armies = this.countries.get(countryName);
         armies += armiesToAdd;
         this.countries.put(countryName, armies);
+    }
+
+    /**
+     * Update the data structures for reinforcement phase
+     */
+    public void reinforcementPhase(String countryName, int armiesToAdd) {
+        this.addArmies(countryName, armiesToAdd);
     }
 }
