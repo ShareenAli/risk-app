@@ -110,39 +110,6 @@ public class MapController {
 	}
 
 	/**
-	 * Creates a new map from user
-	 */
-	
-	public void initiateMapCreation() {
-		int choice;
-		do
-		{
-			System.out.println("=================================");
-			System.out.println("Enter 1 =========== Add Continent");
-			System.out.println("Enter 2 =========== Add Countries");
-			System.out.println("Enter 3 =========== Exit");
-			System.out.println("=================================");
-			choice = scan.nextInt();
-			scan.nextLine();
-			
-			switch(choice)
-			{
-				case 1:
-					addContinent();
-					break;
-				case 2:
-					addCountry();
-					break;
-			}
-		}
-		while(choice!=3);
-		
-		checkForErrors();
-		MAP = new MapModel(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
-		
-	}
-
-	/**
 	 * Gets the list of continents
 	 * @return CONTINENTS the list of continents
 	 */
@@ -215,14 +182,9 @@ public class MapController {
 	 * Add another continent in create mode
 	 */
 	
-	public void addContinent()
+	public void addContinent(String continent, int controlValue)
 	{
-		System.out.println("Enter continent name :: ");
-		String continent = scan.nextLine();
-		System.out.println("Enter control value :: ");
-		int control = scan.nextInt();
-		scan.nextLine();
-		Continent c = new Continent(continent, control);
+		Continent c = new Continent(continent, controlValue);
 		CONTINENTS.add(c);
 		CONTINENTMAPPER.put(c.getName(), c);
 		MAP.updateMap(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
@@ -232,28 +194,14 @@ public class MapController {
 	 * Add another country in create mode
 	 */
 
-	public void addCountry()
+	public void addCountry(String country, int x, int y, String continent, ArrayList<String> neighborList)
 	{
-		System.out.println("Enter country name :: ");
-		String country = scan.nextLine();
-		System.out.println("Enter x value :: ");
-		int x = scan.nextInt();
-		scan.nextLine();
-		System.out.println("Enter y value :: ");
-		int y = scan.nextInt();
-		scan.nextLine();
-		System.out.println("Enter continent name :: ");
-		String continent = scan.nextLine();
-		System.out.println("Enter neighbors names (space) :: ");
-		String neighbors = scan.nextLine();
-		
-		String nbors[] = neighbors.split(" "); 
-		ArrayList<String> neighborList = new ArrayList<String>(Arrays.asList(nbors));
-
 		Country c = new Country(country, continent, x, y);
 		c.setNeighbours(neighborList);
 		TERRITORIES.add(c);
 		COUNTRYMAPPER.put(c.getName(), c);
+		String neighbors = String.join(",", neighborList);
+		addNeighbours(country, neighbors);
 		MAP.updateMap(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
 	}
 
@@ -293,20 +241,10 @@ public class MapController {
 	}
 	
 	/**
-	 * Add another continent in edit mode
-	 */
-
-	public void editModeAddContinent() {
-		addContinent();
-	}
-	
-	/**
 	 * Remove continent in edit mode
 	 */
 
-	public void editModeRemoveContinent() {
-		System.out.println("Which continent you want to remove");
-		String toBeRemoved = scan.nextLine();
+	public void editModeRemoveContinent(String toBeRemoved) {
 		
 		for(int i = 0; i<CONTINENTS.size();i++)
 		{
@@ -329,28 +267,32 @@ public class MapController {
 		MAP.updateMap(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
 	}
 	
-	/**
-	 * Add another country in edit mode
-	 */
 	
-	public void editModeAddCountry() {
-		addCountry();
-	}
 	
 	/**
 	 * Checks if each continent has at least one country
 	 * @return True If there is no error
 	 */
 	
-	public void editModeRemoveCountry() {
-		System.out.println("Which country you want to remove");
-		String toBeRemoved = scan.nextLine();
-		
+	public void editModeRemoveCountry(String toBeRemoved) {
 		for(int i = 0; i<TERRITORIES.size();i++)
 		{
 			if(TERRITORIES.get(i).getName().equalsIgnoreCase(toBeRemoved))
 			{
 				TERRITORIES.remove(i);
+			}
+		}
+		for(int i=0;i<TERRITORIES.size();i++)
+		{
+			Country c = TERRITORIES.get(i);
+			if(c.getNeighbours().contains(toBeRemoved))
+			{
+				TERRITORIES.remove(i);
+				ArrayList<String> temp = c.getNeighbours();
+				temp.remove(toBeRemoved);
+				c.setNeighbours(temp);
+				TERRITORIES.add(c);
+				i--;
 			}
 		}
 		MAP.updateMap(CONTINENTS, TERRITORIES, COUNTRYMAPPER, CONTINENTMAPPER);
