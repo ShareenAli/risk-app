@@ -4,6 +4,7 @@ import entity.Continent;
 import entity.Country;
 import entity.Player;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -16,11 +17,11 @@ import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class MainModel extends Observable {
+    public static final String CHANGE_ARMY = "main:army";
     private ArrayList<String> playerNames = new ArrayList<>();
     private HashMap<String, Player> players = new HashMap<>();
     private HashMap<String, Country> countries = new HashMap<>();
     private HashMap<String, Continent> continents = new HashMap<>();
-    private Country country;
     private int armiesToAssign;
     private double armiesAvailableToAssign = -1;
 
@@ -56,6 +57,14 @@ public class MainModel extends Observable {
     }
 
     /**
+     * Returns the hashmap of the players
+     * @return players
+     */
+    public HashMap<String, Player> getPlayers() {
+        return this.players;
+    }
+
+    /**
      * Fetch the Player object by feeding in a name
      *
      * @param name name of the player
@@ -84,8 +93,8 @@ public class MainModel extends Observable {
     /**
      * Update the state of the player and notify all the observers
      *
-     * @param name
-     * @param player
+     * @param name name of the player
+     * @param player object to update
      */
     public void updatePlayer(String name, Player player) {
         this.players.put(name, player);
@@ -96,7 +105,7 @@ public class MainModel extends Observable {
     /**
      * Assign Country to each player in the game
      */
-    public void assignCountry() {
+    void assignCountry() {
         int playerIndex = 0;
 
         for (Map.Entry<String, Country> entry : countries.entrySet()) {
@@ -150,6 +159,9 @@ public class MainModel extends Observable {
                 this.players.put(thePlayer, player);
             }
         }
+
+        setChanged();
+        notifyObservers(CHANGE_ARMY);
     }
 
     /**
@@ -174,10 +186,10 @@ public class MainModel extends Observable {
     /**
      * Calculate the number of armies to assign in the reinforcement phase
      */
-    @SuppressWarnings("IntegerDivisionInFloatingPointContext")
     private void setArmiesToAssign() {
         int countriesConquered = this.countries.size();
-        this.armiesAvailableToAssign = Math.floor(countriesConquered / 3) < 3 ? 3 : Math.floor(countriesConquered / 3);
+        this.armiesAvailableToAssign = Math.floor((float) countriesConquered / 3) < 3
+            ? 3 : Math.floor((float) countriesConquered / 3);
     }
 
     /**

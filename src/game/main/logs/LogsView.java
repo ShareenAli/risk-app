@@ -61,6 +61,7 @@ public class LogsView implements Observer {
         labelTitle.setText("Gameplay");
         panelTitle.add(labelTitle);
         scrollList = new JScrollPane();
+        scrollList.setPreferredSize(new Dimension(300, 400));
         panelMain.add(scrollList, BorderLayout.CENTER);
         listLogs = new JList();
         scrollList.setViewportView(listLogs);

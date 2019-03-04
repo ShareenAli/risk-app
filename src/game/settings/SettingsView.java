@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
  */
 
 public class SettingsView {
+    private static final String[] COLORS = {"Red", "Purple", "Blue", "Teal", "Green", "Orange"};
+    private static final String[] COLORS_HEX = {"#F44336", "#9C27B0", "#2196F3", "#009688", "#4CAF50", "#FF9800"};
     private JPanel panelSettings;
     private JPanel panelTitle;
     private JLabel labelTitle;
@@ -53,6 +55,7 @@ public class SettingsView {
 
     /**
      * Modifies the file name label for bmp
+     *
      * @param name name of the file
      */
     void updateBmpFileName(String name) {
@@ -61,6 +64,7 @@ public class SettingsView {
 
     /**
      * Modifies the file name label for map.
+     *
      * @param name name of the file.
      */
     void updateMapFileName(String name) {
@@ -87,6 +91,7 @@ public class SettingsView {
 
     /**
      * Binds useful listeners to map and bmp file buttons
+     *
      * @param mapListener listener for map file
      * @param bmpListener listener for bmp file
      */
@@ -106,8 +111,10 @@ public class SettingsView {
             Component[] children = ((JPanel) component).getComponents();
             JTextField name = (JTextField) children[1];
             JComboBox type = (JComboBox) children[2];
+            JComboBox color = (JComboBox) children[3];
+            int selectedColor = color.getSelectedIndex();
 
-            this.model.addPlayer(name.getText(), type.getSelectedIndex());
+            this.model.addPlayer(name.getText(), type.getSelectedIndex(), COLORS_HEX[selectedColor]);
         }
     }
 
@@ -154,6 +161,14 @@ public class SettingsView {
         model.addElement("Computer");
         comboType.setModel(model);
         panel.add(comboType);
+        JComboBox comboColor = new JComboBox();
+        DefaultComboBoxModel<String> modelColors = new DefaultComboBoxModel<>();
+        for (String color : COLORS) {
+            modelColors.addElement(color);
+        }
+        comboColor.setModel(modelColors);
+        comboColor.setSelectedIndex(index);
+        panel.add(comboColor);
 
         return panel;
     }

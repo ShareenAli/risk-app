@@ -22,7 +22,9 @@
       </grid>
       <scrollpane id="1f8d5" binding="scrollList">
         <constraints border-constraint="Center"/>
-        <properties/>
+        <properties>
+          <preferredSize width="300" height="400"/>
+        </properties>
         <border type="none"/>
         <children>
           <component id="fc4e9" class="javax.swing.JList" binding="listLogs">

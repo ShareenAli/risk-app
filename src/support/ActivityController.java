@@ -2,10 +2,19 @@ package support;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
 
 public abstract class ActivityController {
     protected JFrame frame = new JFrame();
     protected abstract void prepareUi();
+
+    public void setupValues() { }
+
+    public void setupValues(HashMap<String, Object> data) { }
+
+    public void destroy() {
+        this.frame.dispose();
+    }
 
     /**
      * It initializes the view, and wraps it to a frame.

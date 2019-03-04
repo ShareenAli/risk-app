@@ -1,12 +1,17 @@
 package game.main;
 
+import entity.Continent;
+import entity.Country;
 import entity.Player;
 import game.main.logs.LogsController;
 import game.main.phases.PhaseController;
 import game.main.world.WorldController;
+import risk.RiskApp;
 import support.ActivityController;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainController extends ActivityController {
     private MainView view;
@@ -15,9 +20,23 @@ public class MainController extends ActivityController {
     private LogsController logsController;
     private WorldController worldController;
 
-    public MainController(ArrayList<Player> players) {
+    public MainController() {
         this.view = new MainView();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setupValues(HashMap<String, Object> data) {
+        ArrayList<Player> players = (ArrayList<Player>) data.get(RiskApp.MainIntent.KEY_PLAYERS);
+        ArrayList<Country> countries = (ArrayList<Country>) data.get(RiskApp.MainIntent.KEY_COUNTRIES);
+        ArrayList<Continent> continents = (ArrayList<Continent>) data.get(RiskApp.MainIntent.KEY_CONTINENT);
+        File bmpFile = (File) data.get(RiskApp.MainIntent.kEY_BMP);
+
         this.model.setPlayers(players);
+        this.model.setMapContent(countries, continents);
+
+        this.worldController.configureView(bmpFile, countries);
+
+        this.startGame();
     }
 
     /**
@@ -30,8 +49,6 @@ public class MainController extends ActivityController {
         this.view.prepareView(this.phaseController.getRootPanel(), this.logsController.getRootPanel(),
             this.worldController.getRootPanel());
         this.attachObservers();
-
-        this.startGame();
     }
 
     private void prepControllers() {
