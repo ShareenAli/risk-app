@@ -11,6 +11,11 @@ import java.util.HashMap;
 
 import static junit.framework.TestCase.assertEquals;
 
+/**
+ * This test class verifies main model functionality
+ *
+ * @author Dhaval, Jasmeet
+ */
 public class TestMainModel {
     private MainModel mainModel = new MainModel();
 
@@ -59,11 +64,25 @@ public class TestMainModel {
         double armiesAvailableToAssign = this.mainModel.getArmiesAvailableToAssign();
         assertEquals(armiesAvailableToAssign, armiesToAssign);
     }
-
+/**
+     * Test Case method for verification of fortification phase
+     */
     @Test
     public void fortificationPhase() {
         boolean resultActual = true;
+        
         this.mainModel.fortificationPhase(this.mainModel.getPlayer("dhaval").getName(), this.mainModel.getCountries().get("China").getName(), this.mainModel.getCountries().get("Bengal").getName(), 3);
 //        assertEquals(resultActual, this.mainModel.result);
     }
+
+
+    /**
+     * Test Case method for verification of countries if connected
+     * in fortification phase
+     */
+    @Test
+    public void testForContriesLinkedInFortificationPhase() {
+        assertTrue(this.mainModel.checkForLink(countries,this.mainModel.getCountries().get("China").getName(), this.mainModel.getCountries().get("Bengal").getName());
+    }
+    
 }
