@@ -34,6 +34,7 @@ public class MainController extends ActivityController {
         this.model.setPlayers(players);
         this.model.setMapContent(countries, continents);
 
+        this.phaseController.setupValues(this.model.getPlayerNames());
         this.worldController.configureView(bmpFile, countries);
 
         this.startGame();
@@ -59,7 +60,7 @@ public class MainController extends ActivityController {
 
     private void prepPhaseController() {
         this.phaseController = new PhaseController();
-        this.phaseController.initializeValues(this.model.getPlayerNames());
+        this.phaseController.initializeValues();
     }
 
     private void prepLogsController() {

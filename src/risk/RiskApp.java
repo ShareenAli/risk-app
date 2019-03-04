@@ -16,6 +16,8 @@ public class RiskApp {
     public static void main(String[] args) {
         RiskController controller = new RiskController();
         ChangeActivityController(controller);
+
+        System.out.println("End of RiskApp.Main");
     }
 
     static void ChangeActivityController(ActivityController controller) {

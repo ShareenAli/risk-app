@@ -105,5 +105,7 @@ public class SettingsController extends ActivityController {
         headers.put(RiskApp.MainIntent.kEY_BMP, model.getBmpFile());
 
         RiskApp.ChangeActivityController(this, new MainController(), headers, true);
+
+        System.out.println("Done with Start Game");
     }
 }

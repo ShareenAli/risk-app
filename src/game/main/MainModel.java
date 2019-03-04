@@ -44,15 +44,18 @@ public class MainModel extends Observable {
     }
 
     public void setMapContent(ArrayList<Country> countries, ArrayList<Continent> continents) {
+        for (Continent continent : continents) {
+            this.continents.put(continent.getName(), continent);
+        }
         for (Country country : countries) {
             this.countries.put(country.getName(), country);
-        }
-        for (Continent continent : continents) {
+            Continent continent = this.continents.get(country.getContinent());
+            continent.addCountry();
             this.continents.put(continent.getName(), continent);
         }
     }
 
-    ArrayList<String> getPlayerNames() {
+    public ArrayList<String> getPlayerNames() {
         return this.playerNames;
     }
 
@@ -79,7 +82,46 @@ public class MainModel extends Observable {
      * @return countries List of all the countries
      */
     public HashMap<String, Country> getCountries() {
-        return countries;
+        return this.countries;
+    }
+
+    public String[] getDominationRow(Player player) {
+        String[] row = new String[4];
+        HashMap<String, Integer> continentsConquered = new HashMap<>();
+        int noOfContinents = 0, noOfArmies = 0, noOfCountries = 0;
+
+        for (Map.Entry<String, Integer> countryEntry : player.getCountries().entrySet()) {
+            noOfCountries++;
+            noOfArmies += countryEntry.getValue();
+
+            String continent = this.countries.get(countryEntry.getKey()).getContinent();
+            int countryCount = continentsConquered.getOrDefault(continent, 0);
+            countryCount++;
+            noOfContinents += (this.continents.get(continent).getCountryCount() == countryCount) ? 1 : 0;
+            continentsConquered.put(continent, countryCount);
+        }
+
+        double percent = ((double) noOfCountries / (double) this.countries.size()) * 100;
+        percent = Math.round(percent * 100) / 100.0;
+
+        row[0] = player.getName();
+        row[1] = String.valueOf(noOfContinents);
+        row[2] = String.valueOf(noOfArmies);
+        row[3] = String.valueOf(percent).concat("%");
+
+        return row;
+    }
+
+    public HashMap<String, String[]> getDominationTable() {
+        HashMap<String, String[]> outcome = new HashMap<>();
+        for (Map.Entry<String, Player> playerEntry : this.players.entrySet()) {
+            String name = playerEntry.getKey();
+
+            Player player = playerEntry.getValue();
+            outcome.put(name, getDominationRow(player));
+        }
+
+        return outcome;
     }
 
     /**
