@@ -5,11 +5,12 @@ import risk.RiskApp;
 import support.ActivityController;
 import support.DisplayFileChooser;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.HashMap;
 
 /**
  * It initializes the game settings.
@@ -21,7 +22,7 @@ import java.io.File;
 public class SettingsController extends ActivityController {
     private SettingsView view;
     private ActionListener comboNoPlayersLs, buttonStartLs, buttonMapLs, buttonBmpLs;
-    private DisplayFileChooser fileChooser = new DisplayFileChooser("~");
+    private DisplayFileChooser fileChooser = new DisplayFileChooser("/Users/ndkcha/Documents/university/app/risk-maps");
 
     /**
      * It initializes the controller
@@ -36,9 +37,12 @@ public class SettingsController extends ActivityController {
     @Override
     protected void prepareUi() {
         this.frame.setContentPane(this.view.$$$getRootComponent$$$());
-        this.view.initializeValues();
         this.initListeners();
         this.bindListeners();
+    }
+
+    public void setupValues() {
+        this.view.initializeValues();
     }
 
     /**
@@ -59,11 +63,7 @@ public class SettingsController extends ActivityController {
             this.frame.pack();
         };
 
-        this.buttonStartLs = (ActionEvent e) -> {
-            this.view.collectData();
-
-            RiskApp.ChangeActivityController(new MainController(SettingsModel.getInstance().getPlayers()));
-        };
+        this.buttonStartLs = (ActionEvent e) -> startGame();
 
         this.buttonMapLs = (ActionEvent e) -> {
             this.fileChooser.updateExtension("map");
@@ -84,5 +84,28 @@ public class SettingsController extends ActivityController {
                 this.view.updateBmpFileName(file.getName());
             }
         };
+    }
+
+    private void startGame() {
+        SettingsModel model = SettingsModel.getInstance();
+
+        this.view.collectData();
+        boolean success = model.processFiles();
+
+        if (!success) {
+            JOptionPane.showMessageDialog(new JFrame(), "Failed to load the data. Please try again.",
+                "Error!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        HashMap<String, Object> headers = new HashMap<>();
+        headers.put(RiskApp.MainIntent.KEY_PLAYERS, model.getPlayers());
+        headers.put(RiskApp.MainIntent.KEY_CONTINENT, model.getContinents());
+        headers.put(RiskApp.MainIntent.KEY_COUNTRIES, model.getCountries());
+        headers.put(RiskApp.MainIntent.kEY_BMP, model.getBmpFile());
+
+        RiskApp.ChangeActivityController(this, new MainController(), headers, true);
+
+        System.out.println("Done with Start Game");
     }
 }

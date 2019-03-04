@@ -20,7 +20,8 @@ public class RiskView {
     private JButton button_edit_map;
     private JButton button_new_map;
 
-    RiskView() { }
+    RiskView() {
+    }
 
     /**
      * Binds the useful listeners to newGameButton
@@ -33,6 +34,7 @@ public class RiskView {
 
     /**
      * Binds the useful listeners to new map button
+     *
      * @param listener onClick listener
      */
     void bindNewMapListener(ActionListener listener) {
@@ -41,6 +43,7 @@ public class RiskView {
 
     /**
      * Binds the useful listeners to edit map button
+     *
      * @param listener onClick listener
      */
     void bindEditMapListener(ActionListener listener) {
@@ -68,9 +71,9 @@ public class RiskView {
         panel_title.setLayout(new GridBagLayout());
         panel_risk.add(panel_title, BorderLayout.NORTH);
         label_title = new JLabel();
-        Font label_titleFont = this.$$$getFont$$$("Ayuthaya", -1, 24, label_title.getFont());
+        Font label_titleFont = this.$$$getFont$$$(null, -1, 18, label_title.getFont());
         if (label_titleFont != null) label_title.setFont(label_titleFont);
-        label_title.setText("Risk");
+        label_title.setText("Main Menu");
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -79,28 +82,17 @@ public class RiskView {
         gbc.ipady = 10;
         panel_title.add(label_title, gbc);
         panel_content = new JPanel();
-        panel_content.setLayout(new GridBagLayout());
+        panel_content.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         panel_risk.add(panel_content, BorderLayout.CENTER);
         button_new_game = new JButton();
         button_new_game.setText("New Game");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel_content.add(button_new_game, gbc);
+        panel_content.add(button_new_game);
         button_edit_map = new JButton();
         button_edit_map.setText("Edit Map");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel_content.add(button_edit_map, gbc);
+        panel_content.add(button_edit_map);
         button_new_map = new JButton();
         button_new_map.setText("New Map");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel_content.add(button_new_map, gbc);
+        panel_content.add(button_new_map);
     }
 
     /**

@@ -5,21 +5,22 @@ import java.util.Observable;
 
 @SuppressWarnings("deprecation")
 public class PhaseModel extends Observable {
-    public static final int PHASE_CARD = 0;
-    public static final int PHASE_REINFORCEMENT = 1;
-    public static final int PHASE_ATTACK = 2;
-    public static final int PHASE_FORTIFICATION = 3;
+    public static final int PHASE_REINFORCEMENT = 0;
+    public static final int PHASE_ATTACK = 1;
+    public static final int PHASE_FORTIFICATION = 2;
 
     public static final String CHANGE_PHASE = "change:phase";
     public static final String CHANGE_PLAYER = "change:player";
 
-    private String[] phaseNames = {"Card", "Reinforcement", "Attack", "Fortification"};
+    private String[] phaseNames = {"Reinforcement", "Attack", "Fortification"};
     private int phase = -1;
     private int playerIndex = -1;
     private int totalPlayers;
     private ArrayList<String> players;
 
-    PhaseModel(ArrayList<String> players) {
+    PhaseModel() { }
+
+    public void setPlayers(ArrayList<String> players) {
         this.totalPlayers = players.size();
         this.players = players;
     }
@@ -27,7 +28,7 @@ public class PhaseModel extends Observable {
     void nextPhase() {
         this.phase++;
 
-        if (this.phase == 4) {
+        if (this.phase == 3) {
             this.phase = 0;
             this.nextPlayer();
         }

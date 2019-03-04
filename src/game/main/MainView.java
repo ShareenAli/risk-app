@@ -26,7 +26,7 @@ public class MainView implements Observer {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.NORTH;
 
         leftPanel.add(panel, gbc);
     }
@@ -35,7 +35,7 @@ public class MainView implements Observer {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.CENTER;
 
         leftPanel.add(panel, gbc);
     }

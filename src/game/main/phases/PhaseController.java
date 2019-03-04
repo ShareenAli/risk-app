@@ -9,14 +9,18 @@ public class PhaseController {
 
     public PhaseController() {
         this.view = new PhaseView();
+        this.model = new PhaseModel();
     }
 
-    public void initializeValues(ArrayList<String> players) {
-        this.model = new PhaseModel(players);
+    public void initializeValues() {
         this.view.initializeValues();
-        this.view.addPlayers(players);
 
         this.model.addObserver(this.view);
+    }
+
+    public void setupValues(ArrayList<String> players) {
+        this.model.setPlayers(players);
+        this.view.addPlayers(players);
     }
 
     public void changePhase() {

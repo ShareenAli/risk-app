@@ -1,11 +1,12 @@
 package game.main.phases;
 
+import entity.Player;
+import game.main.MainModel;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class PhaseView implements Observer {
@@ -73,8 +74,26 @@ public class PhaseView implements Observer {
                 case PhaseModel.CHANGE_PLAYER:
                     this.onPlayerChanged((PhaseModel) o);
                     break;
+                case MainModel.CHANGE_ARMY:
+                    MainModel mainModel = (MainModel) o;
+                    this.addPlayers(mainModel.getDominationTable(), mainModel.getPlayerNames());
+                    break;
             }
         }
+    }
+
+    private void addPlayers(HashMap<String, String[]> players, ArrayList<String> playerNames) {
+        for (Map.Entry<String, String[]> entry : players.entrySet()) {
+            int row = playerNames.indexOf(entry.getKey());
+            String values[] = entry.getValue();
+
+            this.modelPlayers.setValueAt(values[0], row, 0);
+            this.modelPlayers.setValueAt(values[1], row, 1);
+            this.modelPlayers.setValueAt(values[2], row, 2);
+            this.modelPlayers.setValueAt(values[3], row, 3);
+        }
+
+        this.tablePlayers.setModel(this.modelPlayers);
     }
 
     {

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class Continent {
     private String name;
     private int controlValue;
+    private int countryCount;
 	ArrayList<Country> territoriesIn;
 
     /**
@@ -22,6 +23,22 @@ public class Continent {
     public Continent(String name, int controlValue) {
         this.name = name;
         this.controlValue = controlValue;
+        this.countryCount = 0;
+    }
+
+    /**
+     * Adds the country to the counter
+     */
+    public void addCountry() {
+        this.countryCount++;
+    }
+
+    /**
+     * Get the number of countries in continent
+     * @return count of the countries
+     */
+    public int getCountryCount() {
+        return countryCount;
     }
 
     /**

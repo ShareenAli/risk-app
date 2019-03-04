@@ -4,7 +4,6 @@ import entity.Continent;
 import entity.Country;
 import entity.Player;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -15,11 +14,11 @@ import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class MainModel extends Observable {
+    public static final String CHANGE_ARMY = "main:army";
     private ArrayList<String> playerNames = new ArrayList<>();
     private HashMap<String, Player> players = new HashMap<>();
     private HashMap<String, Country> countries = new HashMap<>();
     private HashMap<String, Continent> continents = new HashMap<>();
-    private Country country;
     private int armiesToAssign;
     private double armiesAvailableToAssign = -1;
 
@@ -42,16 +41,27 @@ public class MainModel extends Observable {
     }
 
     public void setMapContent(ArrayList<Country> countries, ArrayList<Continent> continents) {
+        for (Continent continent : continents) {
+            this.continents.put(continent.getName(), continent);
+        }
         for (Country country : countries) {
             this.countries.put(country.getName(), country);
-        }
-        for (Continent continent : continents) {
+            Continent continent = this.continents.get(country.getContinent());
+            continent.addCountry();
             this.continents.put(continent.getName(), continent);
         }
     }
 
-    ArrayList<String> getPlayerNames() {
+    public ArrayList<String> getPlayerNames() {
         return this.playerNames;
+    }
+
+    /**
+     * Returns the hashmap of the players
+     * @return players
+     */
+    public HashMap<String, Player> getPlayers() {
+        return this.players;
     }
 
     /**
@@ -70,7 +80,46 @@ public class MainModel extends Observable {
      * @return countries List of all the countries
      */
     public HashMap<String, Country> getCountries() {
-        return countries;
+        return this.countries;
+    }
+
+    public String[] getDominationRow(Player player) {
+        String[] row = new String[4];
+        HashMap<String, Integer> continentsConquered = new HashMap<>();
+        int noOfContinents = 0, noOfArmies = 0, noOfCountries = 0;
+
+        for (Map.Entry<String, Integer> countryEntry : player.getCountries().entrySet()) {
+            noOfCountries++;
+            noOfArmies += countryEntry.getValue();
+
+            String continent = this.countries.get(countryEntry.getKey()).getContinent();
+            int countryCount = continentsConquered.getOrDefault(continent, 0);
+            countryCount++;
+            noOfContinents += (this.continents.get(continent).getCountryCount() == countryCount) ? 1 : 0;
+            continentsConquered.put(continent, countryCount);
+        }
+
+        double percent = ((double) noOfCountries / (double) this.countries.size()) * 100;
+        percent = Math.round(percent * 100) / 100.0;
+
+        row[0] = player.getName();
+        row[1] = String.valueOf(noOfContinents);
+        row[2] = String.valueOf(noOfArmies);
+        row[3] = String.valueOf(percent).concat("%");
+
+        return row;
+    }
+
+    public HashMap<String, String[]> getDominationTable() {
+        HashMap<String, String[]> outcome = new HashMap<>();
+        for (Map.Entry<String, Player> playerEntry : this.players.entrySet()) {
+            String name = playerEntry.getKey();
+
+            Player player = playerEntry.getValue();
+            outcome.put(name, getDominationRow(player));
+        }
+
+        return outcome;
     }
 
     /**
@@ -85,8 +134,8 @@ public class MainModel extends Observable {
     /**
      * Update the state of the player and notify all the observers
      *
-     * @param name
-     * @param player
+     * @param name name of the player
+     * @param player object to update
      */
     public void updatePlayer(String name, Player player) {
         this.players.put(name, player);
@@ -97,7 +146,7 @@ public class MainModel extends Observable {
     /**
      * Assign Country to each player in the game
      */
-    public void assignCountry() {
+    void assignCountry() {
         int playerIndex = 0;
 
         for (Map.Entry<String, Country> entry : countries.entrySet()) {
@@ -151,6 +200,9 @@ public class MainModel extends Observable {
                 this.players.put(thePlayer, player);
             }
         }
+
+        setChanged();
+        notifyObservers(CHANGE_ARMY);
     }
 
     /**
@@ -230,10 +282,10 @@ public class MainModel extends Observable {
     /**
      * Calculate the number of armies to assign in the reinforcement phase
      */
-    @SuppressWarnings("IntegerDivisionInFloatingPointContext")
     private void setArmiesToAssign() {
         int countriesConquered = this.countries.size();
-        this.armiesAvailableToAssign = Math.floor(countriesConquered / 3) < 3 ? 3 : Math.floor(countriesConquered / 3);
+        this.armiesAvailableToAssign = Math.floor((float) countriesConquered / 3) < 3
+            ? 3 : Math.floor((float) countriesConquered / 3);
     }
 
     /**

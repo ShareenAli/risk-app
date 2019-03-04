@@ -4,6 +4,7 @@ import entity.Continent;
 import entity.Country;
 import entity.Player;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -25,6 +26,7 @@ class SettingsModel {
 
     /**
      * Gets the singleton reference to the class
+     *
      * @return instance of the model
      */
     static SettingsModel getInstance() {
@@ -35,6 +37,7 @@ class SettingsModel {
 
     /**
      * Sets the file that hold map details
+     *
      * @param file map file
      */
     void setMapFile(File file) {
@@ -43,6 +46,7 @@ class SettingsModel {
 
     /**
      * Sets the file that has image of the map
+     *
      * @param file bmp file
      */
     void setBmpFile(File file) {
@@ -52,7 +56,8 @@ class SettingsModel {
     /**
      * private controller for the singleton class
      */
-    private SettingsModel() { }
+    private SettingsModel() {
+    }
 
     /**
      * It clears the list of all the players recorded before.
@@ -65,11 +70,12 @@ class SettingsModel {
     /**
      * It adds a player to the list.
      *
-     * @param name name of the player
-     * @param type index of the player type combo box.
+     * @param name  name of the player
+     * @param type  index of the player type combo box.
+     * @param color color that the player is assigned
      */
-    void addPlayer(String name, int type) {
-        this.players.add(new Player(name, type));
+    void addPlayer(String name, int type, String color) {
+        this.players.add(new Player(name, type, this.hex2Rgb(color)));
     }
 
     /**
@@ -83,6 +89,7 @@ class SettingsModel {
 
     /**
      * It returns the list of countries fetched from the map file
+     *
      * @return array list of countries
      */
     public ArrayList<Country> getCountries() {
@@ -91,6 +98,7 @@ class SettingsModel {
 
     /**
      * It returns thie list of continents fetched from the map file
+     *
      * @return array list of countries
      */
     public ArrayList<Continent> getContinents() {
@@ -99,6 +107,7 @@ class SettingsModel {
 
     /**
      * The bitmap image file used for map
+     *
      * @return image file
      */
     public File getBmpFile() {
@@ -107,6 +116,7 @@ class SettingsModel {
 
     /**
      * Process the map file into the internal data structures
+     *
      * @return checkpoint if the files are processed or not.
      */
     boolean processFiles() {
@@ -164,5 +174,11 @@ class SettingsModel {
             ioe.printStackTrace();
             return false;
         }
+    }
+
+    private Color hex2Rgb(String colorStr) {
+        return new Color(Integer.valueOf(colorStr.substring(1, 3), 16),
+            Integer.valueOf(colorStr.substring(3, 5), 16),
+            Integer.valueOf(colorStr.substring(5, 7), 16));
     }
 }

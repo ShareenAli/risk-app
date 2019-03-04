@@ -1,17 +1,96 @@
 package game.main.world;
 
+import entity.Country;
+import entity.Player;
+import game.main.MainModel;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class WorldView implements Observer {
     private JPanel panelMain;
+    private JLayeredPane layeredPane;
+    private HashMap<String, JButton> countries = new HashMap<>();
+    private HashMap<String, JLabel> armies = new HashMap<>();
 
     @Override
     public void update(Observable o, Object arg) {
+        if (arg instanceof String) {
+            switch ((String) arg) {
+                case MainModel.CHANGE_ARMY:
+                    this.distributeCountriesToPlayers(((MainModel) o).getPlayers());
+                    break;
+            }
+        }
+    }
 
+    void prepUi(File bmpFile) {
+        try {
+            BufferedImage image = ImageIO.read(bmpFile);
+
+            this.layeredPane = new JLayeredPane();
+            this.layeredPane.setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
+
+            JLabel imageLabel = new JLabel(new ImageIcon(image));
+            imageLabel.setBounds(0, 0, image.getWidth(), image.getHeight());
+
+            this.layeredPane.add(imageLabel, 0, 10);
+            this.panelMain.add(this.layeredPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void loadCountries(ArrayList<Country> countries) {
+        for (Country country : countries) {
+            JButton button = new JButton(country.getName());
+            int x = (int) country.getLatitude();
+            int y = (int) country.getLongitude();
+            int length = country.getName().length() * 8;
+            button.setBounds(x - length, y - 6, length * 2 + 40, 20);
+            button.setOpaque(false);
+            button.setContentAreaFilled(false);
+            button.setBorderPainted(false);
+            JLabel label = new JLabel();
+            label.setBounds(x, y + 6, 20, 20);
+
+            this.layeredPane.add(button, 0);
+            this.layeredPane.add(label, 0);
+            this.countries.put(country.getName(), button);
+            this.armies.put(country.getName(), label);
+        }
+    }
+
+    private void distributeCountriesToPlayers(HashMap<String, Player> players) {
+        for (Map.Entry<String, Player> entry : players.entrySet()) {
+            String name = entry.getKey();
+            Player player = entry.getValue();
+
+            for (Map.Entry<String, Integer> countryEntry : player.getCountries().entrySet()) {
+                String country = countryEntry.getKey();
+
+                JButton button = this.countries.get(country);
+                JLabel label = this.armies.get(country);
+                this.layeredPane.remove(button);
+                this.layeredPane.remove(label);
+
+                button.setActionCommand(name + ":" + country);
+                button.setForeground(player.getColor());
+                label.setText(String.valueOf(countryEntry.getValue()));
+                label.setForeground(player.getColor());
+                this.layeredPane.add(button, 0);
+                this.layeredPane.add(label, 0);
+
+                this.countries.put(country, button);
+                this.armies.put(country, label);
+            }
+        }
     }
 
     {
