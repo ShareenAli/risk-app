@@ -86,7 +86,7 @@ public class Player {
     }
 
     /**
-     * Add the armies to the countries
+     * Add the armies to a country
      *
      * @param countryName
      * @param armiesToAdd
@@ -98,9 +98,33 @@ public class Player {
     }
 
     /**
+     * Remove the armies from a country
+     *
+     * @param countryName Name of the country
+     * @param armiesToRemove Number of armies to remove from the country
+     */
+    public void removeArmies(String countryName, int armiesToRemove) {
+        int armies = this.countries.get(countryName);
+        armies-= armiesToRemove;
+        this.countries.put(countryName, armies);
+    }
+
+    /**
      * Update the data structures for reinforcement phase
      */
     public void reinforcementPhase(String countryName, int armiesToAdd) {
         this.addArmies(countryName, armiesToAdd);
+    }
+
+    /**
+     * Perform the fortification phase on the data structures
+     *
+     * @param sourceCountryName Move the armies from the desired country
+     * @param targetCountryName Move the armies to the desired country
+     * @param armiesToTransfer Number of armies to be transferred from a country to another
+     */
+    public void fortificationPhase(String sourceCountryName, String targetCountryName, int armiesToTransfer) {
+        this.addArmies(targetCountryName, armiesToTransfer);
+        this.removeArmies(sourceCountryName, armiesToTransfer);
     }
 }
