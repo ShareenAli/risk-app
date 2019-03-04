@@ -4,9 +4,6 @@ import entity.Continent;
 import entity.Country;
 import entity.Player;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -79,6 +76,7 @@ public class MainModel extends Observable {
 
     /**
      * It is used to get the List of countries
+     *
      * @return countries List of all the countries
      */
     public HashMap<String, Country> getCountries() {
@@ -126,6 +124,7 @@ public class MainModel extends Observable {
 
     /**
      * It is used to get all the armies available to assign
+     *
      * @return armiesAvailableToAssign returns the number of armies to assign
      */
     public double getArmiesAvailableToAssign() {
@@ -223,6 +222,61 @@ public class MainModel extends Observable {
             player.reinforcementPhase(countryName, armiesToAdd);
             this.armiesAvailableToAssign -= armiesToAdd;
         }
+    }
+
+    /**
+     * It is used to validate and perform the fortification phase operations
+     *
+     * @param playerName Name of the player
+     * @param sourceCountryName Name of the source country
+     * @param targetCountryName Name of the target country
+     * @param armiesToTransfer Number of armies to transfer
+     */
+    public void fortificationPhase(String playerName, String sourceCountryName, String targetCountryName, int armiesToTransfer) {
+        Player player = this.players.get(playerName);
+        ArrayList<String> originCountries = new ArrayList<>();
+
+        boolean result = checkForLink(originCountries, sourceCountryName, targetCountryName);
+
+        if (result)
+            player.fortificationPhase(sourceCountryName, targetCountryName, armiesToTransfer);
+        else
+            System.out.println("Countries are not connected, Cannot perform the transfer!");
+    }
+
+    /**
+     * It checks the Source country is interconnected with the target country to which armies are to be transferred
+     *
+     * @param originCountries List of all the source Countries in recursion stack
+     * @param sourceCountryName Name of the Source country from which the armies are to be transferred
+     * @param targetCountryName Name of the target country from which the armies are to be transferred
+     * @return result A boolean value to return whether the countries are interconnected
+     */
+    public boolean checkForLink(ArrayList<String> originCountries, String sourceCountryName, String targetCountryName) {
+        Country country = this.countries.get(sourceCountryName);
+        ArrayList<String> neighbours = new ArrayList<>();
+        boolean compare;
+        originCountries.add(sourceCountryName);
+
+        neighbours = country.getNeighbours();
+
+        for (String neighbour : neighbours) {
+            if (neighbour.equals(targetCountryName))
+                return true;
+        }
+
+        for (String neighbour : neighbours) {
+            compare = true;
+
+            for (String originCountry : originCountries) {
+                if (neighbour.equals(originCountry))
+                    compare = false;
+            }
+
+            if (compare)
+                return checkForLink(originCountries, neighbour, targetCountryName);
+        }
+        return false;
     }
 
     /**

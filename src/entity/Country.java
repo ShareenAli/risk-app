@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * This entity class holds all the information about the country in the map.
  * It also includes the methods to manipulate the information of the country.
- * @author shareenali
+ * @author shareenali, farhan
  * @version 0.1
  */
 
@@ -79,6 +79,14 @@ public class Country {
     public void addNeighbour(String name) {
         if (this.neighbours.indexOf(name) == -1)
             this.neighbours.add(name);
+    }
+    
+    /**
+     * Adds a list of neighbors to the country
+     * @return neighbours of the country
+     */
+    public void setNeighbours(ArrayList<String> neighbours) {
+    	this.neighbours = neighbours;
     }
 
     /**
