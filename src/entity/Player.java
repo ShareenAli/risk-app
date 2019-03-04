@@ -1,5 +1,7 @@
 package entity;
 
+import game.main.MainModel;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +16,6 @@ import java.util.HashMap;
  */
 
 public class Player {
-    public static final String CHANGE_PLAYER = "change:player";
     /**
      * A human player. It can be used as player type
      */
@@ -147,5 +148,9 @@ public class Player {
     public void fortificationPhase(String sourceCountryName, String targetCountryName, int armiesToTransfer) {
         this.addArmies(targetCountryName, armiesToTransfer);
         this.removeArmies(sourceCountryName, armiesToTransfer);
+    }
+
+    public String notifyString() {
+        return MainModel.UPDATE_PLAYER + ":" + this.name;
     }
 }

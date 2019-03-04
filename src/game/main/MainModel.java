@@ -4,6 +4,7 @@ import entity.Continent;
 import entity.Country;
 import entity.Player;
 
+import java.awt.*;
 import java.util.*;
 
 /**
@@ -15,12 +16,14 @@ import java.util.*;
 @SuppressWarnings("deprecation")
 public class MainModel extends Observable {
     public static final String CHANGE_ARMY = "main:army";
+    public static final String UPDATE_PLAYER = "update:player";
+
     private ArrayList<String> playerNames = new ArrayList<>();
     private HashMap<String, Player> players = new HashMap<>();
     private HashMap<String, Country> countries = new HashMap<>();
     private HashMap<String, Continent> continents = new HashMap<>();
     private int armiesToAssign;
-    private double armiesAvailableToAssign = -1;
+    private int armiesAvailableToAssign = -1;
 
     /**
      * Constructor used to extract the data from the map
@@ -54,6 +57,15 @@ public class MainModel extends Observable {
 
     public ArrayList<String> getPlayerNames() {
         return this.playerNames;
+    }
+
+    public ArrayList<Color> getPlayerColors() {
+        ArrayList<Color> colors = new ArrayList<>();
+        for (Map.Entry<String, Player> playerEntry : this.players.entrySet()) {
+            colors.add(playerEntry.getValue().getColor());
+        }
+
+        return colors;
     }
 
     /**
@@ -113,10 +125,7 @@ public class MainModel extends Observable {
     public HashMap<String, String[]> getDominationTable() {
         HashMap<String, String[]> outcome = new HashMap<>();
         for (Map.Entry<String, Player> playerEntry : this.players.entrySet()) {
-            String name = playerEntry.getKey();
-
-            Player player = playerEntry.getValue();
-            outcome.put(name, getDominationRow(player));
+            outcome.put(playerEntry.getKey(), getDominationRow(playerEntry.getValue()));
         }
 
         return outcome;
@@ -127,8 +136,8 @@ public class MainModel extends Observable {
      *
      * @return armiesAvailableToAssign returns the number of armies to assign
      */
-    public double getArmiesAvailableToAssign() {
-        return armiesAvailableToAssign;
+    public int getArmiesAvailableToAssign() {
+        return this.armiesAvailableToAssign;
     }
 
     /**
@@ -137,10 +146,10 @@ public class MainModel extends Observable {
      * @param name name of the player
      * @param player object to update
      */
-    public void updatePlayer(String name, Player player) {
+    private void updatePlayer(String name, Player player) {
         this.players.put(name, player);
         setChanged();
-        notifyObservers(Player.CHANGE_PLAYER);
+        notifyObservers(player.notifyString());
     }
 
     /**
@@ -214,14 +223,9 @@ public class MainModel extends Observable {
      */
     public void reinforcementPhase(String playerName, String countryName, int armiesToAdd) {
         Player player = this.players.get(playerName);
-
-        if (this.armiesAvailableToAssign == 0) {
-        } else if (this.armiesAvailableToAssign == -1) {
-            this.setArmiesToAssign();
-        } else {
-            player.reinforcementPhase(countryName, armiesToAdd);
-            this.armiesAvailableToAssign -= armiesToAdd;
-        }
+        player.reinforcementPhase(countryName, armiesToAdd);
+        this.armiesAvailableToAssign -= armiesToAdd;
+        this.updatePlayer(player.getName(), player);
     }
 
     /**
@@ -254,11 +258,9 @@ public class MainModel extends Observable {
      */
     public boolean checkForLink(ArrayList<String> originCountries, String sourceCountryName, String targetCountryName) {
         Country country = this.countries.get(sourceCountryName);
-        ArrayList<String> neighbours = new ArrayList<>();
+        ArrayList<String> neighbours = country.getNeighbours();
         boolean compare;
         originCountries.add(sourceCountryName);
-
-        neighbours = country.getNeighbours();
 
         for (String neighbour : neighbours) {
             if (neighbour.equals(targetCountryName))
@@ -282,16 +284,9 @@ public class MainModel extends Observable {
     /**
      * Calculate the number of armies to assign in the reinforcement phase
      */
-    private void setArmiesToAssign() {
+    void resetArmiesToAssign() {
         int countriesConquered = this.countries.size();
-        this.armiesAvailableToAssign = Math.floor((float) countriesConquered / 3) < 3
-            ? 3 : Math.floor((float) countriesConquered / 3);
-    }
-
-    /**
-     * It is used to reset the counter back to default for a fresh computation
-     */
-    public void resetArmyCounter() {
-        armiesAvailableToAssign = -1;
+        this.armiesAvailableToAssign = (int) Math.round(Math.floor((float) countriesConquered / 3) < 3
+            ? 3 : Math.floor((float) countriesConquered / 3));
     }
 }

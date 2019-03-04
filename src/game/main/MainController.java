@@ -3,12 +3,17 @@ package game.main;
 import entity.Continent;
 import entity.Country;
 import entity.Player;
+import game.main.dialog.ReinforcementDialog;
 import game.main.logs.LogsController;
 import game.main.phases.PhaseController;
+import game.main.phases.PhaseModel;
 import game.main.world.WorldController;
 import risk.RiskApp;
 import support.ActivityController;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +24,7 @@ public class MainController extends ActivityController {
     private PhaseController phaseController;
     private LogsController logsController;
     private WorldController worldController;
+    private ActionListener buttonCountryLs;
 
     public MainController() {
         this.view = new MainView();
@@ -34,8 +40,8 @@ public class MainController extends ActivityController {
         this.model.setPlayers(players);
         this.model.setMapContent(countries, continents);
 
-        this.phaseController.setupValues(this.model.getPlayerNames());
-        this.worldController.configureView(bmpFile, countries);
+        this.phaseController.setupValues(this.model.getPlayerNames(), this.model.getPlayerColors());
+        this.worldController.configureView(bmpFile, countries, this.buttonCountryLs);
 
         this.startGame();
     }
@@ -50,6 +56,7 @@ public class MainController extends ActivityController {
         this.view.prepareView(this.phaseController.getRootPanel(), this.logsController.getRootPanel(),
             this.worldController.getRootPanel());
         this.attachObservers();
+        this.initCountryClickListeners();
     }
 
     private void prepControllers() {
@@ -71,6 +78,42 @@ public class MainController extends ActivityController {
     private void prepWorldController() {
         this.worldController = new WorldController();
         this.worldController.initializeValues();
+    }
+
+    private void initCountryClickListeners() {
+        this.buttonCountryLs = (ActionEvent e) -> {
+            switch (this.phaseController.activePhase()) {
+                case PhaseModel.PHASE_REINFORCEMENT:
+                    this.doReinforcementPhase(e.getActionCommand());
+                    break;
+            }
+
+            System.out.println(e.getActionCommand());
+        };
+    }
+
+    private void doReinforcementPhase(String command) {
+        String owner = command.split(":")[0];
+        String country = command.split(":")[1];
+        int reinforcementArmies = this.model.getArmiesAvailableToAssign();
+
+        if (!owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
+            JOptionPane.showMessageDialog(new JFrame(), "You can't reinforce other player's country",
+                "Wrong move!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (reinforcementArmies == 0) {
+            JOptionPane.showMessageDialog(new JFrame(), "You don't have enough armies to reinforce",
+                "Reinforcement Phase", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        ReinforcementDialog dialog = new ReinforcementDialog();
+        dialog.setNoOfArmies(reinforcementArmies);
+        int armiesAssigned = dialog.showUi(country);
+
+        this.model.reinforcementPhase(owner, country, armiesAssigned);
     }
 
     /**
@@ -97,6 +140,11 @@ public class MainController extends ActivityController {
         this.startupPhase();
 
         this.phaseController.changePlayer();
+        this.changePhase();
+    }
+
+    private void changePhase() {
+        this.model.resetArmiesToAssign();
         this.phaseController.changePhase();
     }
 }

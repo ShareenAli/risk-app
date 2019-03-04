@@ -1,6 +1,7 @@
 package game.main.phases;
 
 import javax.swing.JPanel;
+import java.awt.*;
 import java.util.ArrayList;
 
 public class PhaseController {
@@ -18,13 +19,21 @@ public class PhaseController {
         this.model.addObserver(this.view);
     }
 
-    public void setupValues(ArrayList<String> players) {
-        this.model.setPlayers(players);
+    public void setupValues(ArrayList<String> players, ArrayList<Color> colors) {
+        this.model.setPlayers(players, colors);
         this.view.addPlayers(players);
     }
 
     public void changePhase() {
         this.model.nextPhase();
+    }
+
+    public int activePhase() {
+        return this.model.getActivePhase();
+    }
+
+    public String activePlayer() {
+        return this.model.getActivePlayer();
     }
 
     public void changePlayer() {

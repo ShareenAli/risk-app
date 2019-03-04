@@ -1,6 +1,5 @@
 package game.main.phases;
 
-import entity.Player;
 import game.main.MainModel;
 
 import javax.swing.*;
@@ -62,12 +61,15 @@ public class PhaseView implements Observer {
      */
     private void onPlayerChanged(PhaseModel model) {
         this.labelPlayer.setText(model.getActivePlayer() + "'s turn");
+        this.labelPlayer.setForeground(model.getActiveColor());
     }
 
     @Override
     public void update(Observable o, Object arg) {
         if (arg instanceof String) {
-            switch ((String) arg) {
+            String content[] = ((String) arg).split(":");
+            String actual = content[0].concat(":").concat(content[1]);
+            switch (actual) {
                 case PhaseModel.CHANGE_PHASE:
                     this.onPhaseChanged((PhaseModel) o);
                     break;
@@ -75,11 +77,20 @@ public class PhaseView implements Observer {
                     this.onPlayerChanged((PhaseModel) o);
                     break;
                 case MainModel.CHANGE_ARMY:
-                    MainModel mainModel = (MainModel) o;
-                    this.addPlayers(mainModel.getDominationTable(), mainModel.getPlayerNames());
+                    this.addPlayers(((MainModel) o).getDominationTable(), ((MainModel) o).getPlayerNames());
+                    break;
+                case MainModel.UPDATE_PLAYER:
+                    this.addPlayer((MainModel) o, content[2]);
                     break;
             }
         }
+    }
+
+    private void addPlayer(MainModel mainModel, String name) {
+        String row[] = mainModel.getDominationRow(mainModel.getPlayer(name));
+        HashMap<String, String[]> dominationTable = new HashMap<>();
+        dominationTable.put(name, row);
+        this.addPlayers(dominationTable, mainModel.getPlayerNames());
     }
 
     private void addPlayers(HashMap<String, String[]> players, ArrayList<String> playerNames) {
