@@ -3,7 +3,6 @@ package map.country;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Set;
 
 public class CountryDialog {
@@ -11,19 +10,28 @@ public class CountryDialog {
     private JPanel panelName;
     private JLabel labelName;
     private JTextField textName;
-    private JPanel panelContinent;
+    private JPanel panelContent;
     private JLabel labelContinent;
     private JComboBox comboContinent;
     private JPanel panelNeighbours;
     private JScrollPane scrollNeighbours;
     private JList listNeighbours;
     private JLabel labelNeighbours;
+    private JPanel panelContinent;
+    private JPanel panelCoord;
+    private JLabel labelCoordinates;
+    private JTextField textX;
+    private JTextField textY;
+    private JPanel panelDelete;
+    private JCheckBox checkDelete;
 
     private DefaultComboBoxModel<String> modelContinent = new DefaultComboBoxModel<>();
     private DefaultListModel<String> modelNeighbours = new DefaultListModel<>();
 
-    public void setupData(String name) {
+    public void setupData(String name, double latitude, double longitude) {
         this.textName.setText(name);
+        this.textX.setText(String.valueOf(latitude));
+        this.textY.setText(String.valueOf(longitude));
     }
 
     @SuppressWarnings("unchecked")
@@ -69,6 +77,18 @@ public class CountryDialog {
         return this.modelContinent.getElementAt(this.comboContinent.getSelectedIndex());
     }
 
+    public double getCountryLatitude() {
+        return Double.parseDouble(this.textX.getText());
+    }
+
+    public double getCountryLongitude() {
+        return Double.parseDouble(this.textY.getText());
+    }
+
+    public boolean isToDelete() {
+        return this.checkDelete.isSelected();
+    }
+
     public ArrayList<String> getNeighbours() {
         ArrayList<String> result = new ArrayList<>();
         int index[] = this.listNeighbours.getSelectedIndices();
@@ -110,14 +130,35 @@ public class CountryDialog {
         textName = new JTextField();
         textName.setPreferredSize(new Dimension(120, 27));
         panelName.add(textName);
+        panelContent = new JPanel();
+        panelContent.setLayout(new BorderLayout(0, 0));
+        panelMain.add(panelContent, BorderLayout.CENTER);
         panelContinent = new JPanel();
         panelContinent.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-        panelMain.add(panelContinent, BorderLayout.CENTER);
+        panelContent.add(panelContinent, BorderLayout.NORTH);
         labelContinent = new JLabel();
         labelContinent.setText("Continent:");
         panelContinent.add(labelContinent);
         comboContinent = new JComboBox();
         panelContinent.add(comboContinent);
+        panelCoord = new JPanel();
+        panelCoord.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        panelContent.add(panelCoord, BorderLayout.CENTER);
+        labelCoordinates = new JLabel();
+        labelCoordinates.setText("(x, y):");
+        panelCoord.add(labelCoordinates);
+        textX = new JTextField();
+        textX.setPreferredSize(new Dimension(50, 27));
+        panelCoord.add(textX);
+        textY = new JTextField();
+        textY.setPreferredSize(new Dimension(50, 27));
+        panelCoord.add(textY);
+        panelDelete = new JPanel();
+        panelDelete.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        panelContent.add(panelDelete, BorderLayout.SOUTH);
+        checkDelete = new JCheckBox();
+        checkDelete.setText("Delete this country?");
+        panelDelete.add(checkDelete);
         panelNeighbours = new JPanel();
         panelNeighbours.setLayout(new BorderLayout(0, 0));
         panelMain.add(panelNeighbours, BorderLayout.SOUTH);

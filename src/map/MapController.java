@@ -134,7 +134,7 @@ public class MapController extends ActivityController {
         Country old = this.model.getCountry(command);
 
         CountryDialog dialog = new CountryDialog();
-        dialog.setupData(country.getName());
+        dialog.setupData(country.getName(), country.getLatitude(), country.getLongitude());
         dialog.allocateContinents(this.model.getContinents().keySet(), country.getContinent());
         dialog.allocateCountries(this.model.getCountries().keySet(), country.getNeighbours());
         int result = dialog.showUi();
@@ -142,8 +142,14 @@ public class MapController extends ActivityController {
         if (result == -1)
             return;
 
+        if (dialog.isToDelete()) {
+            this.model.deleteCountry(country);
+            return;
+        }
+
         ArrayList<String> neighbours = dialog.getNeighbours();
-        country.setValues(country.getName(), dialog.getContinentName(), country.getLatitude(), country.getLongitude());
+        country.setValues(country.getName(), dialog.getContinentName(), dialog.getCountryLatitude(),
+            dialog.getCountryLongitude());
 
         if (old != null) {
             for (String old_n : old.getNeighbours()) {
@@ -277,7 +283,7 @@ public class MapController extends ActivityController {
 
             for (Map.Entry<String, Country> countryDataEntry : this.model.getCountries().entrySet()) {
                 Country data = countryDataEntry.getValue();
-                String temp = data.getName() + "," + (int) data.getLatitude() + "," + (int) data.getLongitude() + ","
+                String temp = data.getName() + "," + data.getLatitude() + "," + data.getLongitude() + ","
                     + data.getContinent();
 
                 for (String neighbour : data.getNeighbours()) {
@@ -302,6 +308,7 @@ public class MapController extends ActivityController {
                     return;
 
                 CountryDialog dialog = new CountryDialog();
+                dialog.setupData("", e.getX(), e.getY());
                 dialog.allocateContinents(controller.model.getContinents().keySet(), null);
                 dialog.allocateCountries(controller.model.getCountries().keySet(), new ArrayList<>());
                 int result = dialog.showUi();

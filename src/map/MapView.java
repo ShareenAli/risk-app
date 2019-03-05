@@ -43,6 +43,7 @@ public class MapView implements Observer {
     private JButton buttonChangeMap;
     private JButton buttonSave;
 
+    private JLabel imageLabel;
     private DefaultListModel<String> modelContinents = new DefaultListModel<>();
     private HashMap<String, JButton> countries = new HashMap<>();
     private ActionListener buttonCountryLs;
@@ -120,10 +121,11 @@ public class MapView implements Observer {
     }
 
     private void updateCountries(HashMap<String, Country> countries) {
+        this.layeredPane.removeAll();
+        this.layeredPane.add(this.imageLabel, 0, 10);
         for (Map.Entry<String, Country> countryEntry : countries.entrySet()) {
             Country country = countryEntry.getValue();
             JButton button = this.countries.getOrDefault(country.getName(), new JButton(country.getName()));
-            this.layeredPane.remove(button);
             int x = (int) country.getLatitude();
             int y = (int) country.getLongitude();
             int length = country.getName().length() * 8;
@@ -142,6 +144,8 @@ public class MapView implements Observer {
             this.layeredPane.add(button, 0);
             this.countries.put(country.getName(), button);
         }
+        this.panelMain.revalidate();
+        this.panelMain.repaint();
     }
 
     @SuppressWarnings("unchecked")
@@ -161,10 +165,10 @@ public class MapView implements Observer {
 
             this.layeredPane.setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
 
-            JLabel imageLabel = new JLabel(new ImageIcon(image));
-            imageLabel.setBounds(0, 0, image.getWidth(), image.getHeight());
+            this.imageLabel = new JLabel(new ImageIcon(image));
+            this.imageLabel.setBounds(0, 0, image.getWidth(), image.getHeight());
 
-            this.layeredPane.add(imageLabel, 0, 10);
+            this.layeredPane.add(this.imageLabel, 0, 10);
             this.labelMap.setText(file.getName());
         } catch (IOException e) {
             e.printStackTrace();

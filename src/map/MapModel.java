@@ -71,6 +71,19 @@ class MapModel extends Observable {
         notifyObservers(UPDATE_COUNTRIES);
     }
 
+    void deleteCountry(Country country) {
+        for (Map.Entry<String, Country> countryEntry : this.countries.entrySet()) {
+            Country c = countryEntry.getValue();
+            int index = c.getNeighbours().indexOf(country.getName());
+            if (index != -1)
+                c.removeNeighbour(country.getName());
+            this.saveCountryWithoutNotify(c);
+        }
+        this.countries.remove(country.getName());
+        setChanged();
+        notifyObservers(UPDATE_COUNTRIES);
+    }
+
     void saveContinent(Continent continent) {
         this.continents.put(continent.getName(), continent);
         setChanged();

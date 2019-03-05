@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="map.country.CountryDialog">
   <grid id="27dc6" binding="panelMain" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="20" y="20" width="258" height="280"/>
+      <xy x="20" y="20" width="258" height="342"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -26,21 +26,66 @@
           </component>
         </children>
       </grid>
-      <grid id="2878e" binding="panelContinent" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+      <grid id="2878e" binding="panelContent" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints border-constraint="Center"/>
         <properties/>
         <border type="none"/>
         <children>
-          <component id="a9211" class="javax.swing.JLabel" binding="labelContinent">
-            <constraints/>
-            <properties>
-              <text value="Continent:"/>
-            </properties>
-          </component>
-          <component id="df350" class="javax.swing.JComboBox" binding="comboContinent">
-            <constraints/>
+          <grid id="b27cc" binding="panelContinent" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+            <constraints border-constraint="North"/>
             <properties/>
-          </component>
+            <border type="none"/>
+            <children>
+              <component id="a9211" class="javax.swing.JLabel" binding="labelContinent">
+                <constraints/>
+                <properties>
+                  <text value="Continent:"/>
+                </properties>
+              </component>
+              <component id="df350" class="javax.swing.JComboBox" binding="comboContinent">
+                <constraints/>
+                <properties/>
+              </component>
+            </children>
+          </grid>
+          <grid id="44fce" binding="panelCoord" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+            <constraints border-constraint="Center"/>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="6761d" class="javax.swing.JLabel" binding="labelCoordinates">
+                <constraints/>
+                <properties>
+                  <text value="(x, y):"/>
+                </properties>
+              </component>
+              <component id="4da50" class="javax.swing.JTextField" binding="textX">
+                <constraints/>
+                <properties>
+                  <preferredSize width="50" height="27"/>
+                </properties>
+              </component>
+              <component id="40683" class="javax.swing.JTextField" binding="textY">
+                <constraints/>
+                <properties>
+                  <preferredSize width="50" height="27"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+          <grid id="b3ac3" binding="panelDelete" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+            <constraints border-constraint="South"/>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="62764" class="javax.swing.JCheckBox" binding="checkDelete">
+                <constraints/>
+                <properties>
+                  <text value="Delete this country?"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
         </children>
       </grid>
       <grid id="d65b5" binding="panelNeighbours" layout-manager="BorderLayout" hgap="0" vgap="0">
