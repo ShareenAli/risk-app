@@ -1,14 +1,11 @@
 package game.main.world;
 
 import entity.Country;
-import entity.Player;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class WorldController {
     private WorldView view;
@@ -23,9 +20,13 @@ public class WorldController {
         this.model.addObserver(this.view);
     }
 
-    public void configureView(File bmpFile, ArrayList<Country> countries) {
+    public void configureView(File bmpFile, ArrayList<Country> countries, ActionListener buttonCountryLs) {
         this.view.prepUi(bmpFile);
-        this.view.loadCountries(countries);
+        this.view.loadCountries(countries, buttonCountryLs);
+    }
+
+    public void selectCountry(String country) {
+        this.view.selectCountry(country);
     }
 
     public JPanel getRootPanel() {

@@ -1,5 +1,6 @@
 package game.main.phases;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -17,12 +18,14 @@ public class PhaseModel extends Observable {
     private int playerIndex = -1;
     private int totalPlayers;
     private ArrayList<String> players;
+    private ArrayList<Color> colors;
 
     PhaseModel() { }
 
-    public void setPlayers(ArrayList<String> players) {
+    void setPlayers(ArrayList<String> players, ArrayList<Color> colors) {
         this.totalPlayers = players.size();
         this.players = players;
+        this.colors = colors;
     }
 
     void nextPhase() {
@@ -47,7 +50,11 @@ public class PhaseModel extends Observable {
         return this.players.get(this.playerIndex);
     }
 
-    public int getActivePhase() {
+    Color getActiveColor() {
+        return this.colors.get(this.playerIndex);
+    }
+
+    int getActivePhase() {
         return this.phase;
     }
 

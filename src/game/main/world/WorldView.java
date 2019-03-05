@@ -7,6 +7,7 @@ import game.main.MainModel;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -22,9 +23,14 @@ public class WorldView implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (arg instanceof String) {
-            switch ((String) arg) {
+            String content[] = ((String) arg).split(":");
+            String actual = content[0].concat(":").concat(content[1]);
+            switch (actual) {
                 case MainModel.CHANGE_ARMY:
                     this.distributeCountriesToPlayers(((MainModel) o).getPlayers());
+                    break;
+                case MainModel.UPDATE_PLAYER:
+                    this.updateCountryOfPlayer(((MainModel) o).getPlayer(content[2]));
                     break;
             }
         }
@@ -47,7 +53,7 @@ public class WorldView implements Observer {
         }
     }
 
-    void loadCountries(ArrayList<Country> countries) {
+    void loadCountries(ArrayList<Country> countries, ActionListener buttonCountryLs) {
         for (Country country : countries) {
             JButton button = new JButton(country.getName());
             int x = (int) country.getLatitude();
@@ -57,6 +63,7 @@ public class WorldView implements Observer {
             button.setOpaque(false);
             button.setContentAreaFilled(false);
             button.setBorderPainted(false);
+            button.addActionListener(buttonCountryLs);
             JLabel label = new JLabel();
             label.setBounds(x, y + 6, 20, 20);
 
@@ -65,6 +72,22 @@ public class WorldView implements Observer {
             this.countries.put(country.getName(), button);
             this.armies.put(country.getName(), label);
         }
+    }
+
+    void selectCountry(String country) {
+        JButton button = this.countries.get(country);
+        this.layeredPane.remove(button);
+
+        button.setForeground(Color.BLACK);
+        this.layeredPane.add(button, 0);
+
+        this.countries.put(country, button);
+    }
+
+    private void updateCountryOfPlayer(Player player) {
+        HashMap<String, Player> players = new HashMap<>();
+        players.put(player.getName(), player);
+        this.distributeCountriesToPlayers(players);
     }
 
     private void distributeCountriesToPlayers(HashMap<String, Player> players) {
