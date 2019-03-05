@@ -35,4 +35,11 @@ public class DisplayFileChooser {
 
         return (fileAction == JFileChooser.APPROVE_OPTION) ? this.chooser.getSelectedFile() : null;
     }
+
+    public String saveFile() {
+        int fileAction = this.chooser.showSaveDialog(this.parent);
+        this.parent.dispose();
+
+        return (fileAction == JFileChooser.APPROVE_OPTION) ? this.chooser.getSelectedFile().getAbsolutePath() : null;
+    }
 }

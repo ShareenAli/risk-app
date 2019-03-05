@@ -1,12 +1,12 @@
 package risk;
 
 import game.settings.SettingsController;
+import map.MapController;
 import support.ActivityController;
 
-import javax.swing.JFrame;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 /**
  * The Main Controller of the game.
@@ -57,11 +57,11 @@ class RiskController extends ActivityController {
         this.newGameListener = (ActionEvent e) -> RiskApp.ChangeActivityController(new SettingsController());
 
         this.editMapListener = (ActionEvent e) -> {
-            System.out.println("Dillo me tum apni betabiya le ke chal rhe ho");
+            HashMap<String, Object> headers = new HashMap<>();
+            headers.put(RiskApp.MapIntent.KEY_EDIT, true);
+            RiskApp.ChangeActivityController(this, new MapController(), headers, false);
         };
 
-        this.newMapListener = (ActionEvent e) -> {
-            System.out.println("toh zinda ho tum");
-        };
+        this.newMapListener = (ActionEvent e) -> RiskApp.ChangeActivityController(new MapController());
     }
 }

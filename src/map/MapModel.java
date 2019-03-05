@@ -1,142 +1,128 @@
 package map;
-import entity.Country;
+
 import entity.Continent;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import entity.Country;
 
-/**
- * MapModel, has all the relevant information related to the .map file that is being loaded
- * 
- * @author Farhan Rahman Wasee
- * @version 1.0.0
- */
+import java.io.File;
+import java.util.*;
 
-public class MapModel {
-	
-	/**
-	 * Stores all the continents inside it
-	 */
-	
-	private static ArrayList<Continent> CONTINENTS = new ArrayList<Continent>();
-	
-	/**
-	 * Stores all the countries inside it
-	 */
-	
-	private static ArrayList<Country> TERRITORIES = new ArrayList<Country>();
-	
-	/**
-	 * Created, for a mapping for countries and strings, will be used on alter builds.
-	 */
-	
-	private static HashMap<String, Country> COUNTRYMAPPER = new HashMap<String, Country>();
-	private static HashMap<String, Continent> CONTINENTMAPPER = new HashMap<String, Continent>();
+@SuppressWarnings("deprecation")
+class MapModel extends Observable {
+    static final String UPDATE_MAP = "update:map";
+    static final String UPDATE_CONTINENTS = "update:continents";
+    static final String UPDATE_ALL = "update:all";
+    static final String UPDATE_COUNTRIES = "update:countries";
+    private HashMap<String, Country> countries = new HashMap<>();
+    private HashMap<String, Continent> continents = new HashMap<>();
+    private File bmpFile;
 
-	
-	/**
-	 * Constructor for creating a MapModel
-	 * @param CONTINENTS list of continents 
-	 * @param TERRITORIES list of countries
-	 * @param COUNTRYMAPPER hashmap using string to countries
-	 * @param CONTINENTMAPPER hashmap using string to continents
-	 */
-	
-	public MapModel(ArrayList<Continent> CONTINENTS, ArrayList<Country> TERRITORIES, HashMap<String, Country> COUNTRYMAPPER
-			, HashMap<String, Continent> CONTINENTMAPPER)
-	{
-		this.CONTINENTS = CONTINENTS;
-		this.TERRITORIES = TERRITORIES;
-		this.COUNTRYMAPPER = COUNTRYMAPPER;
-		this.CONTINENTMAPPER = CONTINENTMAPPER;
-	}
-	
-	/**
-	 * Model updater, that can update the data in the MAP object
-	 * @param CONTINENTS list of continents 
-	 * @param TERRITORIES list of countries
-	 * @param COUNTRYMAPPER hashmap using string to countries
-	 * @param CONTINENTMAPPER hashmap using string to continents
-	 */
-	
-	public void updateMap(ArrayList<Continent> CONTINENTS, ArrayList<Country> TERRITORIES, HashMap<String, Country> COUNTRYMAPPER
-			, HashMap<String, Continent> CONTINENTMAPPER)
-	{
-		this.CONTINENTS = CONTINENTS;
-		this.TERRITORIES = TERRITORIES;
-		this.COUNTRYMAPPER = COUNTRYMAPPER;
-		this.CONTINENTMAPPER = CONTINENTMAPPER;
-		TERRITORIES.sort((o1, o2) -> o1.getContinent().compareTo(o2.getContinent()));
-	}
-	
-	/**
-	 * Gets the list of continents in the map model
-	 */
-	
-	public static ArrayList<Continent> getCONTINENTS() {
-		return CONTINENTS;
-	}
+    public String author, imageFileName, scrollType, mapFileName;
+    public boolean wrap, warn;
 
-	/**
-	 * Sets the list of continents in the map model
-	 * @param cONTINENTS ArrayList of Continents
-	 */
-	
-	public static void setCONTINENTS(ArrayList<Continent> cONTINENTS) {
-		CONTINENTS = cONTINENTS;
-	}
+    MapModel() {
+        wrap = false;
+        warn = false;
+        this.mapFileName = "";
+        this.author = "shareenali";
+        this.imageFileName = "";
+        this.scrollType = "";
+    }
 
-	/**
-	 * Gets the list of countries in the map model
-	 */
-	
-	public static ArrayList<Country> getTERRITORIES() {
-		return TERRITORIES;
-	}
+    void setBmpFile(File file) {
+        this.imageFileName = file.getName();
+        this.bmpFile = file;
+        setChanged();
+        notifyObservers(UPDATE_MAP);
+    }
 
-	/**
-	 * Sets the list of countries in the map model
-	 * @param tERRITORIES ArrayList of Countries
-	 */
-	
-	public static void setTERRITORIES(ArrayList<Country> tERRITORIES) {
-		TERRITORIES = tERRITORIES;
-	}
+    void hardNotifyView() {
+        setChanged();
+        notifyObservers(UPDATE_ALL);
+    }
 
-	/**
-	 * Returns the hashmap that does string to country mapping
-	 */
-	
-	public static HashMap<String, Country> getCOUNTRYMAPPER() {
-		return COUNTRYMAPPER;
-	}
+    File getBmpFile() {
+        return bmpFile;
+    }
 
-	/**
-	 * Sets the hashmap that does string to country mapping
-	 * @param cOUNTRYMAPPER Hashmap of String, Country pairs
-	 */
-	
-	public static void setCOUNTRYMAPPER(HashMap<String, Country> cOUNTRYMAPPER) {
-		COUNTRYMAPPER = cOUNTRYMAPPER;
-	}
+    void deleteContinent(String name) {
+        this.continents.remove(name);
 
-	/**
-	 * Returns the hashmap that does string to continent mapping
-	 */
-	
-	public static HashMap<String, Continent> getCONTINENTMAPPER() {
-		return CONTINENTMAPPER;
-	}
+        ArrayList<String> countries = new ArrayList<>();
+        for (Map.Entry<String, Country> countryEntry : this.countries.entrySet()) {
+            if (countryEntry.getValue().getContinent().equalsIgnoreCase(name))
+                countries.add(countryEntry.getKey());
+        }
 
-	/**
-	 * Sets the hashmap that does string to continent mapping
-	 * @param cONTINENTMAPPER Hashmap of String, Continent pairs
-	 */
-	
-	public static void setCONTINENTMAPPER(HashMap<String, Continent> cONTINENTMAPPER) {
-		CONTINENTMAPPER = cONTINENTMAPPER;
-	}
-	
+        for (String country : countries) {
+            this.countries.remove(country);
+        }
+
+        setChanged();
+        notifyObservers(UPDATE_ALL);
+    }
+
+    void saveCountryWithoutNotify(Country country) {
+        this.countries.put(country.getName(), country);
+    }
+
+    void saveCountry(Country country) {
+        this.countries.put(country.getName(), country);
+        setChanged();
+        notifyObservers(UPDATE_COUNTRIES);
+    }
+
+    void deleteCountry(Country country) {
+        for (Map.Entry<String, Country> countryEntry : this.countries.entrySet()) {
+            Country c = countryEntry.getValue();
+            int index = c.getNeighbours().indexOf(country.getName());
+            if (index != -1)
+                c.removeNeighbour(country.getName());
+            this.saveCountryWithoutNotify(c);
+        }
+        this.countries.remove(country.getName());
+        setChanged();
+        notifyObservers(UPDATE_COUNTRIES);
+    }
+
+    void saveContinent(Continent continent) {
+        this.continents.put(continent.getName(), continent);
+        setChanged();
+        notifyObservers(UPDATE_CONTINENTS);
+    }
+
+    void saveContinentWithoutNotify(Continent continent) {
+        this.continents.put(continent.getName(), continent);
+    }
+
+    Continent getContinent(String name) {
+        return this.continents.get(name);
+    }
+
+    Country getCountry(String name) {
+        return this.countries.get(name);
+    }
+
+    public HashMap<String, Continent> getContinents() {
+        return this.continents;
+    }
+
+    public HashMap<String, Country> getCountries() {
+        return this.countries;
+    }
+
+    public List<Country> getCountriesInContinent(String continentName) {
+        List<Country> countryDataList = new ArrayList<>();
+
+        for (Map.Entry<String, Country> countryDataEntry : this.countries.entrySet()) {
+            Country country = countryDataEntry.getValue();
+            if (country.getContinent().equalsIgnoreCase(continentName))
+                countryDataList.add(country);
+        }
+
+        return countryDataList;
+    }
+
+    boolean doesCountryExist(String country) {
+        return this.getCountries().containsKey(country);
+    }
 }

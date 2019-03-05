@@ -46,6 +46,10 @@ public class Country {
         this.longitude = longitude;
     }
 
+    public void setContinent(String continent) {
+        this.continent = continent;
+    }
+
     /**
      * Use the card assigned to the country.
      * Once the card is used, it should never be used again.
@@ -135,5 +139,9 @@ public class Country {
      */
     public ArrayList<String> getNeighbours() {
         return neighbours;
+    }
+
+    public void resetNeighbours() {
+        this.neighbours.clear();
     }
 }
