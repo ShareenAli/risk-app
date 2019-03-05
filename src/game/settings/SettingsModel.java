@@ -153,14 +153,31 @@ class SettingsModel {
 
                     temp = line.split("=");
                     this.continents.add(new Continent(temp[0].trim(), Integer.parseInt(temp[1])));
+
                 }
 
                 if (territoryFlag == 1) {
                     if (line.equals("[Territories]"))
                         line = scanner.nextLine();
 
+                    int continentIndex = 0;
                     temp = line.split(",");
                     Country country = new Country(temp[0].trim(), temp[3].trim(), Double.parseDouble(temp[1].trim()), Double.parseDouble(temp[2].trim()));
+
+                    for (Continent continent : continents) {
+                        if (continent.getName().equals(temp[3].trim())) {
+                            continentIndex = this.continents.indexOf(continent);
+                        }
+                    }
+                    Continent continent = this.continents.get(continentIndex);
+                    if (continent.getTerritoriesIn() != null) {
+                        ArrayList<Country> territoriesIn = continent.getTerritoriesIn();
+                        territoriesIn.add(country);
+                    } else {
+                        ArrayList<Country> territoriesIn = new ArrayList<Country>();
+                        territoriesIn.add(country);
+                        continent.setTerritoriesIn(territoriesIn);
+                    }
 
                     for (int i = 4; i < temp.length - 1; i++) {
                         country.addNeighbour(temp[i]);
@@ -178,7 +195,7 @@ class SettingsModel {
 
     private Color hex2Rgb(String colorStr) {
         return new Color(Integer.valueOf(colorStr.substring(1, 3), 16),
-            Integer.valueOf(colorStr.substring(3, 5), 16),
-            Integer.valueOf(colorStr.substring(5, 7), 16));
+                Integer.valueOf(colorStr.substring(3, 5), 16),
+                Integer.valueOf(colorStr.substring(5, 7), 16));
     }
 }

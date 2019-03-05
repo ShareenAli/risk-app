@@ -70,6 +70,7 @@ public class MainModel extends Observable {
 
     /**
      * Returns the hashmap of the players
+     *
      * @return players
      */
     public HashMap<String, Player> getPlayers() {
@@ -143,7 +144,7 @@ public class MainModel extends Observable {
     /**
      * Update the state of the player and notify all the observers
      *
-     * @param name name of the player
+     * @param name   name of the player
      * @param player object to update
      */
     private void updatePlayer(String name, Player player) {
@@ -223,6 +224,8 @@ public class MainModel extends Observable {
      */
     public void reinforcementPhase(String playerName, String countryName, int armiesToAdd) {
         Player player = this.players.get(playerName);
+        int controlValue = checkControlValueArmies(player);
+        armiesToAdd += controlValue;
         player.reinforcementPhase(countryName, armiesToAdd);
         this.armiesAvailableToAssign -= armiesToAdd;
         this.updatePlayer(player.getName(), player);
@@ -231,10 +234,10 @@ public class MainModel extends Observable {
     /**
      * It is used to validate and perform the fortification phase operations
      *
-     * @param playerName Name of the player
+     * @param playerName        Name of the player
      * @param sourceCountryName Name of the source country
      * @param targetCountryName Name of the target country
-     * @param armiesToTransfer Number of armies to transfer
+     * @param armiesToTransfer  Number of armies to transfer
      */
     public void fortificationPhase(String playerName, String sourceCountryName, String targetCountryName, int armiesToTransfer) {
         Player player = this.players.get(playerName);
@@ -245,7 +248,7 @@ public class MainModel extends Observable {
     /**
      * It checks the Source country is interconnected with the target country to which armies are to be transferred
      *
-     * @param originCountries List of all the source Countries in recursion stack
+     * @param originCountries   List of all the source Countries in recursion stack
      * @param sourceCountryName Name of the Source country from which the armies are to be transferred
      * @param targetCountryName Name of the target country from which the armies are to be transferred
      * @return result A boolean value to return whether the countries are interconnected
@@ -283,6 +286,26 @@ public class MainModel extends Observable {
     void resetArmiesToAssign() {
         int countriesConquered = this.countries.size();
         this.armiesAvailableToAssign = (int) Math.round(Math.floor((float) countriesConquered / 3) < 3
-            ? 3 : Math.floor((float) countriesConquered / 3));
+                ? 3 : Math.floor((float) countriesConquered / 3));
+    }
+
+    int checkControlValueArmies(Player player) {
+        HashMap<String, Integer> countries = player.getCountries();
+        boolean controlValueFlag;
+        int cv = 0;
+        for (Map.Entry<String, Continent> entry : this.continents.entrySet()) {
+            Continent continent = entry.getValue();
+            controlValueFlag = true;
+            ArrayList<Country> country = continent.getTerritoriesIn();
+
+            for (Country eachCountry : country) {
+                if (!countries.containsKey(eachCountry))
+                    controlValueFlag = false;
+            }
+
+            if (controlValueFlag)
+                cv = continent.getControlValue();
+        }
+        return cv;
     }
 }
