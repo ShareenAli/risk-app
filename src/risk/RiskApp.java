@@ -57,4 +57,8 @@ public class RiskApp {
         public static final String KEY_CONTINENT = "continents";
         public static final String kEY_BMP = "bmp";
     }
+
+    public static abstract class MapIntent {
+        public static final String KEY_EDIT = "isEdit";
+    }
 }
