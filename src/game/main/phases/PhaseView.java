@@ -5,6 +5,7 @@ import game.main.MainModel;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.*;
 
 @SuppressWarnings("deprecation")
@@ -32,6 +33,10 @@ public class PhaseView implements Observer {
         this.modelPlayers.addColumn("%");
 
         this.tablePlayers.setModel(this.modelPlayers);
+    }
+
+    void bindChangePhaseListener(ActionListener listener) {
+        this.buttonChange.addActionListener(listener);
     }
 
     /**

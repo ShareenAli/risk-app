@@ -238,14 +238,8 @@ public class MainModel extends Observable {
      */
     public void fortificationPhase(String playerName, String sourceCountryName, String targetCountryName, int armiesToTransfer) {
         Player player = this.players.get(playerName);
-        ArrayList<String> originCountries = new ArrayList<>();
-
-        boolean result = checkForLink(originCountries, sourceCountryName, targetCountryName);
-
-        if (result)
-            player.fortificationPhase(sourceCountryName, targetCountryName, armiesToTransfer);
-        else
-            System.out.println("Countries are not connected, Cannot perform the transfer!");
+        player.fortificationPhase(sourceCountryName, targetCountryName, armiesToTransfer);
+        this.updatePlayer(player.getName(), player);
     }
 
     /**
@@ -258,6 +252,8 @@ public class MainModel extends Observable {
      */
     public boolean checkForLink(ArrayList<String> originCountries, String sourceCountryName, String targetCountryName) {
         Country country = this.countries.get(sourceCountryName);
+        if (country == null)
+            return false;
         ArrayList<String> neighbours = country.getNeighbours();
         boolean compare;
         originCountries.add(sourceCountryName);

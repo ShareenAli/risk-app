@@ -25,6 +25,10 @@ public class WorldController {
         this.view.loadCountries(countries, buttonCountryLs);
     }
 
+    public void selectCountry(String country) {
+        this.view.selectCountry(country);
+    }
+
     public JPanel getRootPanel() {
         return (JPanel) this.view.$$$getRootComponent$$$();
     }

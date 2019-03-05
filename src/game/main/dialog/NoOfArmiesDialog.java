@@ -2,12 +2,12 @@ package game.main.dialog;
 
 import javax.swing.*;
 
-public class ReinforcementDialog {
+public class NoOfArmiesDialog {
     private JPanel panel;
     private JComboBox comboNoOfArmies = new JComboBox();
     private DefaultComboBoxModel<Integer> modelNoOfArmies = new DefaultComboBoxModel<>();
 
-    public ReinforcementDialog() {
+    public NoOfArmiesDialog() {
         this.panel = new JPanel();
         this.panel.add(new JLabel("No of armies to assign: "));
         this.panel.add(this.comboNoOfArmies);
@@ -22,8 +22,8 @@ public class ReinforcementDialog {
         this.comboNoOfArmies.setModel(this.modelNoOfArmies);
     }
 
-    public int showUi(String country) {
-        int result = JOptionPane.showOptionDialog(null, this.panel, country,
+    public int showUi(String title) {
+        int result = JOptionPane.showOptionDialog(null, this.panel, title,
             JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
 
         return (result != -1) ? this.comboNoOfArmies.getSelectedIndex() + 1 : 0;

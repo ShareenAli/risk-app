@@ -2,6 +2,8 @@ package game.main.phases;
 
 import javax.swing.JPanel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class PhaseController {
@@ -13,8 +15,9 @@ public class PhaseController {
         this.model = new PhaseModel();
     }
 
-    public void initializeValues() {
+    public void initializeValues(ActionListener buttonChangeLs) {
         this.view.initializeValues();
+        this.view.bindChangePhaseListener(buttonChangeLs);
 
         this.model.addObserver(this.view);
     }

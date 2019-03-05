@@ -74,6 +74,16 @@ public class WorldView implements Observer {
         }
     }
 
+    void selectCountry(String country) {
+        JButton button = this.countries.get(country);
+        this.layeredPane.remove(button);
+
+        button.setForeground(Color.BLACK);
+        this.layeredPane.add(button, 0);
+
+        this.countries.put(country, button);
+    }
+
     private void updateCountryOfPlayer(Player player) {
         HashMap<String, Player> players = new HashMap<>();
         players.put(player.getName(), player);

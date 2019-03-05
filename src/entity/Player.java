@@ -150,6 +150,10 @@ public class Player {
         this.removeArmies(sourceCountryName, armiesToTransfer);
     }
 
+    public int getArmiesInCountry(String country) {
+        return this.countries.get(country);
+    }
+
     public String notifyString() {
         return MainModel.UPDATE_PLAYER + ":" + this.name;
     }
