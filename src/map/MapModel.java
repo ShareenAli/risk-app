@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.*;
 
 @SuppressWarnings("deprecation")
-class MapModel extends Observable {
+public class MapModel extends Observable {
     static final String UPDATE_MAP = "update:map";
     static final String UPDATE_CONTINENTS = "update:continents";
     static final String UPDATE_ALL = "update:all";
@@ -19,7 +19,7 @@ class MapModel extends Observable {
     public String author, imageFileName, scrollType, mapFileName;
     public boolean wrap, warn;
 
-    MapModel() {
+    public MapModel() {
         wrap = false;
         warn = false;
         this.mapFileName = "";
@@ -65,7 +65,7 @@ class MapModel extends Observable {
         this.countries.put(country.getName(), country);
     }
 
-    void saveCountry(Country country) {
+    public void saveCountry(Country country) {
         this.countries.put(country.getName(), country);
         setChanged();
         notifyObservers(UPDATE_COUNTRIES);
@@ -84,7 +84,7 @@ class MapModel extends Observable {
         notifyObservers(UPDATE_COUNTRIES);
     }
 
-    void saveContinent(Continent continent) {
+    public void saveContinent(Continent continent) {
         this.continents.put(continent.getName(), continent);
         setChanged();
         notifyObservers(UPDATE_CONTINENTS);

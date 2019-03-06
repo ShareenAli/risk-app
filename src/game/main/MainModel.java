@@ -156,7 +156,7 @@ public class MainModel extends Observable {
     /**
      * Assign Country to each player in the game
      */
-    void assignCountry() {
+    public void assignCountry() {
         int playerIndex = 0;
 
         for (Map.Entry<String, Country> entry : countries.entrySet()) {
@@ -173,7 +173,7 @@ public class MainModel extends Observable {
     /**
      * Assign armies to the countries owned by the player
      */
-    void assignArmies() {
+    public void assignArmies() {
         int noOfPlayers = this.playerNames.size();
         Random random = new Random();
 
@@ -283,7 +283,7 @@ public class MainModel extends Observable {
     /**
      * Calculate the number of armies to assign in the reinforcement phase
      */
-    void resetArmiesToAssign(String playerName) {
+    public void resetArmiesToAssign(String playerName) {
         Player player = this.getPlayer(playerName);
         int countriesConquered = player.getCountries().size();
         this.armiesAvailableToAssign = (int) Math.round(Math.floor((float) countriesConquered / 3) < 3

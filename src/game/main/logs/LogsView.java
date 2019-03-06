@@ -22,7 +22,7 @@ public class LogsView implements Observer {
      */
     @SuppressWarnings("unchecked")
     private void appendLog(String log) {
-        this.modelLogs.addElement(log);
+        this.modelLogs.add(0, log);
         this.listLogs.setModel(modelLogs);
     }
 
