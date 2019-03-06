@@ -120,6 +120,7 @@ public class MainController extends ActivityController {
         int armiesAssigned = dialog.showUi(country);
 
         this.model.reinforcementPhase(owner, country, armiesAssigned);
+        this.logsController.log(owner + " reinforced " + country + " with " + armiesAssigned + " armies " );
     }
 
     private boolean isFortificationPossible(String owner) {
@@ -136,6 +137,7 @@ public class MainController extends ActivityController {
         }
 
         return true;
+
     }
 
     private void doFortificationPhase(String command) {
@@ -168,6 +170,7 @@ public class MainController extends ActivityController {
         }
 
         this.model.fortificationPhase(owner, this.fortSource, this.fortTarget, armiesMoved);
+        this.logsController.log(owner + " transferred " + armiesMoved + " armies from " + this.fortSource + " to " + this.fortTarget);
     }
 
     private int selectFortificationArmies(String owner) {
