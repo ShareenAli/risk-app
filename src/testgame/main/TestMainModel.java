@@ -100,4 +100,21 @@ public class TestMainModel {
         this.mainModel.reinforcementPhase(this.mainModel.getPlayer("dhaval").getName(), this.mainModel.getCountries().get("India").getName(), 3);
         assertEquals(this.mainModel.getPlayer("dhaval").getArmiesInCountry("India"), updatedArmies);
     }
+
+    /**
+     * Check link between countries
+     */
+    @Test
+    public void checkConnectionFort() {
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 1);
+        this.mainModel.getPlayer("shareen").setArmies("Pakistan", 1);
+        this.mainModel.getPlayer("shareen").setArmies("Bengal", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("China", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 1);
+        boolean resultExcpected = true;
+        boolean resultActual = this.mainModel.checkForLink(new ArrayList<>(), "India", "Russia");
+        assertEquals(resultActual, resultExcpected);
+    }
+
 }
