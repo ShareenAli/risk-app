@@ -283,28 +283,47 @@ public class MainModel extends Observable {
     /**
      * Calculate the number of armies to assign in the reinforcement phase
      */
-    void resetArmiesToAssign() {
-        int countriesConquered = this.countries.size();
+    void resetArmiesToAssign(String playerName) {
+        Player player = this.getPlayer(playerName);
+        int countriesConquered = player.getCountries().size();
         this.armiesAvailableToAssign = (int) Math.round(Math.floor((float) countriesConquered / 3) < 3
                 ? 3 : Math.floor((float) countriesConquered / 3));
+        this.armiesAvailableToAssign += this.checkControlValueArmies(player);
     }
 
-    int checkControlValueArmies(Player player) {
-        HashMap<String, Integer> countries = player.getCountries();
-        boolean controlValueFlag;
+    private int countCountriesInContinent(String continent, Set<String> countries) {
+        int count = 0;
+
+        for (String country : countries) {
+            Country c = this.countries.get(country);
+            if (c.getContinent().equalsIgnoreCase(continent))
+                count++;
+        }
+
+        return count;
+    }
+
+    private int countCountriesInContinent(String continent) {
+        int count = 0;
+
+        for (Map.Entry<String, Country> countryEntry : this.countries.entrySet()) {
+            Country country = countryEntry.getValue();
+            if (country.getContinent().equalsIgnoreCase(continent))
+                count++;
+        }
+
+        return count;
+    }
+
+    private int checkControlValueArmies(Player player) {
         int cv = 0;
         for (Map.Entry<String, Continent> entry : this.continents.entrySet()) {
             Continent continent = entry.getValue();
-            controlValueFlag = true;
-            ArrayList<Country> country = continent.getTerritoriesIn();
+            int noOfCountriesInside = this.countCountriesInContinent(continent.getName());
+            int noOfCountriesPlayer = this.countCountriesInContinent(continent.getName(), player.getCountries().keySet());
 
-            for (Country eachCountry : country) {
-                if (!countries.containsKey(eachCountry))
-                    controlValueFlag = false;
-            }
-
-            if (controlValueFlag)
-                cv = continent.getControlValue();
+            if (noOfCountriesInside == noOfCountriesPlayer)
+                cv += continent.getControlValue();
         }
         return cv;
     }

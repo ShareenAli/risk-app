@@ -205,8 +205,8 @@ public class MainController extends ActivityController {
     }
 
     private void changePhase() {
-        this.model.resetArmiesToAssign();
         this.fortSource = this.fortTarget = null;
         this.phaseController.changePhase();
+        this.model.resetArmiesToAssign(this.phaseController.activePlayer());
     }
 }
