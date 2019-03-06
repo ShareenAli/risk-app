@@ -117,4 +117,68 @@ public class TestMainModel {
         assertEquals(resultActual, resultExcpected);
     }
 
+
+    @Test
+    public void checkDomination() {
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 1);
+        this.mainModel.getPlayer("shareen").setArmies("Pakistan", 1);
+        this.mainModel.getPlayer("shareen").setArmies("Bengal", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("China", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 1);
+        String dom = "50.0%";
+        String[] result = this.mainModel.getDominationRow(this.mainModel.getPlayer("dhaval"));
+        assertEquals(result[3], dom);
+    }
+
+    @Test
+    public void checkCountryAssignment() {
+        this.mainModel.assignCountry();
+        assertEquals(this.mainModel.getPlayer("dhaval").getCountries().size(), 3);
+    }
+
+    @Test
+    public void checkAssignArmies() {
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 1);
+        this.mainModel.getPlayer("shareen").setArmies("Pakistan", 1);
+        this.mainModel.getPlayer("shareen").setArmies("Bengal", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("China", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 1);
+        this.mainModel.assignArmies();
+        int total = this.mainModel.getPlayer("dhaval").getArmiesInCountry("India") + this.mainModel.getPlayer("dhaval").getArmiesInCountry("China") + this.mainModel.getPlayer("dhaval").getArmiesInCountry("Mongolia");
+        assertEquals(total, 43);
+    }
+
+    @Test
+    public void checkSubconnectedGraph() {
+        boolean error = this.mapController.isErrorInSubConnectedGraph();
+        assertEquals(error, false);
+    }
+
+    @Test
+    public void checkNoContinent() {
+        boolean result = this.mapController.validateNoContinent();
+        assertEquals(result, false);
+    }
+
+    @Test
+    public void checkNoNeighbours() {
+        boolean result = this.mapController.validateNoNeighbours();
+        assertEquals(result, false);
+    }
+
+    @Test
+    public void checkNoCountryInContinent() {
+        boolean result = this.mapController.validateNoCountryInContinent();
+        assertEquals(result, false);
+    }
+
+    @Test
+    public void checkGhostNeighboursNolink() {
+        boolean result = this.mapController.validateGhostNeighboursNolink();
+        assertEquals(result, false);
+    }
+
+
 }
