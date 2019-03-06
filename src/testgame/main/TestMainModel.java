@@ -1,8 +1,11 @@
 package testgame.main;
 
+import entity.Continent;
 import entity.Country;
 import entity.Player;
 import game.main.MainModel;
+import map.MapController;
+import map.MapModel;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,21 +22,32 @@ import static junit.framework.TestCase.assertTrue;
  */
 public class TestMainModel {
     private MainModel mainModel = new MainModel();
+    private MapModel mapModel = new MapModel();
+    private MapController mapController = new MapController();
 
     @Before
     public void before() {
         ArrayList<Player> players = new ArrayList<>();
+        ArrayList<Continent> continents = new ArrayList<>();
+        Continent continent = new Continent("Asia", 5);
         players.add(new Player("dhaval", 0));
         players.add(new Player("shareen", 1));
 
         this.mainModel.setPlayers(players);
+
         ArrayList<Country> countries = new ArrayList<>();
         Country country1 = new Country("India", "Asia", 1, 1);
+        this.mapModel.saveCountry(country1);
         Country country2 = new Country("Russia", "Asia", 1, 1);
+        this.mapModel.saveCountry(country2);
         Country country3 = new Country("China", "Asia", 1, 1);
+        this.mapModel.saveCountry(country3);
         Country country4 = new Country("Pakistan", "Asia", 1, 1);
+        this.mapModel.saveCountry(country4);
         Country country5 = new Country("Mongolia", "Asia", 1, 1);
+        this.mapModel.saveCountry(country5);
         Country country6 = new Country("Bengal", "Asia", 1, 1);
+        this.mapModel.saveCountry(country6);
 
         country1.addNeighbour(country2.getName());
         country2.addNeighbour(country1.getName());
@@ -51,7 +65,9 @@ public class TestMainModel {
         countries.add(country5);
         countries.add(country6);
 
-        this.mainModel.setMapContent(countries, new ArrayList<>());
+        continents.add(continent);
+
+        this.mainModel.setMapContent(countries, continents);
     }
 
     /**
@@ -59,31 +75,29 @@ public class TestMainModel {
      */
     @Test
     public void reinforcementArmies() {
-        double armiesToAssign;
-        armiesToAssign = Math.floor(5.0 / 3) < 3 ? 3 : Math.floor(5.0 / 3);
-        this.mainModel.reinforcementPhase(this.mainModel.getPlayer("dhaval").getName(), this.mainModel.getCountries().get("India").getName(), 4);
-        double armiesAvailableToAssign = this.mainModel.getArmiesAvailableToAssign();
+        int armiesToAssign, controlValue = 0;
+        armiesToAssign = (int) (int) Math.round(Math.floor((float) 3 / 3) < 3
+                ? 3 : Math.floor((float) 3 / 3));
+
+        armiesToAssign += controlValue;
+        this.mainModel.resetArmiesToAssign(this.mainModel.getPlayer("dhaval").getName());
+        int armiesAvailableToAssign = this.mainModel.getArmiesAvailableToAssign();
         assertEquals(armiesAvailableToAssign, armiesToAssign);
     }
-/**
-     * Test Case method for verification of fortification phase
-     */
-    @Test
-    public void fortificationPhase() {
-        boolean resultActual = true;
-        
-        this.mainModel.fortificationPhase(this.mainModel.getPlayer("dhaval").getName(), this.mainModel.getCountries().get("China").getName(), this.mainModel.getCountries().get("Bengal").getName(), 3);
-//        assertEquals(resultActual, this.mainModel.result);
-    }
-
 
     /**
-     * Test Case method for verification of countries if connected
-     * in fortification phase
+     * Test Case method for calculation of reinforcement armies after
      */
     @Test
-    public void testForContriesLinkedInFortificationPhase() {
-//        assertTrue(this.mainModel.checkForLink(countries,this.mainModel.getCountries().get("China").getName(), this.mainModel.getCountries().get("Bengal").getName());
+    public void calculateReinforcementArmies() {
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 1);
+        this.mainModel.getPlayer("shareen").setArmies("Pakistan", 1);
+        this.mainModel.getPlayer("shareen").setArmies("Bengal", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("China", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 1);
+        int updatedArmies = 4;
+        this.mainModel.reinforcementPhase(this.mainModel.getPlayer("dhaval").getName(), this.mainModel.getCountries().get("India").getName(), 3);
+        assertEquals(this.mainModel.getPlayer("dhaval").getArmiesInCountry("India"), updatedArmies);
     }
-    
 }

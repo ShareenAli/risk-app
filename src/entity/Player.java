@@ -115,6 +115,7 @@ public class Player {
      * @param armiesToAdd armies to append
      */
     public void addArmies(String countryName, int armiesToAdd) {
+        System.out.println(this.countries.get("India"));
         int armies = this.countries.get(countryName);
         armies += armiesToAdd;
         this.countries.put(countryName, armies);
