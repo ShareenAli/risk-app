@@ -86,6 +86,9 @@ public class SettingsController extends ActivityController {
         };
     }
 
+    /**
+     * Starts the game
+     */
     private void startGame() {
         SettingsModel model = SettingsModel.getInstance();
 

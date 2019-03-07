@@ -5,6 +5,11 @@ import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
+/**
+ * View that displays Logs
+ * @author shareenali
+ * @version 0.1
+ */
 @SuppressWarnings("deprecation")
 public class LogsView implements Observer {
     private JPanel panelMain;
@@ -26,6 +31,11 @@ public class LogsView implements Observer {
         this.listLogs.setModel(modelLogs);
     }
 
+    /**
+     * Updates the view the observable notifies
+     * @param o the model
+     * @param arg identification string
+     */
     @Override
     public void update(Observable o, Object arg) {
         if (arg instanceof String) {

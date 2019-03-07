@@ -13,6 +13,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * View that implements the World UI
+ * @author shareenali
+ * @version 0.1
+ */
 @SuppressWarnings("deprecation")
 public class WorldView implements Observer {
     private JPanel panelMain;
@@ -20,6 +25,11 @@ public class WorldView implements Observer {
     private HashMap<String, JButton> countries = new HashMap<>();
     private HashMap<String, JLabel> armies = new HashMap<>();
 
+    /**
+     * Updates the view the observable notifies
+     * @param o the model
+     * @param arg identification string
+     */
     @Override
     public void update(Observable o, Object arg) {
         if (arg instanceof String) {
@@ -36,6 +46,10 @@ public class WorldView implements Observer {
         }
     }
 
+    /**
+     * Prepares the world ui
+     * @param bmpFile image of the map
+     */
     void prepUi(File bmpFile) {
         try {
             BufferedImage image = ImageIO.read(bmpFile);
@@ -53,6 +67,11 @@ public class WorldView implements Observer {
         }
     }
 
+    /**
+     * Loads countries into the UI
+     * @param countries list of countries
+     * @param buttonCountryLs button listeners when countries are clicked
+     */
     void loadCountries(ArrayList<Country> countries, ActionListener buttonCountryLs) {
         for (Country country : countries) {
             JButton button = new JButton(country.getName());
@@ -74,6 +93,10 @@ public class WorldView implements Observer {
         }
     }
 
+    /**
+     * Selects a country
+     * @param country name of the country
+     */
     void selectCountry(String country) {
         JButton button = this.countries.get(country);
         this.layeredPane.remove(button);
@@ -84,12 +107,20 @@ public class WorldView implements Observer {
         this.countries.put(country, button);
     }
 
+    /**
+     * Updates a countries of player
+     * @param player player for which the country is to updated
+     */
     private void updateCountryOfPlayer(Player player) {
         HashMap<String, Player> players = new HashMap<>();
         players.put(player.getName(), player);
         this.distributeCountriesToPlayers(players);
     }
 
+    /**
+     * Update countries of all the players
+     * @param players list of players
+     */
     private void distributeCountriesToPlayers(HashMap<String, Player> players) {
         for (Map.Entry<String, Player> entry : players.entrySet()) {
             String name = entry.getKey();

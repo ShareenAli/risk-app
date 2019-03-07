@@ -2,6 +2,11 @@ package game.main.logs;
 
 import java.util.Observable;
 
+/**
+ * Model that drives the view
+ * @author shareenali
+ * @version 0.1
+ */
 @SuppressWarnings("deprecation")
 public class LogsModel extends Observable {
     public static final String ADD_LOG = "add:log";

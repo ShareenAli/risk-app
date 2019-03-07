@@ -20,27 +20,23 @@ public class RiskApp {
         System.out.println("End of RiskApp.Main");
     }
 
+    /**
+     * Change the activity
+     * @param controller controller to change to
+     */
     static void ChangeActivityController(ActivityController controller) {
         controller.initUi();
         controller.setupValues();
         controller.displayUi();
     }
 
-    public static void ChangeActivityController(ActivityController source, ActivityController target, boolean hideSource) {
-        if (hideSource)
-            source.destroy();
-
-        target.initUi();
-        target.setupValues();
-        target.displayUi();
-    }
-
-    public static void ChangeActivityController(ActivityController controller, HashMap<String, Object> data) {
-        controller.initUi();
-        controller.setupValues(data);
-        controller.displayUi();
-    }
-
+    /**
+     * Change the activity
+     * @param source current activity
+     * @param target activity to change to
+     * @param data data to pass
+     * @param hideSource hide current
+     */
     public static void ChangeActivityController(ActivityController source, ActivityController target,
                                                 HashMap<String, Object> data, boolean hideSource) {
         if (hideSource)

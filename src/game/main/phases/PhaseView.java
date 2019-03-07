@@ -8,6 +8,11 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.*;
 
+/**
+ * View that displays UI
+ * @author shareeali
+ * @version 0.1
+ */
 @SuppressWarnings("deprecation")
 public class PhaseView implements Observer {
     private JPanel panelMain;
@@ -35,6 +40,10 @@ public class PhaseView implements Observer {
         this.tablePlayers.setModel(this.modelPlayers);
     }
 
+    /**
+     * Bind the change phase listener
+     * @param listener listener to bind
+     */
     void bindChangePhaseListener(ActionListener listener) {
         this.buttonChange.addActionListener(listener);
     }
@@ -69,6 +78,11 @@ public class PhaseView implements Observer {
         this.labelPlayer.setForeground(model.getActiveColor());
     }
 
+    /**
+     * Updates the view the observable notifies
+     * @param o the model
+     * @param arg identification string
+     */
     @Override
     public void update(Observable o, Object arg) {
         if (arg instanceof String) {
@@ -91,6 +105,11 @@ public class PhaseView implements Observer {
         }
     }
 
+    /**
+     * Add player to the view
+     * @param mainModel the root model
+     * @param name name of the player to add
+     */
     private void addPlayer(MainModel mainModel, String name) {
         String row[] = mainModel.getDominationRow(mainModel.getPlayer(name));
         HashMap<String, String[]> dominationTable = new HashMap<>();
@@ -98,6 +117,11 @@ public class PhaseView implements Observer {
         this.addPlayers(dominationTable, mainModel.getPlayerNames());
     }
 
+    /**
+     * Add players to the view
+     * @param players list of players
+     * @param playerNames names of players
+     */
     private void addPlayers(HashMap<String, String[]> players, ArrayList<String> playerNames) {
         for (Map.Entry<String, String[]> entry : players.entrySet()) {
             int row = playerNames.indexOf(entry.getKey());

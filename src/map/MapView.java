@@ -48,38 +48,72 @@ public class MapView implements Observer {
     private HashMap<String, JButton> countries = new HashMap<>();
     private ActionListener buttonCountryLs;
 
+    /**
+     * Prepare the UI
+     */
     void prepUi() {
         this.layeredPane = new JLayeredPane();
 
         this.panelMain.add(this.layeredPane);
     }
 
+    /**
+     * Bind action listener to change map
+     * @param listener listener to change map
+     */
     void bindChangeMapListener(ActionListener listener) {
         this.buttonChangeMap.addActionListener(listener);
     }
 
+    /**
+     * Bind action listeners to continent buttons
+     * @param add add continent
+     * @param update update continent
+     * @param delete delete continent
+     */
     void bindContinentButtonsListeners(ActionListener add, ActionListener update, ActionListener delete) {
         this.buttonAddContinent.addActionListener(add);
         this.buttonUpdateContinent.addActionListener(update);
         this.buttonDeleteContinent.addActionListener(delete);
     }
 
+    /**
+     * Bind the continent combo listeners
+     * @param listener listener for the combo
+     */
     void bindContinentComboListener(ListSelectionListener listener) {
         this.listContinents.addListSelectionListener(listener);
     }
 
+    /**
+     * Bind the mouse actions
+     * @param listener mouse listener
+     */
     void bindMouseListener(MouseListener listener) {
         this.layeredPane.addMouseListener(listener);
     }
 
+    /**
+     * Bind country listener
+     * @param listener click listener
+     */
     void bindCountryListener(ActionListener listener) {
         this.buttonCountryLs = listener;
     }
 
+    /**
+     * Bind save listener
+     * @param listener click listener
+     */
     void bindSaveListener(ActionListener listener) {
         this.buttonSave.addActionListener(listener);
     }
 
+    /**
+     * Notifies changes
+     * @param o model class
+     * @param arg notifier action
+     */
     @Override
     public void update(Observable o, Object arg) {
         if (arg instanceof String) {
@@ -105,21 +139,36 @@ public class MapView implements Observer {
         }
     }
 
+    /**
+     * Edit continent
+     * @param continent continent to edit
+     */
     void editContinent(Continent continent) {
         this.textContinentName.setText(continent.getName());
         this.textContinentCv.setText(String.valueOf(continent.getControlValue()));
     }
 
+    /**
+     * Get the selected continent
+     * @return continent
+     */
     String selectedContinent() {
         return (this.listContinents.getSelectedIndex() > -1)
             ? this.modelContinents.get(this.listContinents.getSelectedIndex())
             : null;
     }
 
+    /**
+     * Clear the continent selection from the view
+     */
     void clearContinentSelection() {
         this.listContinents.setSelectedIndex(-1);
     }
 
+    /**
+     * Update the countries on the view
+     * @param countries list of countries
+     */
     private void updateCountries(HashMap<String, Country> countries) {
         this.layeredPane.removeAll();
         this.layeredPane.add(this.imageLabel, 0, 10);
@@ -148,6 +197,10 @@ public class MapView implements Observer {
         this.panelMain.repaint();
     }
 
+    /**
+     * Update the continent on view
+     * @param continents list of continents
+     */
     @SuppressWarnings("unchecked")
     private void updateContinent(HashMap<String, Continent> continents) {
         this.modelContinents.removeAllElements();
@@ -159,6 +212,10 @@ public class MapView implements Observer {
         this.listContinents.setModel(this.modelContinents);
     }
 
+    /**
+     * Updates the image file
+     * @param file image file
+     */
     private void updateMap(File file) {
         try {
             BufferedImage image = ImageIO.read(file);
@@ -175,6 +232,10 @@ public class MapView implements Observer {
         }
     }
 
+    /**
+     * Makes the continent object
+     * @return continent
+     */
     Continent constructContinentDetails() {
         String name = this.textContinentName.getText();
         int controlValue = Integer.parseInt(this.textContinentCv.getText());

@@ -17,6 +17,11 @@ import java.awt.event.MouseListener;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Controller for the map editor
+ * @author shareenali farhan
+ * @version 0.1
+ */
 public class MapController extends ActivityController {
     private MapView view;
     private MapModel model;
@@ -26,11 +31,17 @@ public class MapController extends ActivityController {
     private MouseListener mouseListener;
     private String errorMessage;
 
+    /**
+     * It initializes the view and model
+     */
     public MapController() {
         this.view = new MapView();
         this.model = new MapModel();
     }
 
+    /**
+     * Prepares the UI
+     */
     @Override
     protected void prepareUi() {
         this.view.prepUi();
@@ -41,6 +52,10 @@ public class MapController extends ActivityController {
         this.bindListeners();
     }
 
+    /**
+     * Sets values from the previous controller
+     * @param data values from the previous controller
+     */
     public void setupValues(HashMap<String, Object> data) {
         boolean isEditMode = (boolean) data.getOrDefault(RiskApp.MapIntent.KEY_EDIT, false);
 
@@ -72,6 +87,9 @@ public class MapController extends ActivityController {
         }
     }
 
+    /**
+     * Binds the listeners the view
+     */
     private void bindListeners() {
         this.view.bindChangeMapListener(this.buttonChangeMapLs);
         this.view.bindContinentButtonsListeners(this.buttonAddContinentLs, this.buttonUpdateContinentsLs,
@@ -82,6 +100,9 @@ public class MapController extends ActivityController {
         this.view.bindSaveListener(this.buttonSaveLs);
     }
 
+    /**
+     * initializes the action listeners
+     */
     private void initListeners() {
         this.buttonChangeMapLs = (ActionEvent e) -> this.onMapChanged();
         this.buttonAddContinentLs = (ActionEvent e) -> this.onContinentAdded();
@@ -93,6 +114,9 @@ public class MapController extends ActivityController {
         this.initMouseListener();
     }
 
+    /**
+     * Called when the continent is selected
+     */
     private void onContinentSelected() {
         String name = this.view.selectedContinent();
         if (name == null)
@@ -101,23 +125,35 @@ public class MapController extends ActivityController {
         this.view.editContinent(continent);
     }
 
+    /**
+     * Called when the continent is deleted
+     */
     private void onContinentDeleted() {
         this.view.clearContinentSelection();
         Continent continent = this.view.constructContinentDetails();
         this.model.deleteContinent(continent.getName());
     }
 
+    /**
+     * Called when continent is added
+     */
     private void onContinentAdded() {
         Continent continent = this.view.constructContinentDetails();
         this.model.saveContinent(continent);
     }
 
+    /**
+     * Called when continent is updated
+     */
     private void onContinentUpdated() {
         this.view.clearContinentSelection();
         Continent continent = this.view.constructContinentDetails();
         this.model.saveContinent(continent);
     }
 
+    /**
+     * Called when the map file is changed
+     */
     private void onMapChanged() {
         DisplayFileChooser fileChooser = new DisplayFileChooser("/Users/ndkcha/Documents/university/app/risk-maps");
         fileChooser.updateExtension("bmp");
@@ -129,6 +165,10 @@ public class MapController extends ActivityController {
         this.frame.setLocationRelativeTo(null);
     }
 
+    /**
+     * Open the country dialog
+     * @param command action command that holds name of the country
+     */
     private void openCountryDialog(String command) {
         Country country = this.model.getCountry(command);
         Country old = this.model.getCountry(command);
@@ -171,6 +211,10 @@ public class MapController extends ActivityController {
         this.model.saveCountry(country);
     }
 
+    /**
+     * Check for the errors on the map
+     * @return true of there is any error
+     */
     public boolean checkForErrors() {
         boolean noNeighbours, noContinent, noCountryInContinent, ghostNeighbours, subConnectedGraph;
 
@@ -184,6 +228,10 @@ public class MapController extends ActivityController {
             || ghostNeighbours || subConnectedGraph;
     }
 
+    /**
+     * Check if the map is sub connected graph
+     * @return true if it is not
+     */
     public boolean isErrorInSubConnectedGraph() {
         for (Map.Entry<String, Continent> continentDataEntry : this.model.getContinents().entrySet()) {
             boolean isSubConnectedGraph = false;
@@ -232,6 +280,9 @@ public class MapController extends ActivityController {
         return names;
     }
 
+    /**
+     * Prepare to save the game
+     */
     private void prepareToSave() {
         DisplayFileChooser fileChooser = new DisplayFileChooser("/Users/ndkcha/Documents/university/app/risk-maps");
         fileChooser.updateExtension("map");
@@ -241,6 +292,10 @@ public class MapController extends ActivityController {
         this.saveMap(fileName);
     }
 
+    /**
+     * Save the map
+     * @param name name of the map file.
+     */
     private void saveMap(String name) {
         this.errorMessage = "";
         if (this.checkForErrors()) {
@@ -299,6 +354,9 @@ public class MapController extends ActivityController {
         }
     }
 
+    /**
+     * Initialize the mouse listeners
+     */
     private void initMouseListener() {
         MapController controller = this;
         this.mouseListener = new MouseListener() {
@@ -351,6 +409,10 @@ public class MapController extends ActivityController {
         };
     }
 
+    /**
+     * Check if the country is part of no continent
+     * @return true if it not
+     */
     public boolean validateNoContinent() {
         boolean noContinent = false;
 
@@ -451,6 +513,11 @@ public class MapController extends ActivityController {
         return ghostNeighbours || noLink;
     }
 
+    /**
+     * Loads existing map into the UI
+     * @param mapFile map file
+     * @return true if there are errors
+     */
     public boolean loadExistingMap(File mapFile) {
         boolean invalidFormatError = false;
         this.errorMessage = "";
@@ -502,6 +569,11 @@ public class MapController extends ActivityController {
         return otherErrors || invalidFormatError;
     }
 
+    /**
+     * Parse the map data into object
+     * @param field field of the data
+     * @param value value of the data
+     */
     private void addToMapData(String field, String value) {
         if (field.equalsIgnoreCase("image"))
             this.model.imageFileName = value;
@@ -515,6 +587,11 @@ public class MapController extends ActivityController {
             this.model.warn = value.equalsIgnoreCase("yes");
     }
 
+    /**
+     * Parse the continent data
+     * @param incoming raw string
+     * @return continent
+     */
     private Continent addContinent(String incoming) {
         String[] contents = incoming.split("=");
         if (contents.length != 2) {
@@ -526,6 +603,11 @@ public class MapController extends ActivityController {
             : null;
     }
 
+    /**
+     * Parse the country data
+     * @param incoming raw string
+     * @return country
+     */
     private Country addCountry(String incoming) {
         String content[] = incoming.split(",");
         if (content.length < 4) {

@@ -18,6 +18,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * The controller for the main view
+ * @author shareenali, iamdc003
+ * @version 0.1
+ */
+
 public class MainController extends ActivityController {
     private MainView view;
     private MainModel model = new MainModel();
@@ -31,6 +37,10 @@ public class MainController extends ActivityController {
         this.view = new MainView();
     }
 
+    /**
+     * Setup values when the controller is loaded into the game
+     * @param data data to get from the previous controller
+     */
     @SuppressWarnings("unchecked")
     public void setupValues(HashMap<String, Object> data) {
         ArrayList<Player> players = (ArrayList<Player>) data.get(RiskApp.MainIntent.KEY_PLAYERS);
@@ -60,27 +70,42 @@ public class MainController extends ActivityController {
         this.attachObservers();
     }
 
+    /**
+     * Prepare the child controllers for the views inside
+     */
     private void prepControllers() {
         this.prepPhaseController();
         this.prepLogsController();
         this.prepWorldController();
     }
 
+    /**
+     * Prepare the phase controller
+     */
     private void prepPhaseController() {
         this.phaseController = new PhaseController();
         this.phaseController.initializeValues(this.buttonChangePhaseLs);
     }
 
+    /**
+     * Prepare the logs controller
+     */
     private void prepLogsController() {
         this.logsController = new LogsController();
         this.logsController.initializeValues();
     }
 
+    /**
+     * Prepare the world controller
+     */
     private void prepWorldController() {
         this.worldController = new WorldController();
         this.worldController.initializeValues();
     }
 
+    /**
+     * Initialize the view listeners
+     */
     private void initListeners() {
         this.buttonCountryLs = (ActionEvent e) -> {
             switch (this.phaseController.activePhase()) {
@@ -98,6 +123,10 @@ public class MainController extends ActivityController {
         this.buttonChangePhaseLs = (ActionEvent e) -> this.changePhase();
     }
 
+    /**
+     * Performs the reinforcement phase when triggered from the UI
+     * @param command action command that contains the owner and name of the country
+     */
     private void doReinforcementPhase(String command) {
         String owner = command.split(":")[0];
         String country = command.split(":")[1];
@@ -123,6 +152,11 @@ public class MainController extends ActivityController {
         this.logsController.log(owner + " reinforced " + country + " with " + armiesAssigned + " armies " );
     }
 
+    /**
+     * Checks whether the fortification phase is possible or not.
+     * @param owner owner of the country
+     * @return true if it is possible
+     */
     private boolean isFortificationPossible(String owner) {
         if (!owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
             JOptionPane.showMessageDialog(new JFrame(), "You can't move army to other player's country",
@@ -140,6 +174,10 @@ public class MainController extends ActivityController {
 
     }
 
+    /**
+     * Performs the fortification phase based on the UI actions
+     * @param command action commands that contains owner and name of the country.
+     */
     private void doFortificationPhase(String command) {
         String owner = command.split(":")[0];
         String country = command.split(":")[1];
@@ -173,6 +211,11 @@ public class MainController extends ActivityController {
         this.logsController.log(owner + " transferred " + armiesMoved + " armies from " + this.fortSource + " to " + this.fortTarget);
     }
 
+    /**
+     * Displays popup to select number of armies to transfer
+     * @param owner owner of the country
+     * @return number of armies to transfer
+     */
     private int selectFortificationArmies(String owner) {
         NoOfArmiesDialog dialog = new NoOfArmiesDialog();
         int armies = this.model.getPlayer(owner).getArmiesInCountry(this.fortSource) - 1;
@@ -200,6 +243,9 @@ public class MainController extends ActivityController {
         this.model.addObserver(this.worldController.getView());
     }
 
+    /**
+     * Start the game initially
+     */
     private void startGame() {
         this.startupPhase();
 
@@ -207,6 +253,10 @@ public class MainController extends ActivityController {
         this.changePhase();
     }
 
+    /**
+     * Changes the phase from one to another.
+     * Automatically changes the players when the last phase is changed.
+     */
     private void changePhase() {
         this.fortSource = this.fortTarget = null;
         this.phaseController.changePhase();

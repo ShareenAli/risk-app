@@ -5,23 +5,44 @@ import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
+/**
+ * Displays the UI of the main game play
+ * @author shareenali
+ * @version 0.1
+ */
+
 @SuppressWarnings("deprecation")
 public class MainView implements Observer {
     private JPanel mainPanel;
     private JPanel leftPanel;
     private JPanel rightPanel;
 
+    /**
+     * Updates the view the observable notifies
+     * @param o the model
+     * @param arg identification string
+     */
     @Override
     public void update(Observable o, Object arg) {
 
     }
 
+    /**
+     * Prepares the view w.r.t. children
+     * @param panelPhase phase view
+     * @param panelLogs logs view
+     * @param panelWorld world view
+     */
     void prepareView(JPanel panelPhase, JPanel panelLogs, JPanel panelWorld) {
         this.addPhaseView(panelPhase);
         this.addLogsView(panelLogs);
         this.addWorldView(panelWorld);
     }
 
+    /**
+     * Adds phase view into the UI
+     * @param panel panel that contains phase view
+     */
     private void addPhaseView(JPanel panel) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -31,6 +52,10 @@ public class MainView implements Observer {
         leftPanel.add(panel, gbc);
     }
 
+    /**
+     * Adds logs view into the UI
+     * @param panel panel that contains the logs view
+     */
     private void addLogsView(JPanel panel) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -40,6 +65,10 @@ public class MainView implements Observer {
         leftPanel.add(panel, gbc);
     }
 
+    /**
+     * Adds world view into the UI
+     * @param panel panel that contains the world view
+     */
     private void addWorldView(JPanel panel) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 1;

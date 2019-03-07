@@ -10,7 +10,8 @@ import java.util.*;
 /**
  * This model class carries all the data structures for the application
  *
- * @author Dhaval
+ * @author imdc003, shareenali
+ * @version 0.1
  */
 
 @SuppressWarnings("deprecation")
@@ -43,6 +44,11 @@ public class MainModel extends Observable {
         }
     }
 
+    /**
+     * Set the content from the map
+     * @param countries list of countries
+     * @param continents list of continents
+     */
     public void setMapContent(ArrayList<Country> countries, ArrayList<Continent> continents) {
         for (Continent continent : continents) {
             this.continents.put(continent.getName(), continent);
@@ -55,10 +61,18 @@ public class MainModel extends Observable {
         }
     }
 
+    /**
+     * Get the name of players
+     * @return list of players with just their names
+     */
     public ArrayList<String> getPlayerNames() {
         return this.playerNames;
     }
 
+    /**
+     * Get the colors of the players
+     * @return list of players with just their colors
+     */
     public ArrayList<Color> getPlayerColors() {
         ArrayList<Color> colors = new ArrayList<>();
         for (Map.Entry<String, Player> playerEntry : this.players.entrySet()) {
@@ -96,6 +110,13 @@ public class MainModel extends Observable {
         return this.countries;
     }
 
+    /**
+     * Get the row for the domination table.
+     * It will display name, no of continents conquered, no of armies the player posses
+     * and percent of the map conquered.
+     * @param player player to get the data for
+     * @return domination row
+     */
     public String[] getDominationRow(Player player) {
         String[] row = new String[4];
         HashMap<String, Integer> continentsConquered = new HashMap<>();
@@ -123,6 +144,12 @@ public class MainModel extends Observable {
         return row;
     }
 
+    /**
+     * Get the domination table
+     * It will display name, no of continents conquered, no of armies the player posses
+     * and percent of the map conquered.
+     * @return the table
+     */
     public HashMap<String, String[]> getDominationTable() {
         HashMap<String, String[]> outcome = new HashMap<>();
         for (Map.Entry<String, Player> playerEntry : this.players.entrySet()) {
@@ -291,6 +318,12 @@ public class MainModel extends Observable {
         this.armiesAvailableToAssign += this.checkControlValueArmies(player);
     }
 
+    /**
+     * Count list of countries in continent from given sets
+     * @param continent name of the continent
+     * @param countries list of countries to loop in
+     * @return the count
+     */
     private int countCountriesInContinent(String continent, Set<String> countries) {
         int count = 0;
 
@@ -303,6 +336,11 @@ public class MainModel extends Observable {
         return count;
     }
 
+    /**
+     * Count list of countries in the continent
+     * @param continent name of the continent
+     * @return the count
+     */
     private int countCountriesInContinent(String continent) {
         int count = 0;
 
@@ -315,6 +353,11 @@ public class MainModel extends Observable {
         return count;
     }
 
+    /**
+     * Get the armies to get based on continents conquered
+     * @param player object players
+     * @return armies to add
+     */
     private int checkControlValueArmies(Player player) {
         int cv = 0;
         for (Map.Entry<String, Continent> entry : this.continents.entrySet()) {

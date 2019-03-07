@@ -9,6 +9,10 @@ public class DisplayFileChooser {
     private String defaultFilePath;
     private JFileChooser chooser;
 
+    /**
+     * Initialize the chooser
+     * @param defaultFilePath default directory
+     */
     public DisplayFileChooser(String defaultFilePath) {
         this.parent = new JFrame();
         this.defaultFilePath = defaultFilePath;
@@ -16,11 +20,18 @@ public class DisplayFileChooser {
         this.initializeChooser();
     }
 
+    /**
+     * Get the chooser ready
+     */
     private void initializeChooser() {
         this.chooser = new JFileChooser();
         this.chooser.setCurrentDirectory(new File(defaultFilePath));
     }
 
+    /**
+     * Update the extension
+     * @param extension new extension
+     */
     public void updateExtension(String extension) {
         this.parent.setTitle("Choose " + extension + " file");
 
@@ -28,6 +39,10 @@ public class DisplayFileChooser {
         this.chooser.setFileFilter(extensionFilter);
     }
 
+    /**
+     * Show open dialog
+     * @return file that is opened
+     */
     public File openFile() {
         int fileAction = this.chooser.showOpenDialog(this.parent);
 
@@ -36,6 +51,10 @@ public class DisplayFileChooser {
         return (fileAction == JFileChooser.APPROVE_OPTION) ? this.chooser.getSelectedFile() : null;
     }
 
+    /**
+     * Show save dialog
+     * @return file that is saved
+     */
     public String saveFile() {
         int fileAction = this.chooser.showSaveDialog(this.parent);
         this.parent.dispose();
