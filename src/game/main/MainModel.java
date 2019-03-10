@@ -160,7 +160,7 @@ public class MainModel extends Observable {
     }
 
     /**
-     * It is used to get all the armies available to assign
+     * It is used to get all the armies available to assign for reinforcement phase
      *
      * @return armiesAvailableToAssign returns the number of armies to assign
      */

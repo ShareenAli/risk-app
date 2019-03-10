@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * The controller for the main view
@@ -110,14 +111,12 @@ public class MainController extends ActivityController {
         this.buttonCountryLs = (ActionEvent e) -> {
             switch (this.phaseController.activePhase()) {
                 case PhaseModel.PHASE_REINFORCEMENT:
-                    this.doReinforcementPhase(e.getActionCommand());
+                    this.doReinforcementPhase(e.getActionCommand(), false);
                     break;
                 case PhaseModel.PHASE_FORTIFICATION:
-                    this.doFortificationPhase(e.getActionCommand());
+                    this.doFortificationPhase(e.getActionCommand(), false, 0);
                     break;
             }
-
-            System.out.println(e.getActionCommand());
         };
 
         this.buttonChangePhaseLs = (ActionEvent e) -> this.changePhase();
@@ -126,8 +125,9 @@ public class MainController extends ActivityController {
     /**
      * Performs the reinforcement phase when triggered from the UI
      * @param command action command that contains the owner and name of the country
+     * @param isComputerPlayer identifier to check the type of player
      */
-    private void doReinforcementPhase(String command) {
+    private void doReinforcementPhase(String command, boolean isComputerPlayer) {
         String owner = command.split(":")[0];
         String country = command.split(":")[1];
         int reinforcementArmies = this.model.getArmiesAvailableToAssign();
@@ -146,7 +146,11 @@ public class MainController extends ActivityController {
 
         NoOfArmiesDialog dialog = new NoOfArmiesDialog();
         dialog.setNoOfArmies(reinforcementArmies);
-        int armiesAssigned = dialog.showUi(country);
+        int armiesAssigned = isComputerPlayer ? (new Random()).nextInt(reinforcementArmies + 1)
+            : dialog.showUi(country);
+
+        if (armiesAssigned == 0)
+            return;
 
         this.model.reinforcementPhase(owner, country, armiesAssigned);
         this.logsController.log(owner + " reinforced " + country + " with " + armiesAssigned + " armies " );
@@ -177,8 +181,10 @@ public class MainController extends ActivityController {
     /**
      * Performs the fortification phase based on the UI actions
      * @param command action commands that contains owner and name of the country.
+     * @param isComputerPlayer identifier to check the type of player
+     * @param armiesMoved number of armies to move from one country to another
      */
-    private void doFortificationPhase(String command) {
+    private void doFortificationPhase(String command, boolean isComputerPlayer, int armiesMoved) {
         String owner = command.split(":")[0];
         String country = command.split(":")[1];
 
@@ -200,7 +206,8 @@ public class MainController extends ActivityController {
 
         this.fortTarget = country;
 
-        int armiesMoved = selectFortificationArmies(owner);
+        if (!isComputerPlayer)
+            armiesMoved = selectFortificationArmies(owner);
 
         if (armiesMoved == 0) {
             this.fortTarget = this.fortSource = null;
@@ -261,5 +268,72 @@ public class MainController extends ActivityController {
         this.fortSource = this.fortTarget = null;
         this.phaseController.changePhase();
         this.model.resetArmiesToAssign(this.phaseController.activePlayer());
+
+        this.onPhaseChanged();
+    }
+
+    /**
+     * Called when the phase has been changed.
+     */
+    private void onPhaseChanged() {
+        switch (this.phaseController.activePhase()) {
+            case PhaseModel.PHASE_REINFORCEMENT:
+                automateReinforcementPhase();
+                break;
+            case PhaseModel.PHASE_FORTIFICATION:
+                automateFortificationPhase();
+                break;
+        }
+    }
+
+    /**
+     * It automates the reinforcement phase when it's computer player
+     */
+    private void automateReinforcementPhase() {
+        Player player = this.model.getPlayer(this.phaseController.activePlayer());
+
+        if (player.getType() == Player.TYPE_HUMAN)
+            return;
+
+        ArrayList<String> list = new ArrayList<>(player.getCountries().keySet());
+        String countryName = list.get((new Random()).nextInt(list.size()));
+
+        while (this.model.getArmiesAvailableToAssign() != 0) {
+            this.doReinforcementPhase(player.getName() + ":" + countryName, true);
+        }
+
+        this.changePhase();
+    }
+
+    /**
+     * It automates the fortification phase when it's computer player
+     */
+    private void automateFortificationPhase() {
+        Player player = this.model.getPlayer(this.phaseController.activePlayer());
+
+        if (player.getType() == Player.TYPE_HUMAN)
+            return;
+
+        ArrayList<String> list = new ArrayList<>(player.getCountries().keySet());
+        String countryName = list.get((new Random()).nextInt(list.size()));
+
+        if (player.getArmiesInCountry(countryName) == 1) {
+            this.logsController.log(player.getName() + " skipped the fortification phase!");
+            this.changePhase();
+            return;
+        }
+
+        this.doFortificationPhase(player.getName() + ":" + countryName, true, 0);
+
+        do {
+            countryName = list.get((new Random()).nextInt(list.size()));
+            if (this.model.checkForLink(new ArrayList<>(), this.fortSource, countryName))
+                break;
+        } while (!countryName.equalsIgnoreCase(this.fortSource));
+
+        int armiesToMove = (new Random()).nextInt(player.getArmiesInCountry(this.fortSource) - 1);
+        this.doFortificationPhase(player.getName() + ":" + countryName, true, armiesToMove);
+
+        this.changePhase();
     }
 }
