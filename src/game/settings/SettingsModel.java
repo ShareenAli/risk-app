@@ -110,7 +110,7 @@ class SettingsModel {
      *
      * @return image file
      */
-    public File getBmpFile() {
+    File getBmpFile() {
         return bmpFile;
     }
 
@@ -160,24 +160,9 @@ class SettingsModel {
                     if (line.equals("[Territories]"))
                         line = scanner.nextLine();
 
-                    int continentIndex = 0;
                     temp = line.split(",");
-                    Country country = new Country(temp[0].trim(), temp[3].trim(), Double.parseDouble(temp[1].trim()), Double.parseDouble(temp[2].trim()));
-
-                    for (Continent continent : continents) {
-                        if (continent.getName().equals(temp[3].trim())) {
-                            continentIndex = this.continents.indexOf(continent);
-                        }
-                    }
-                    Continent continent = this.continents.get(continentIndex);
-                    if (continent.getTerritoriesIn() != null) {
-                        ArrayList<Country> territoriesIn = continent.getTerritoriesIn();
-                        territoriesIn.add(country);
-                    } else {
-                        ArrayList<Country> territoriesIn = new ArrayList<Country>();
-                        territoriesIn.add(country);
-                        continent.setTerritoriesIn(territoriesIn);
-                    }
+                    Country country = new Country(temp[0].trim(), temp[3].trim(), Double.parseDouble(temp[1].trim()),
+                        Double.parseDouble(temp[2].trim()));
 
                     for (int i = 4; i < temp.length - 1; i++) {
                         country.addNeighbour(temp[i]);

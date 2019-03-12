@@ -8,8 +8,8 @@ import java.util.Observable;
  * @version 0.1
  */
 @SuppressWarnings("deprecation")
-public class LogsModel extends Observable {
-    public static final String ADD_LOG = "add:log";
+class LogsModel extends Observable {
+    static final String ADD_LOG = "add:log";
 
     private String log;
 
@@ -32,7 +32,7 @@ public class LogsModel extends Observable {
      * Returns the recent log to attach
      * @return log as a string
      */
-    public String getLog() {
+    String getLog() {
         return log;
     }
 }

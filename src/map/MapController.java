@@ -215,7 +215,7 @@ public class MapController extends ActivityController {
      * Check for the errors on the map
      * @return true of there is any error
      */
-    public boolean checkForErrors() {
+    private boolean checkForErrors() {
         boolean noNeighbours, noContinent, noCountryInContinent, ghostNeighbours, subConnectedGraph;
 
         noContinent = this.validateNoContinent();
@@ -459,7 +459,6 @@ public class MapController extends ActivityController {
 
         for (Map.Entry<String, Continent> continentDataEntry : this.model.getContinents().entrySet()) {
             Continent data = continentDataEntry.getValue();
-            boolean hasLink = false;
 
             List<Country> countries = this.model.getCountriesInContinent(data.getName());
             if (countries.size() == 0) {
@@ -518,7 +517,7 @@ public class MapController extends ActivityController {
      * @param mapFile map file
      * @return true if there are errors
      */
-    public boolean loadExistingMap(File mapFile) {
+    private boolean loadExistingMap(File mapFile) {
         boolean invalidFormatError = false;
         this.errorMessage = "";
         try {

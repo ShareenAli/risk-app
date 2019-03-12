@@ -10,25 +10,16 @@ import java.util.ArrayList;
 /**
  * Controller that handles the world view
  * @author shareenali
- * @version 0.1
+ * @version 0.2
  */
 public class WorldController {
     private WorldView view;
-    private WorldModel model;
 
     /**
      * The default controller that initializes the view and model
      */
     public WorldController() {
         this.view = new WorldView();
-        this.model = new WorldModel();
-    }
-
-    /**
-     * Initializes values before launching the UI
-     */
-    public void initializeValues() {
-        this.model.addObserver(this.view);
     }
 
     /**

@@ -114,7 +114,7 @@ public class Player {
      * @param countryName name of the countries
      * @param armiesToAdd armies to append
      */
-    public void addArmies(String countryName, int armiesToAdd) {
+    private void addArmies(String countryName, int armiesToAdd) {
         System.out.println(this.countries.get("India"));
         int armies = this.countries.get(countryName);
         armies += armiesToAdd;
@@ -127,7 +127,7 @@ public class Player {
      * @param countryName Name of the country
      * @param armiesToRemove Number of armies to remove from the country
      */
-    public void removeArmies(String countryName, int armiesToRemove) {
+    private void removeArmies(String countryName, int armiesToRemove) {
         int armies = this.countries.get(countryName);
         armies-= armiesToRemove;
         this.countries.put(countryName, armies);

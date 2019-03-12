@@ -13,7 +13,6 @@ public class Continent {
     private String name;
     private int controlValue;
     private int countryCount;
-	ArrayList<Country> territoriesIn;
 
     /**
      * It holds the continent data.
@@ -58,22 +57,4 @@ public class Continent {
     public int getControlValue() {
         return controlValue;
     }
-	
-	/**
-     * It returns the territories held in this continent
-     * A continent must hold at least one country.
-     * @return listOfCountries
-     */
-    public ArrayList<Country> getTerritoriesIn() {
-		return territoriesIn;
-	}
-	
-	/**
-     * It sets the list of territories currently belonging to the continent
-     * A continent must hold at least one territory.
-	 * @param territoriesIn list of countries in the continent
-     */
-	public void setTerritoriesIn(ArrayList<Country> territoriesIn) {
-		this.territoriesIn = territoriesIn;
-	}
 }

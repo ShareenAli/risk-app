@@ -15,8 +15,8 @@ public class PhaseModel extends Observable {
     public static final int PHASE_ATTACK = 1;
     public static final int PHASE_FORTIFICATION = 2;
 
-    public static final String CHANGE_PHASE = "change:phase";
-    public static final String CHANGE_PLAYER = "change:player";
+    static final String CHANGE_PHASE = "change:phase";
+    static final String CHANGE_PLAYER = "change:player";
 
     private String[] phaseNames = {"Reinforcement", "Attack", "Fortification"};
     private int phase = -1;

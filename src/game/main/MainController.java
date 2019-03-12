@@ -22,7 +22,7 @@ import java.util.Random;
 /**
  * The controller for the main view
  * @author shareenali, iamdc003
- * @version 0.1
+ * @version 0.2
  */
 
 public class MainController extends ActivityController {
@@ -101,7 +101,6 @@ public class MainController extends ActivityController {
      */
     private void prepWorldController() {
         this.worldController = new WorldController();
-        this.worldController.initializeValues();
     }
 
     /**

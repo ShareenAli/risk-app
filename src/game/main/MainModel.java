@@ -73,7 +73,7 @@ public class MainModel extends Observable {
      * Get the colors of the players
      * @return list of players with just their colors
      */
-    public ArrayList<Color> getPlayerColors() {
+    ArrayList<Color> getPlayerColors() {
         ArrayList<Color> colors = new ArrayList<>();
         for (Map.Entry<String, Player> playerEntry : this.players.entrySet()) {
             colors.add(playerEntry.getValue().getColor());
@@ -266,7 +266,7 @@ public class MainModel extends Observable {
      * @param targetCountryName Name of the target country
      * @param armiesToTransfer  Number of armies to transfer
      */
-    public void fortificationPhase(String playerName, String sourceCountryName, String targetCountryName, int armiesToTransfer) {
+    void fortificationPhase(String playerName, String sourceCountryName, String targetCountryName, int armiesToTransfer) {
         Player player = this.players.get(playerName);
         player.fortificationPhase(sourceCountryName, targetCountryName, armiesToTransfer);
         this.updatePlayer(player.getName(), player);

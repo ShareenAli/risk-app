@@ -8,17 +8,17 @@ import java.awt.event.ActionListener;
  * The view component for the entry point in game.
  *
  * @author shareenali
- * @version 0.1
+ * @version 0.2
  */
 
 public class RiskView {
-    private JPanel panel_risk;
-    private JPanel panel_title;
-    private JLabel label_title;
-    private JPanel panel_content;
-    private JButton button_new_game;
-    private JButton button_edit_map;
-    private JButton button_new_map;
+    private JPanel panelRisk;
+    private JPanel panelTitle;
+    private JLabel labelTitle;
+    private JPanel panelContent;
+    private JButton buttonNewGame;
+    private JButton buttonEditMap;
+    private JButton buttonNewMap;
 
     RiskView() {
     }
@@ -29,7 +29,7 @@ public class RiskView {
      * @param listener onClick listener
      */
     void bindNewGameListener(ActionListener listener) {
-        this.button_new_game.addActionListener(listener);
+        this.buttonNewGame.addActionListener(listener);
     }
 
     /**
@@ -38,7 +38,7 @@ public class RiskView {
      * @param listener onClick listener
      */
     void bindNewMapListener(ActionListener listener) {
-        this.button_new_map.addActionListener(listener);
+        this.buttonNewMap.addActionListener(listener);
     }
 
     /**
@@ -47,7 +47,7 @@ public class RiskView {
      * @param listener onClick listener
      */
     void bindEditMapListener(ActionListener listener) {
-        this.button_edit_map.addActionListener(listener);
+        this.buttonEditMap.addActionListener(listener);
     }
 
     {
@@ -65,34 +65,34 @@ public class RiskView {
      * @noinspection ALL
      */
     private void $$$setupUI$$$() {
-        panel_risk = new JPanel();
-        panel_risk.setLayout(new BorderLayout(0, 0));
-        panel_title = new JPanel();
-        panel_title.setLayout(new GridBagLayout());
-        panel_risk.add(panel_title, BorderLayout.NORTH);
-        label_title = new JLabel();
-        Font label_titleFont = this.$$$getFont$$$(null, -1, 18, label_title.getFont());
-        if (label_titleFont != null) label_title.setFont(label_titleFont);
-        label_title.setText("Main Menu");
+        panelRisk = new JPanel();
+        panelRisk.setLayout(new BorderLayout(0, 0));
+        panelTitle = new JPanel();
+        panelTitle.setLayout(new GridBagLayout());
+        panelRisk.add(panelTitle, BorderLayout.NORTH);
+        labelTitle = new JLabel();
+        Font label_titleFont = this.$$$getFont$$$(null, -1, 18, labelTitle.getFont());
+        if (label_titleFont != null) labelTitle.setFont(label_titleFont);
+        labelTitle.setText("Main Menu");
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.ipadx = 10;
         gbc.ipady = 10;
-        panel_title.add(label_title, gbc);
-        panel_content = new JPanel();
-        panel_content.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-        panel_risk.add(panel_content, BorderLayout.CENTER);
-        button_new_game = new JButton();
-        button_new_game.setText("New Game");
-        panel_content.add(button_new_game);
-        button_edit_map = new JButton();
-        button_edit_map.setText("Edit Map");
-        panel_content.add(button_edit_map);
-        button_new_map = new JButton();
-        button_new_map.setText("New Map");
-        panel_content.add(button_new_map);
+        panelTitle.add(labelTitle, gbc);
+        panelContent = new JPanel();
+        panelContent.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        panelRisk.add(panelContent, BorderLayout.CENTER);
+        buttonNewGame = new JButton();
+        buttonNewGame.setText("New Game");
+        panelContent.add(buttonNewGame);
+        buttonEditMap = new JButton();
+        buttonEditMap.setText("Edit Map");
+        panelContent.add(buttonEditMap);
+        buttonNewMap = new JButton();
+        buttonNewMap.setText("New Map");
+        panelContent.add(buttonNewMap);
     }
 
     /**
@@ -118,6 +118,6 @@ public class RiskView {
      * @noinspection ALL
      */
     public JComponent $$$getRootComponent$$$() {
-        return panel_risk;
+        return panelRisk;
     }
 }
