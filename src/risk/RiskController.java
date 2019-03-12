@@ -1,8 +1,8 @@
 package risk;
 
-import game.settings.SettingsController;
-import map.MapController;
-import support.ActivityController;
+import risk.game.settings.SettingsController;
+import risk.map.MapController;
+import risk.support.ActivityController;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

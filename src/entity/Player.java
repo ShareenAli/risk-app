@@ -1,11 +1,10 @@
 package entity;
 
-import game.main.MainModel;
+import risk.game.main.MainModel;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This holds the player entity and the runtime entity collected for player It holds

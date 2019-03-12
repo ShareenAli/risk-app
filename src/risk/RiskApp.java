@@ -1,6 +1,6 @@
 package risk;
 
-import support.ActivityController;
+import risk.support.ActivityController;
 
 import java.util.HashMap;
 
