@@ -21,8 +21,8 @@ public class MapModel extends Observable {
     private HashMap<String, Continent> continents = new HashMap<>();
     private File bmpFile;
 
-    public String author, imageFileName, scrollType, mapFileName;
-    public boolean wrap, warn;
+    String author, imageFileName, scrollType;
+    boolean wrap, warn;
 
     /**
      * It initializes the map model
@@ -30,10 +30,19 @@ public class MapModel extends Observable {
     public MapModel() {
         wrap = false;
         warn = false;
-        this.mapFileName = "";
         this.author = "shareenali";
         this.imageFileName = "";
         this.scrollType = "";
+    }
+
+    /**
+     * Setup raw values
+     * @param countries map of countries
+     * @param continents map of continents
+     */
+    void setValues(HashMap<String, Country> countries, HashMap<String, Continent> continents) {
+        this.countries = countries;
+        this.continents = continents;
     }
 
     /**
@@ -68,7 +77,7 @@ public class MapModel extends Observable {
      * Recursively delete the continent
      * @param name name of the continent
      */
-    void deleteContinent(String name) {
+    public void deleteContinent(String name) {
         this.continents.remove(name);
 
         ArrayList<String> countries = new ArrayList<>();
@@ -107,7 +116,7 @@ public class MapModel extends Observable {
      * Deletes the country
      * @param country country to delete
      */
-    void deleteCountry(Country country) {
+    public void deleteCountry(Country country) {
         for (Map.Entry<String, Country> countryEntry : this.countries.entrySet()) {
             Country c = countryEntry.getValue();
             int index = c.getNeighbours().indexOf(country.getName());

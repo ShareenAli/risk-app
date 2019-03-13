@@ -1,11 +1,9 @@
-package test.main;
+package test.game.main;
 
 import entity.Continent;
 import entity.Country;
 import entity.Player;
 import risk.game.main.MainModel;
-import risk.map.MapController;
-import risk.map.MapModel;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,12 +15,11 @@ import static junit.framework.TestCase.assertTrue;
 /**
  * This test class verifies main model functionality
  *
- * @author Dhaval, Jasmeet
+ * @author iamdc003, jasmeet, shareenali
+ * @version 0.2
  */
 public class TestMainModel {
     private MainModel mainModel = new MainModel();
-    private MapModel mapModel = new MapModel();
-    private MapController mapController = new MapController();
 
     @Before
     public void before() {
@@ -36,17 +33,11 @@ public class TestMainModel {
 
         ArrayList<Country> countries = new ArrayList<>();
         Country country1 = new Country("India", "Asia", 1, 1);
-        this.mapModel.saveCountry(country1);
         Country country2 = new Country("Russia", "Asia", 1, 1);
-        this.mapModel.saveCountry(country2);
         Country country3 = new Country("China", "Asia", 1, 1);
-        this.mapModel.saveCountry(country3);
         Country country4 = new Country("Pakistan", "Asia", 1, 1);
-        this.mapModel.saveCountry(country4);
         Country country5 = new Country("Mongolia", "Asia", 1, 1);
-        this.mapModel.saveCountry(country5);
         Country country6 = new Country("Bengal", "Asia", 1, 1);
-        this.mapModel.saveCountry(country6);
 
         country1.addNeighbour(country2.getName());
         country2.addNeighbour(country1.getName());
@@ -148,36 +139,4 @@ public class TestMainModel {
         int total = this.mainModel.getPlayer("dhaval").getArmiesInCountry("India") + this.mainModel.getPlayer("dhaval").getArmiesInCountry("China") + this.mainModel.getPlayer("dhaval").getArmiesInCountry("Mongolia");
         assertEquals(total, 43);
     }
-
-    @Test
-    public void checkSubconnectedGraph() {
-        boolean error = this.mapController.isErrorInSubConnectedGraph();
-        assertEquals(error, false);
-    }
-
-    @Test
-    public void checkNoContinent() {
-        boolean result = this.mapController.validateNoContinent();
-        assertEquals(result, false);
-    }
-
-    @Test
-    public void checkNoNeighbours() {
-        boolean result = this.mapController.validateNoNeighbours();
-        assertEquals(result, false);
-    }
-
-    @Test
-    public void checkNoCountryInContinent() {
-        boolean result = this.mapController.validateNoCountryInContinent();
-        assertEquals(result, false);
-    }
-
-    @Test
-    public void checkGhostNeighboursNolink() {
-        boolean result = this.mapController.validateGhostNeighboursNolink();
-        assertEquals(result, false);
-    }
-
-
 }

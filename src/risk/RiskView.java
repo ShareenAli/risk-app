@@ -71,8 +71,8 @@ public class RiskView {
         panelTitle.setLayout(new GridBagLayout());
         panelRisk.add(panelTitle, BorderLayout.NORTH);
         labelTitle = new JLabel();
-        Font label_titleFont = this.$$$getFont$$$(null, -1, 18, labelTitle.getFont());
-        if (label_titleFont != null) labelTitle.setFont(label_titleFont);
+        Font labelTitleFont = this.$$$getFont$$$(null, -1, 18, labelTitle.getFont());
+        if (labelTitleFont != null) labelTitle.setFont(labelTitleFont);
         labelTitle.setText("Main Menu");
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();

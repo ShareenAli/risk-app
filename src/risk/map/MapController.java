@@ -37,6 +37,7 @@ public class MapController extends ActivityController {
     public MapController() {
         this.view = new MapView();
         this.model = new MapModel();
+        this.errorMessage = "";
     }
 
     /**
@@ -50,6 +51,15 @@ public class MapController extends ActivityController {
 
         this.model.addObserver(this.view);
         this.bindListeners();
+    }
+
+    /**
+     * Setup values for tests
+     * @param countries list of countries
+     * @param continents list of continents
+     */
+    public void setupValues(HashMap<String, Country> countries, HashMap<String, Continent> continents) {
+        this.model.setValues(countries, continents);
     }
 
     /**
@@ -517,7 +527,7 @@ public class MapController extends ActivityController {
      * @param mapFile map file
      * @return true if there are errors
      */
-    private boolean loadExistingMap(File mapFile) {
+    public boolean loadExistingMap(File mapFile) {
         boolean invalidFormatError = false;
         this.errorMessage = "";
         try {
