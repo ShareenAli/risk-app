@@ -14,6 +14,7 @@ public class Country {
     private double latitude, longitude; // x and y of the coordinate system  respectively
     private ArrayList<String> neighbours;
 
+
     /**
      * It initializes the data for the country.
      * The constructor can be used in both the parts, Map and Game.
@@ -66,6 +67,7 @@ public class Country {
     public void setCardType(String type) {
         this.cardType = type;
     }
+
 
     /**
      * Remove a neighbour for a country

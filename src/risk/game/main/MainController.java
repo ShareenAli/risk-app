@@ -21,6 +21,7 @@ import java.util.Random;
 
 /**
  * The controller for the main view
+ *
  * @author shareenali, iamdc003
  * @version 0.2
  */
@@ -33,6 +34,7 @@ public class MainController extends ActivityController {
     private WorldController worldController;
     private ActionListener buttonCountryLs, buttonChangePhaseLs;
     private String fortSource, fortTarget;
+    private String attackSource, attackTarget;
 
     public MainController() {
         this.view = new MainView();
@@ -40,6 +42,7 @@ public class MainController extends ActivityController {
 
     /**
      * Setup values when the controller is loaded into the game
+     *
      * @param data data to get from the previous controller
      */
     @SuppressWarnings("unchecked")
@@ -67,7 +70,7 @@ public class MainController extends ActivityController {
         this.initListeners();
         this.prepControllers();
         this.view.prepareView(this.phaseController.getRootPanel(), this.logsController.getRootPanel(),
-            this.worldController.getRootPanel());
+                this.worldController.getRootPanel());
         this.attachObservers();
     }
 
@@ -123,7 +126,8 @@ public class MainController extends ActivityController {
 
     /**
      * Performs the reinforcement phase when triggered from the UI
-     * @param command action command that contains the owner and name of the country
+     *
+     * @param command          action command that contains the owner and name of the country
      * @param isComputerPlayer identifier to check the type of player
      */
     private void doReinforcementPhase(String command, boolean isComputerPlayer) {
@@ -133,55 +137,115 @@ public class MainController extends ActivityController {
 
         if (!owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
             JOptionPane.showMessageDialog(new JFrame(), "You can't reinforce other player's country",
-                "Wrong move!", JOptionPane.ERROR_MESSAGE);
+                    "Wrong move!", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (reinforcementArmies == 0) {
             JOptionPane.showMessageDialog(new JFrame(), "You don't have enough armies to reinforce",
-                "Reinforcement Phase", JOptionPane.INFORMATION_MESSAGE);
+                    "Reinforcement Phase", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
         NoOfArmiesDialog dialog = new NoOfArmiesDialog();
         dialog.setNoOfArmies(reinforcementArmies);
         int armiesAssigned = isComputerPlayer ? (new Random()).nextInt(reinforcementArmies + 1)
-            : dialog.showUi(country);
+                : dialog.showUi(country);
 
         if (armiesAssigned == 0)
             return;
 
         this.model.reinforcementPhase(owner, country, armiesAssigned);
-        this.logsController.log(owner + " reinforced " + country + " with " + armiesAssigned + " armies " );
+        this.logsController.log(owner + " reinforced " + country + " with " + armiesAssigned + " armies ");
+    }
+
+    private boolean isAttackPossible(String owner, String attackSource, String attackTarget) {
+        Player player = this.model.getPlayer(owner);
+        boolean feasible = this.model.checkIfAttackFeasible(player, this.attackSource, attackTarget);
+
+        if (!feasible) {
+            JOptionPane.showMessageDialog(new JFrame(), this.attackSource + " and " + attackTarget +
+                    " are not neighbours!", "Invalid Move!", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        boolean minArmyCriteria = this.model.checkMinArmiesForAttack(player, attackSource);
+
+        if (!minArmyCriteria) {
+            JOptionPane.showMessageDialog(new JFrame(), this.attackSource + "does not " +
+                    "have sufficient armies!", "Invalid Move!", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (!owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
+            JOptionPane.showMessageDialog(new JFrame(), "You can't move army to other player's country",
+                    "Wrong move!", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void doAttackPhase(String command, boolean isComputerPlayer) {
+        String owner = command.split(":")[0];
+        String country = command.split(":")[1];
+        int sourceCountryDiceRolls, targetCountryDiceRolls;
+
+        if (this.attackSource == null) {
+            this.attackSource = country;
+            this.worldController.selectCountry(country);
+            return;
+        }
+
+        // check if attack is possible
+        // check if the player controls the country --> UI validation
+        boolean feasible = isAttackPossible(owner, this.attackSource, country);
+
+        if (!feasible)
+            return;
+
+        this.attackTarget = country;
+
+        // determine the number of turns
+        Player player = this.model.getPlayer(owner);
+        sourceCountryDiceRolls = this.model.determineNoOfDiceRolls(this.attackSource, player);
+        targetCountryDiceRolls = this.model.determineNoOfDiceRolls(country, player);
+        
+        // Perform the attack
+        // if won --> attacker moves the armies to the newly conquered country, update the players countries and armies, award a card
+        // if lost --> update the armies of attacker and defendant
+
+
     }
 
     /**
      * Checks whether the fortification phase is possible or not.
+     *
      * @param owner owner of the country
      * @return true if it is possible
      */
     private boolean isFortificationPossible(String owner) {
         if (!owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
             JOptionPane.showMessageDialog(new JFrame(), "You can't move army to other player's country",
-                "Wrong move!", JOptionPane.ERROR_MESSAGE);
+                    "Wrong move!", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         if (this.fortSource != null && this.fortTarget != null) {
             JOptionPane.showMessageDialog(new JFrame(), "You're out of moves for fortification phase",
-                "No more moves allowed!", JOptionPane.ERROR_MESSAGE);
+                    "No more moves allowed!", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         return true;
-
     }
 
     /**
      * Performs the fortification phase based on the UI actions
-     * @param command action commands that contains owner and name of the country.
+     *
+     * @param command          action commands that contains owner and name of the country.
      * @param isComputerPlayer identifier to check the type of player
-     * @param armiesMoved number of armies to move from one country to another
+     * @param armiesMoved      number of armies to move from one country to another
      */
     private void doFortificationPhase(String command, boolean isComputerPlayer, int armiesMoved) {
         String owner = command.split(":")[0];
@@ -219,6 +283,7 @@ public class MainController extends ActivityController {
 
     /**
      * Displays popup to select number of armies to transfer
+     *
      * @param owner owner of the country
      * @return number of armies to transfer
      */

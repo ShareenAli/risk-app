@@ -46,7 +46,8 @@ public class MainModel extends Observable {
 
     /**
      * Set the content from the map
-     * @param countries list of countries
+     *
+     * @param countries  list of countries
      * @param continents list of continents
      */
     public void setMapContent(ArrayList<Country> countries, ArrayList<Continent> continents) {
@@ -63,6 +64,7 @@ public class MainModel extends Observable {
 
     /**
      * Get the name of players
+     *
      * @return list of players with just their names
      */
     public ArrayList<String> getPlayerNames() {
@@ -71,6 +73,7 @@ public class MainModel extends Observable {
 
     /**
      * Get the colors of the players
+     *
      * @return list of players with just their colors
      */
     ArrayList<Color> getPlayerColors() {
@@ -114,6 +117,7 @@ public class MainModel extends Observable {
      * Get the row for the domination table.
      * It will display name, no of continents conquered, no of armies the player posses
      * and percent of the map conquered.
+     *
      * @param player player to get the data for
      * @return domination row
      */
@@ -148,6 +152,7 @@ public class MainModel extends Observable {
      * Get the domination table
      * It will display name, no of continents conquered, no of armies the player posses
      * and percent of the map conquered.
+     *
      * @return the table
      */
     public HashMap<String, String[]> getDominationTable() {
@@ -320,6 +325,7 @@ public class MainModel extends Observable {
 
     /**
      * Count list of countries in continent from given sets
+     *
      * @param continent name of the continent
      * @param countries list of countries to loop in
      * @return the count
@@ -338,6 +344,7 @@ public class MainModel extends Observable {
 
     /**
      * Count list of countries in the continent
+     *
      * @param continent name of the continent
      * @return the count
      */
@@ -355,6 +362,7 @@ public class MainModel extends Observable {
 
     /**
      * Get the armies to get based on continents conquered
+     *
      * @param player object players
      * @return armies to add
      */
@@ -369,5 +377,47 @@ public class MainModel extends Observable {
                 cv += continent.getControlValue();
         }
         return cv;
+    }
+
+    /**
+     * Checks if the attack is possible or not
+     *
+     * @param attackingCountry Name of the attacking country
+     * @param defendingCountry Name of the defending country
+     * @return boolean true if attack is feasible
+     */
+    public boolean checkIfAttackFeasible(Player player, String attackingCountry, String defendingCountry) {
+        Country attackingCountryObject = this.countries.get(attackingCountry);
+
+        ArrayList<String> neighbours = attackingCountryObject.getNeighbours();
+
+        if (neighbours.contains(defendingCountry))
+            return true;
+        else
+            return false;
+    }
+
+    public boolean checkMinArmiesForAttack(Player player, String country) {
+        int armies = player.getArmiesInCountry(country);
+
+        if (armies < 2)
+            return false;
+        else
+            return true;
+    }
+
+    /**
+     * Determine the number of dice rolls for each player
+     *
+     * @param country
+     * @param player
+     * @return
+     */
+    public int determineNoOfDiceRolls(String country, Player player) {
+        int armies = player.getArmiesInCountry(country);
+
+        int diceRolls = (armies >= 3) ? 3 : 2;
+
+        return diceRolls;
     }
 }
