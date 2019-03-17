@@ -3,12 +3,12 @@ package risk.game.main;
 import entity.Continent;
 import entity.Country;
 import entity.Player;
+import risk.RiskApp;
 import risk.game.main.dialog.NoOfArmiesDialog;
 import risk.game.main.logs.LogsController;
 import risk.game.main.phases.PhaseController;
 import risk.game.main.phases.PhaseModel;
 import risk.game.main.world.WorldController;
-import risk.RiskApp;
 import risk.support.ActivityController;
 
 import javax.swing.*;
@@ -189,7 +189,6 @@ public class MainController extends ActivityController {
     private void doAttackPhase(String command, boolean isComputerPlayer) {
         String owner = command.split(":")[0];
         String country = command.split(":")[1];
-        int sourceCountryDiceRolls, targetCountryDiceRolls;
 
         if (this.attackSource == null) {
             this.attackSource = country;
@@ -197,8 +196,6 @@ public class MainController extends ActivityController {
             return;
         }
 
-        // check if attack is possible
-        // check if the player controls the country --> UI validation
         boolean feasible = isAttackPossible(owner, this.attackSource, country);
 
         if (!feasible)
@@ -206,13 +203,11 @@ public class MainController extends ActivityController {
 
         this.attackTarget = country;
 
-        // determine the number of turns
         Player player = this.model.getPlayer(owner);
-        sourceCountryDiceRolls = this.model.determineNoOfDiceRolls(this.attackSource, player);
-        targetCountryDiceRolls = this.model.determineNoOfDiceRolls(country, player);
-        
-        // Perform the attack
+        boolean outcome = this.model.executeAttack(player, this.attackSource, this.attackTarget);
         // if won --> attacker moves the armies to the newly conquered country, update the players countries and armies, award a card
+            
+        // Attacker receives all the cards of the defendant if the latter had only 1 country & is now out of the game
         // if lost --> update the armies of attacker and defendant
 
 

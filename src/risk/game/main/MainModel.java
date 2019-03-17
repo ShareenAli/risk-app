@@ -411,13 +411,61 @@ public class MainModel extends Observable {
      *
      * @param country
      * @param player
-     * @return
+     * @return dicerolls
      */
-    public int determineNoOfDiceRolls(String country, Player player) {
+    private int determineNoOfDiceRolls(String country, Player player, boolean attacking) {
+        int diceRolls = 0;
         int armies = player.getArmiesInCountry(country);
 
-        int diceRolls = (armies >= 3) ? 3 : 2;
+        if (attacking)
+            diceRolls = (armies >= 3) ? 3 : 2;
+        else
+            diceRolls = (armies < 2) ? 1 : 2;
 
         return diceRolls;
     }
+
+
+    /**
+     * To perform attack execution
+     *
+     * @param player       Player currently attacking
+     * @param attackSource Attacking Country
+     * @param attackTarget Defending Country
+     * @return boolean Win or lose!
+     */
+    public boolean executeAttack(Player player, String attackSource, String attackTarget) {
+        int battleCount = 0, i = 0, rollDiceAttacker = 0, rollDiceDefendant = 0;
+        boolean victory = false;
+
+        int sourceCountryDiceRolls = determineNoOfDiceRolls(attackSource, player, true);
+        int targetCountryDiceRolls = determineNoOfDiceRolls(attackTarget, player, false);
+
+        while (i < targetCountryDiceRolls) {
+            rollDiceAttacker = (int) (Math.random() * 5 + 1);
+            rollDiceDefendant = (int) (Math.random() * 5 + 1);
+
+            if (rollDiceAttacker > rollDiceDefendant)
+                battleCount++;
+            else if (rollDiceAttacker < rollDiceDefendant)
+                battleCount--;
+            else
+                battleCount--;
+
+            if (i == targetCountryDiceRolls - 1 && sourceCountryDiceRolls == 3) {
+                if (battleCount < 1)
+                    victory = false;
+                else if (battleCount > 1)
+                    victory = true;
+                else
+                    victory = true;
+            }
+            i++;
+        }
+        if (battleCount > 0)
+            victory = true;
+
+        return victory;
+    }
+
 }
