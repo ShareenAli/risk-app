@@ -277,6 +277,34 @@ public class MainModel extends Observable {
         this.updatePlayer(player.getName(), player);
     }
 
+
+    void attackPhase(String attackerName, String defendantName, String sourceCountry, String targetCountry, int armiesToTransfer) {
+        Player attacker = this.players.get(attackerName);
+        Player defendant = this.players.get(defendantName);
+        HashMap<String, Integer> defendantCountries = defendant.getCountries();
+        Integer armies = defendant.removeCountry(targetCountry);
+
+        if (armies != null) {
+            Country country = this.countries.get(targetCountry);
+            ArrayList<String> cards = attacker.getCards();
+
+            attacker.assignCountry(targetCountry);
+            attacker.setArmies(targetCountry, armies);
+
+            if (defendantCountries.size() == 1) {
+                cards = defendant.getCards();
+                this.playerNames.remove(defendant);
+                this.players.remove(defendant);
+            }
+
+            cards.add(country.getCardType());
+            attacker.setCards(cards);
+            attacker.attackPhase(sourceCountry, targetCountry, armiesToTransfer);
+            this.updatePlayer(attacker.getName(), attacker);
+            this.updatePlayer(defendant.getName(), defendant);
+        }
+    }
+
     /**
      * It checks the Source country is interconnected with the target country to which armies are to be transferred
      *
@@ -413,7 +441,7 @@ public class MainModel extends Observable {
      * @param player
      * @return dicerolls
      */
-    private int determineNoOfDiceRolls(String country, Player player, boolean attacking) {
+    public int determineNoOfDiceRolls(String country, Player player, boolean attacking) {
         int diceRolls = 0;
         int armies = player.getArmiesInCountry(country);
 
@@ -423,49 +451,6 @@ public class MainModel extends Observable {
             diceRolls = (armies < 2) ? 1 : 2;
 
         return diceRolls;
-    }
-
-
-    /**
-     * To perform attack execution
-     *
-     * @param player       Player currently attacking
-     * @param attackSource Attacking Country
-     * @param attackTarget Defending Country
-     * @return boolean Win or lose!
-     */
-    public boolean executeAttack(Player player, String attackSource, String attackTarget) {
-        int battleCount = 0, i = 0, rollDiceAttacker = 0, rollDiceDefendant = 0;
-        boolean victory = false;
-
-        int sourceCountryDiceRolls = determineNoOfDiceRolls(attackSource, player, true);
-        int targetCountryDiceRolls = determineNoOfDiceRolls(attackTarget, player, false);
-
-        while (i < targetCountryDiceRolls) {
-            rollDiceAttacker = (int) (Math.random() * 5 + 1);
-            rollDiceDefendant = (int) (Math.random() * 5 + 1);
-
-            if (rollDiceAttacker > rollDiceDefendant)
-                battleCount++;
-            else if (rollDiceAttacker < rollDiceDefendant)
-                battleCount--;
-            else
-                battleCount--;
-
-            if (i == targetCountryDiceRolls - 1 && sourceCountryDiceRolls == 3) {
-                if (battleCount < 1)
-                    victory = false;
-                else if (battleCount > 1)
-                    victory = true;
-                else
-                    victory = true;
-            }
-            i++;
-        }
-        if (battleCount > 0)
-            victory = true;
-
-        return victory;
     }
 
 }

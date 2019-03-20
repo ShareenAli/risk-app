@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -34,7 +35,7 @@ public class MainController extends ActivityController {
     private WorldController worldController;
     private ActionListener buttonCountryLs, buttonChangePhaseLs;
     private String fortSource, fortTarget;
-    private String attackSource, attackTarget;
+    private String attackSourceCountry, attackTargetCountry, attacker, defendant;
 
     public MainController() {
         this.view = new MainView();
@@ -122,6 +123,7 @@ public class MainController extends ActivityController {
         };
 
         this.buttonChangePhaseLs = (ActionEvent e) -> this.changePhase();
+
     }
 
     /**
@@ -161,10 +163,10 @@ public class MainController extends ActivityController {
 
     private boolean isAttackPossible(String owner, String attackSource, String attackTarget) {
         Player player = this.model.getPlayer(owner);
-        boolean feasible = this.model.checkIfAttackFeasible(player, this.attackSource, attackTarget);
+        boolean feasible = this.model.checkIfAttackFeasible(player, attackSource, attackTarget);
 
         if (!feasible) {
-            JOptionPane.showMessageDialog(new JFrame(), this.attackSource + " and " + attackTarget +
+            JOptionPane.showMessageDialog(new JFrame(), this.attackSourceCountry + " and " + attackTarget +
                     " are not neighbours!", "Invalid Move!", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -172,14 +174,8 @@ public class MainController extends ActivityController {
         boolean minArmyCriteria = this.model.checkMinArmiesForAttack(player, attackSource);
 
         if (!minArmyCriteria) {
-            JOptionPane.showMessageDialog(new JFrame(), this.attackSource + "does not " +
+            JOptionPane.showMessageDialog(new JFrame(), this.attackSourceCountry + "does not " +
                     "have sufficient armies!", "Invalid Move!", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
-        if (!owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
-            JOptionPane.showMessageDialog(new JFrame(), "You can't move army to other player's country",
-                    "Wrong move!", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -190,27 +186,118 @@ public class MainController extends ActivityController {
         String owner = command.split(":")[0];
         String country = command.split(":")[1];
 
-        if (this.attackSource == null) {
-            this.attackSource = country;
+        if (this.attackSourceCountry == null) {
+            this.attacker = owner;
+            this.attackSourceCountry = country;
             this.worldController.selectCountry(country);
             return;
         }
 
-        boolean feasible = isAttackPossible(owner, this.attackSource, country);
+        this.defendant = owner;
+        this.attackTargetCountry = country;
+
+        if (owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
+            JOptionPane.showMessageDialog(new JFrame(), "You can't attack your own country",
+                    "Wrong move!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean feasible = isAttackPossible(attacker, this.attackSourceCountry, this.attackTargetCountry);
 
         if (!feasible)
             return;
 
-        this.attackTarget = country;
+        Player attacker = this.model.getPlayer(this.attacker);
+        Player defendant = this.model.getPlayer(this.defendant);
 
-        Player player = this.model.getPlayer(owner);
-        boolean outcome = this.model.executeAttack(player, this.attackSource, this.attackTarget);
+        boolean outcome = executeAttack(attacker, defendant, this.attackSourceCountry, this.attackTargetCountry);
         // if won --> attacker moves the armies to the newly conquered country, update the players countries and armies, award a card
-            
-        // Attacker receives all the cards of the defendant if the latter had only 1 country & is now out of the game
-        // if lost --> update the armies of attacker and defendant
 
 
+        if (outcome) {
+            int armiesInSourceCountry = attacker.getArmiesInCountry(attackSourceCountry);
+
+            NoOfArmiesDialog dialog = new NoOfArmiesDialog();
+            dialog.setNoOfArmies(armiesInSourceCountry);
+
+            int armiesMoved = isComputerPlayer ? (new Random()).nextInt(armiesInSourceCountry + 1)
+                    : dialog.showUi(attackSourceCountry);
+
+            this.model.attackPhase(attacker.getName(), defendant.getName(), this.attackSourceCountry, this.attackTargetCountry, armiesMoved);
+
+            this.logsController.log(attacker.getName() + " won the battle");
+        } else
+            this.logsController.log(attacker.getName() + " lost the battle");
+    }
+
+    /**
+     * To perform attack execution
+     *
+     * @param attacker
+     * @param defendant
+     * @param attackSource
+     * @param attackTarget
+     * @return
+     */
+    public boolean executeAttack(Player attacker, Player defendant, String attackSource, String attackTarget) {
+        int battleCount = 0, i = 0, rollDiceAttacker = 0, rollDiceDefendant = 0;
+        boolean victory = false;
+
+        int attackerDiceRolls = this.model.determineNoOfDiceRolls(attackSource, attacker, true);
+        int defendantDiceRolls = this.model.determineNoOfDiceRolls(attackTarget, defendant, false);
+
+        while (i < defendantDiceRolls) {
+            rollDiceAttacker = (int) (Math.random() * 5 + 1);
+            rollDiceDefendant = (int) (Math.random() * 5 + 1);
+
+            if (rollDiceAttacker > rollDiceDefendant) {
+                battleCount++;
+                HashMap<String, Integer> countries = attacker.getCountries();
+                Integer armies = countries.get(attackTarget);
+                if (armies == 1) {
+                    return victory = false;
+                } else
+                    armies--;
+
+                countries.put(attackTarget, armies);
+            } else if (rollDiceAttacker < rollDiceDefendant) {
+                battleCount--;
+                HashMap<String, Integer> countries = defendant.getCountries();
+                Integer armies = countries.get(attackSource);
+                if (armies == 1) {
+                    return victory = true;
+                } else
+                    armies--;
+                countries.put(attackSource, armies);
+            } else {
+                battleCount--;
+                HashMap<String, Integer> countries = attacker.getCountries();
+                Integer armies = countries.get(attackSource);
+                if (armies == 1) {
+                    return victory = true;
+                } else
+                    armies--;
+                armies--;
+                countries.put(attackSource, armies);
+            }
+
+            this.logsController.log(attacker.getName() + " rolled dice " + rollDiceAttacker);
+            this.logsController.log(defendant.getName() + " rolled dice " + rollDiceDefendant);
+
+            if (i == defendantDiceRolls - 1 && attackerDiceRolls == 3) {
+                if (battleCount < 1)
+                    victory = false;
+                else if (battleCount > 1)
+                    victory = true;
+                else
+                    victory = true;
+            }
+            i++;
+        }
+        if (battleCount > 0)
+            victory = true;
+
+        return victory;
     }
 
     /**
@@ -328,6 +415,7 @@ public class MainController extends ActivityController {
         this.phaseController.changePhase();
         this.model.resetArmiesToAssign(this.phaseController.activePlayer());
 
+
         this.onPhaseChanged();
     }
 
@@ -337,6 +425,7 @@ public class MainController extends ActivityController {
     private void onPhaseChanged() {
         switch (this.phaseController.activePhase()) {
             case PhaseModel.PHASE_REINFORCEMENT:
+
                 automateReinforcementPhase();
                 break;
             case PhaseModel.PHASE_FORTIFICATION:
