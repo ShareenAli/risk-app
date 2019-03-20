@@ -29,10 +29,31 @@ public class Player {
     private int type;
     private Color color;
     private HashMap<String, Integer> countries = new HashMap<>();
+
+
+    /**
+     * Gets a list of cards owned by a player
+     *
+     * @return list of cards
+     */
+    public ArrayList<String> getCards() {
+        return cards;
+    }
+
+    /**
+     * Sets the value of cards owned by a player
+     *
+     * @param cards
+     */
+    public void setCards(ArrayList<String> cards) {
+        this.cards = cards;
+    }
+
     private ArrayList<String> cards = new ArrayList<>();
 
     /**
      * It initializes the player
+     *
      * @param name name of the player
      * @param type type of the player
      */
@@ -43,8 +64,9 @@ public class Player {
 
     /**
      * It initializes the player with color
-     * @param name name of the player
-     * @param type type of the player
+     *
+     * @param name  name of the player
+     * @param type  type of the player
      * @param color color that the player is assigned to
      */
     public Player(String name, int type, Color color) {
@@ -73,6 +95,7 @@ public class Player {
 
     /**
      * Get the color of the player
+     *
      * @return color object
      */
     public Color getColor() {
@@ -100,8 +123,9 @@ public class Player {
     /**
      * Assign armies to the countries
      * It will replace the number of armies.
+     *
      * @param countryName name of the countries
-     * @param armies armies to assign to
+     * @param armies      armies to assign to
      */
     public void setArmies(String countryName, int armies) {
         this.countries.put(countryName, armies);
@@ -110,11 +134,11 @@ public class Player {
     /**
      * Add the armies to the countries.
      * It will add armies to the existing armies.
+     *
      * @param countryName name of the countries
      * @param armiesToAdd armies to append
      */
     private void addArmies(String countryName, int armiesToAdd) {
-        System.out.println(this.countries.get("India"));
         int armies = this.countries.get(countryName);
         armies += armiesToAdd;
         this.countries.put(countryName, armies);
@@ -123,12 +147,12 @@ public class Player {
     /**
      * Remove the armies from a country
      *
-     * @param countryName Name of the country
+     * @param countryName    Name of the country
      * @param armiesToRemove Number of armies to remove from the country
      */
     private void removeArmies(String countryName, int armiesToRemove) {
         int armies = this.countries.get(countryName);
-        armies-= armiesToRemove;
+        armies -= armiesToRemove;
         this.countries.put(countryName, armies);
     }
 
@@ -144,18 +168,41 @@ public class Player {
      *
      * @param sourceCountryName Move the armies from the desired country
      * @param targetCountryName Move the armies to the desired country
-     * @param armiesToTransfer Number of armies to be transferred from a country to another
+     * @param armiesToTransfer  Number of armies to be transferred from a country to another
      */
     public void fortificationPhase(String sourceCountryName, String targetCountryName, int armiesToTransfer) {
         this.addArmies(targetCountryName, armiesToTransfer);
         this.removeArmies(sourceCountryName, armiesToTransfer);
     }
 
+    /**
+     * Perform the attack phase on data structures
+     *
+     * @param sourceCountry    Name of the attacking country
+     * @param targetCountry    Name of the country being attacked
+     * @param armiesToTransfer Number of armies transferred by the player from source to target country
+     */
+    public void attackPhase(String sourceCountry, String targetCountry, int armiesToTransfer) {
+        this.addArmies(targetCountry, armiesToTransfer);
+        this.removeArmies(sourceCountry, armiesToTransfer);
+    }
+
+    /**
+     * Get number of armies present in the country
+     *
+     * @param country Country object
+     * @return Integer Number of armies in the country
+     */
     public int getArmiesInCountry(String country) {
         return this.countries.get(country);
     }
 
     public String notifyString() {
         return MainModel.UPDATE_PLAYER + ":" + this.name;
+    }
+
+    public Integer removeCountry(String countryName) {
+        Integer armies = this.countries.remove(countryName);
+        return armies;
     }
 }

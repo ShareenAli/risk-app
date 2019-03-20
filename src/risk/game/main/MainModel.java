@@ -46,7 +46,8 @@ public class MainModel extends Observable {
 
     /**
      * Set the content from the map
-     * @param countries list of countries
+     *
+     * @param countries  list of countries
      * @param continents list of continents
      */
     public void setMapContent(ArrayList<Country> countries, ArrayList<Continent> continents) {
@@ -63,6 +64,7 @@ public class MainModel extends Observable {
 
     /**
      * Get the name of players
+     *
      * @return list of players with just their names
      */
     public ArrayList<String> getPlayerNames() {
@@ -71,6 +73,7 @@ public class MainModel extends Observable {
 
     /**
      * Get the colors of the players
+     *
      * @return list of players with just their colors
      */
     ArrayList<Color> getPlayerColors() {
@@ -114,6 +117,7 @@ public class MainModel extends Observable {
      * Get the row for the domination table.
      * It will display name, no of continents conquered, no of armies the player posses
      * and percent of the map conquered.
+     *
      * @param player player to get the data for
      * @return domination row
      */
@@ -148,6 +152,7 @@ public class MainModel extends Observable {
      * Get the domination table
      * It will display name, no of continents conquered, no of armies the player posses
      * and percent of the map conquered.
+     *
      * @return the table
      */
     public HashMap<String, String[]> getDominationTable() {
@@ -272,6 +277,43 @@ public class MainModel extends Observable {
         this.updatePlayer(player.getName(), player);
     }
 
+
+    /**
+     * Attack phase to perform post attack operations in case an attack is successful
+     *
+     * @param attackerName     Name of the attacker
+     * @param defendantName    Name of the defendant
+     * @param sourceCountry    Name of the attacking country
+     * @param targetCountry    Name of the defending country
+     * @param armiesToTransfer Number of armies to transfer
+     */
+    void attackPhase(String attackerName, String defendantName, String sourceCountry, String targetCountry, int armiesToTransfer) {
+        Player attacker = this.players.get(attackerName);
+        Player defendant = this.players.get(defendantName);
+        HashMap<String, Integer> defendantCountries = defendant.getCountries();
+        Integer armies = defendant.removeCountry(targetCountry);
+
+        if (armies != null) {
+            Country country = this.countries.get(targetCountry);
+            ArrayList<String> cards = attacker.getCards();
+
+            attacker.assignCountry(targetCountry);
+            attacker.setArmies(targetCountry, armies);
+
+            if (defendantCountries.size() == 1) {
+                cards = defendant.getCards();
+                this.playerNames.remove(defendant);
+                this.players.remove(defendant);
+            }
+
+            cards.add(country.getCardType());
+            attacker.setCards(cards);
+            attacker.attackPhase(sourceCountry, targetCountry, armiesToTransfer);
+            this.updatePlayer(attacker.getName(), attacker);
+            this.updatePlayer(defendant.getName(), defendant);
+        }
+    }
+
     /**
      * It checks the Source country is interconnected with the target country to which armies are to be transferred
      *
@@ -320,6 +362,7 @@ public class MainModel extends Observable {
 
     /**
      * Count list of countries in continent from given sets
+     *
      * @param continent name of the continent
      * @param countries list of countries to loop in
      * @return the count
@@ -338,6 +381,7 @@ public class MainModel extends Observable {
 
     /**
      * Count list of countries in the continent
+     *
      * @param continent name of the continent
      * @return the count
      */
@@ -355,6 +399,7 @@ public class MainModel extends Observable {
 
     /**
      * Get the armies to get based on continents conquered
+     *
      * @param player object players
      * @return armies to add
      */
@@ -370,4 +415,58 @@ public class MainModel extends Observable {
         }
         return cv;
     }
+
+    /**
+     * Checks if the attack is possible or not
+     *
+     * @param attackingCountry Name of the attacking country
+     * @param defendingCountry Name of the defending country
+     * @return boolean true if attack is feasible
+     */
+    public boolean checkIfAttackFeasible(Player player, String attackingCountry, String defendingCountry) {
+        Country attackingCountryObject = this.countries.get(attackingCountry);
+
+        ArrayList<String> neighbours = attackingCountryObject.getNeighbours();
+
+        if (neighbours.contains(defendingCountry))
+            return true;
+        else
+            return false;
+    }
+
+    /**
+     * Check the minimum armies required to perform the attack
+     *
+     * @param player  Player object
+     * @param country Country object
+     * @return boolean true if armies meet the min. army criteria
+     */
+    public boolean checkMinArmiesForAttack(Player player, String country) {
+        int armies = player.getArmiesInCountry(country);
+
+        if (armies < 2)
+            return false;
+        else
+            return true;
+    }
+
+    /**
+     * Determine the number of dice rolls for each player
+     *
+     * @param country Country object
+     * @param player  Player object
+     * @return dicerolls Number of dice rolls for the player
+     */
+    public int determineNoOfDiceRolls(String country, Player player, boolean attacking) {
+        int diceRolls = 0;
+        int armies = player.getArmiesInCountry(country);
+
+        if (attacking)
+            diceRolls = (armies >= 3) ? 3 : 2;
+        else
+            diceRolls = (armies < 2) ? 1 : 2;
+
+        return diceRolls;
+    }
+
 }

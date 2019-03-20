@@ -3,12 +3,12 @@ package risk.game.main;
 import entity.Continent;
 import entity.Country;
 import entity.Player;
+import risk.RiskApp;
 import risk.game.main.dialog.NoOfArmiesDialog;
 import risk.game.main.logs.LogsController;
 import risk.game.main.phases.PhaseController;
 import risk.game.main.phases.PhaseModel;
 import risk.game.main.world.WorldController;
-import risk.RiskApp;
 import risk.support.ActivityController;
 
 import javax.swing.*;
@@ -17,10 +17,12 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
  * The controller for the main view
+ *
  * @author shareenali, iamdc003
  * @version 0.2
  */
@@ -33,6 +35,7 @@ public class MainController extends ActivityController {
     private WorldController worldController;
     private ActionListener buttonCountryLs, buttonChangePhaseLs;
     private String fortSource, fortTarget;
+    private String attackSourceCountry, attackTargetCountry, attacker, defendant;
 
     public MainController() {
         this.view = new MainView();
@@ -40,6 +43,7 @@ public class MainController extends ActivityController {
 
     /**
      * Setup values when the controller is loaded into the game
+     *
      * @param data data to get from the previous controller
      */
     @SuppressWarnings("unchecked")
@@ -67,7 +71,7 @@ public class MainController extends ActivityController {
         this.initListeners();
         this.prepControllers();
         this.view.prepareView(this.phaseController.getRootPanel(), this.logsController.getRootPanel(),
-            this.worldController.getRootPanel());
+                this.worldController.getRootPanel());
         this.attachObservers();
     }
 
@@ -119,11 +123,13 @@ public class MainController extends ActivityController {
         };
 
         this.buttonChangePhaseLs = (ActionEvent e) -> this.changePhase();
+
     }
 
     /**
      * Performs the reinforcement phase when triggered from the UI
-     * @param command action command that contains the owner and name of the country
+     *
+     * @param command          action command that contains the owner and name of the country
      * @param isComputerPlayer identifier to check the type of player
      */
     private void doReinforcementPhase(String command, boolean isComputerPlayer) {
@@ -133,55 +139,209 @@ public class MainController extends ActivityController {
 
         if (!owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
             JOptionPane.showMessageDialog(new JFrame(), "You can't reinforce other player's country",
-                "Wrong move!", JOptionPane.ERROR_MESSAGE);
+                    "Wrong move!", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (reinforcementArmies == 0) {
             JOptionPane.showMessageDialog(new JFrame(), "You don't have enough armies to reinforce",
-                "Reinforcement Phase", JOptionPane.INFORMATION_MESSAGE);
+                    "Reinforcement Phase", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
         NoOfArmiesDialog dialog = new NoOfArmiesDialog();
         dialog.setNoOfArmies(reinforcementArmies);
         int armiesAssigned = isComputerPlayer ? (new Random()).nextInt(reinforcementArmies + 1)
-            : dialog.showUi(country);
+                : dialog.showUi(country);
 
         if (armiesAssigned == 0)
             return;
 
         this.model.reinforcementPhase(owner, country, armiesAssigned);
-        this.logsController.log(owner + " reinforced " + country + " with " + armiesAssigned + " armies " );
+        this.logsController.log(owner + " reinforced " + country + " with " + armiesAssigned + " armies ");
+    }
+
+    /**
+     * Checking attack feasibility
+     *
+     * @param owner        Name of the owner of the country
+     * @param attackSource The attacking country
+     * @param attackTarget The country being attacked
+     * @return True or false for feasibility
+     */
+    private boolean isAttackPossible(String owner, String attackSource, String attackTarget) {
+        Player player = this.model.getPlayer(owner);
+        boolean feasible = this.model.checkIfAttackFeasible(player, attackSource, attackTarget);
+
+        if (!feasible) {
+            JOptionPane.showMessageDialog(new JFrame(), this.attackSourceCountry + " and " + attackTarget +
+                    " are not neighbours!", "Invalid Move!", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        boolean minArmyCriteria = this.model.checkMinArmiesForAttack(player, attackSource);
+
+        if (!minArmyCriteria) {
+            JOptionPane.showMessageDialog(new JFrame(), this.attackSourceCountry + "does not " +
+                    "have sufficient armies!", "Invalid Move!", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Perform the attack phase
+     *
+     * @param command          action command that contains the owner and name of the country
+     * @param isComputerPlayer identifier to check the type of player
+     */
+    private void doAttackPhase(String command, boolean isComputerPlayer) {
+        String owner = command.split(":")[0];
+        String country = command.split(":")[1];
+
+        if (this.attackSourceCountry == null) {
+            this.attacker = owner;
+            this.attackSourceCountry = country;
+            this.worldController.selectCountry(country);
+            return;
+        }
+
+        this.defendant = owner;
+        this.attackTargetCountry = country;
+
+        if (owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
+            JOptionPane.showMessageDialog(new JFrame(), "You can't attack your own country",
+                    "Wrong move!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean feasible = isAttackPossible(attacker, this.attackSourceCountry, this.attackTargetCountry);
+
+        if (!feasible)
+            return;
+
+        Player attacker = this.model.getPlayer(this.attacker);
+        Player defendant = this.model.getPlayer(this.defendant);
+
+        boolean outcome = executeAttack(attacker, defendant, this.attackSourceCountry, this.attackTargetCountry);
+        // if won --> attacker moves the armies to the newly conquered country, update the players countries and armies, award a card
+
+
+        if (outcome) {
+            int armiesInSourceCountry = attacker.getArmiesInCountry(attackSourceCountry);
+
+            NoOfArmiesDialog dialog = new NoOfArmiesDialog();
+            dialog.setNoOfArmies(armiesInSourceCountry);
+
+            int armiesMoved = isComputerPlayer ? (new Random()).nextInt(armiesInSourceCountry + 1)
+                    : dialog.showUi(attackSourceCountry);
+
+            this.model.attackPhase(attacker.getName(), defendant.getName(), this.attackSourceCountry, this.attackTargetCountry, armiesMoved);
+
+            this.logsController.log(attacker.getName() + " won the battle");
+        } else
+            this.logsController.log(attacker.getName() + " lost the battle");
+    }
+
+    /**
+     * To perform attack execution
+     *
+     * @param attacker     Name of the attacker
+     * @param defendant    Name of the defendant
+     * @param attackSource The attacking country
+     * @param attackTarget The defending country
+     * @return Boolean true or false depending on whether the attack was a success
+     */
+    public boolean executeAttack(Player attacker, Player defendant, String attackSource, String attackTarget) {
+        int battleCount = 0, i = 0, rollDiceAttacker = 0, rollDiceDefendant = 0;
+        boolean victory = false;
+
+        int attackerDiceRolls = this.model.determineNoOfDiceRolls(attackSource, attacker, true);
+        int defendantDiceRolls = this.model.determineNoOfDiceRolls(attackTarget, defendant, false);
+
+        while (i < defendantDiceRolls) {
+            rollDiceAttacker = (int) (Math.random() * 5 + 1);
+            rollDiceDefendant = (int) (Math.random() * 5 + 1);
+
+            if (rollDiceAttacker > rollDiceDefendant) {
+                battleCount++;
+                HashMap<String, Integer> countries = attacker.getCountries();
+                Integer armies = countries.get(attackTarget);
+                if (armies == 1) {
+                    return victory = false;
+                } else
+                    armies--;
+
+                countries.put(attackTarget, armies);
+            } else if (rollDiceAttacker < rollDiceDefendant) {
+                battleCount--;
+                HashMap<String, Integer> countries = defendant.getCountries();
+                Integer armies = countries.get(attackSource);
+                if (armies == 1) {
+                    return victory = true;
+                } else
+                    armies--;
+                countries.put(attackSource, armies);
+            } else {
+                battleCount--;
+                HashMap<String, Integer> countries = attacker.getCountries();
+                Integer armies = countries.get(attackSource);
+                if (armies == 1) {
+                    return victory = true;
+                } else
+                    armies--;
+                armies--;
+                countries.put(attackSource, armies);
+            }
+
+            this.logsController.log(attacker.getName() + " rolled dice " + rollDiceAttacker);
+            this.logsController.log(defendant.getName() + " rolled dice " + rollDiceDefendant);
+
+            if (i == defendantDiceRolls - 1 && attackerDiceRolls == 3) {
+                if (battleCount < 1)
+                    victory = false;
+                else if (battleCount > 1)
+                    victory = true;
+                else
+                    victory = true;
+            }
+            i++;
+        }
+        if (battleCount > 0)
+            victory = true;
+
+        return victory;
     }
 
     /**
      * Checks whether the fortification phase is possible or not.
+     *
      * @param owner owner of the country
-     * @return true if it is possible
+     * @return boolean true if it is possible
      */
     private boolean isFortificationPossible(String owner) {
         if (!owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
             JOptionPane.showMessageDialog(new JFrame(), "You can't move army to other player's country",
-                "Wrong move!", JOptionPane.ERROR_MESSAGE);
+                    "Wrong move!", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         if (this.fortSource != null && this.fortTarget != null) {
             JOptionPane.showMessageDialog(new JFrame(), "You're out of moves for fortification phase",
-                "No more moves allowed!", JOptionPane.ERROR_MESSAGE);
+                    "No more moves allowed!", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         return true;
-
     }
 
     /**
      * Performs the fortification phase based on the UI actions
-     * @param command action commands that contains owner and name of the country.
+     *
+     * @param command          action commands that contains owner and name of the country.
      * @param isComputerPlayer identifier to check the type of player
-     * @param armiesMoved number of armies to move from one country to another
+     * @param armiesMoved      number of armies to move from one country to another
      */
     private void doFortificationPhase(String command, boolean isComputerPlayer, int armiesMoved) {
         String owner = command.split(":")[0];
@@ -219,8 +379,9 @@ public class MainController extends ActivityController {
 
     /**
      * Displays popup to select number of armies to transfer
+     *
      * @param owner owner of the country
-     * @return number of armies to transfer
+     * @return Integer number of armies to transfer
      */
     private int selectFortificationArmies(String owner) {
         NoOfArmiesDialog dialog = new NoOfArmiesDialog();
@@ -268,6 +429,7 @@ public class MainController extends ActivityController {
         this.phaseController.changePhase();
         this.model.resetArmiesToAssign(this.phaseController.activePlayer());
 
+
         this.onPhaseChanged();
     }
 
@@ -277,6 +439,7 @@ public class MainController extends ActivityController {
     private void onPhaseChanged() {
         switch (this.phaseController.activePhase()) {
             case PhaseModel.PHASE_REINFORCEMENT:
+
                 automateReinforcementPhase();
                 break;
             case PhaseModel.PHASE_FORTIFICATION:
