@@ -161,6 +161,14 @@ public class MainController extends ActivityController {
         this.logsController.log(owner + " reinforced " + country + " with " + armiesAssigned + " armies ");
     }
 
+    /**
+     * Checking attack feasibility
+     *
+     * @param owner        Name of the owner of the country
+     * @param attackSource The attacking country
+     * @param attackTarget The country being attacked
+     * @return True or false for feasibility
+     */
     private boolean isAttackPossible(String owner, String attackSource, String attackTarget) {
         Player player = this.model.getPlayer(owner);
         boolean feasible = this.model.checkIfAttackFeasible(player, attackSource, attackTarget);
@@ -182,6 +190,12 @@ public class MainController extends ActivityController {
         return true;
     }
 
+    /**
+     * Perform the attack phase
+     *
+     * @param command          action command that contains the owner and name of the country
+     * @param isComputerPlayer identifier to check the type of player
+     */
     private void doAttackPhase(String command, boolean isComputerPlayer) {
         String owner = command.split(":")[0];
         String country = command.split(":")[1];
@@ -233,11 +247,11 @@ public class MainController extends ActivityController {
     /**
      * To perform attack execution
      *
-     * @param attacker
-     * @param defendant
-     * @param attackSource
-     * @param attackTarget
-     * @return
+     * @param attacker     Name of the attacker
+     * @param defendant    Name of the defendant
+     * @param attackSource The attacking country
+     * @param attackTarget The defending country
+     * @return Boolean true or false depending on whether the attack was a success
      */
     public boolean executeAttack(Player attacker, Player defendant, String attackSource, String attackTarget) {
         int battleCount = 0, i = 0, rollDiceAttacker = 0, rollDiceDefendant = 0;
@@ -304,7 +318,7 @@ public class MainController extends ActivityController {
      * Checks whether the fortification phase is possible or not.
      *
      * @param owner owner of the country
-     * @return true if it is possible
+     * @return boolean true if it is possible
      */
     private boolean isFortificationPossible(String owner) {
         if (!owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
@@ -367,7 +381,7 @@ public class MainController extends ActivityController {
      * Displays popup to select number of armies to transfer
      *
      * @param owner owner of the country
-     * @return number of armies to transfer
+     * @return Integer number of armies to transfer
      */
     private int selectFortificationArmies(String owner) {
         NoOfArmiesDialog dialog = new NoOfArmiesDialog();

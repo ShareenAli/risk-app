@@ -278,6 +278,15 @@ public class MainModel extends Observable {
     }
 
 
+    /**
+     * Attack phase to perform post attack operations in case an attack is successful
+     *
+     * @param attackerName     Name of the attacker
+     * @param defendantName    Name of the defendant
+     * @param sourceCountry    Name of the attacking country
+     * @param targetCountry    Name of the defending country
+     * @param armiesToTransfer Number of armies to transfer
+     */
     void attackPhase(String attackerName, String defendantName, String sourceCountry, String targetCountry, int armiesToTransfer) {
         Player attacker = this.players.get(attackerName);
         Player defendant = this.players.get(defendantName);
@@ -425,6 +434,13 @@ public class MainModel extends Observable {
             return false;
     }
 
+    /**
+     * Check the minimum armies required to perform the attack
+     *
+     * @param player  Player object
+     * @param country Country object
+     * @return boolean true if armies meet the min. army criteria
+     */
     public boolean checkMinArmiesForAttack(Player player, String country) {
         int armies = player.getArmiesInCountry(country);
 
@@ -437,9 +453,9 @@ public class MainModel extends Observable {
     /**
      * Determine the number of dice rolls for each player
      *
-     * @param country
-     * @param player
-     * @return dicerolls
+     * @param country Country object
+     * @param player  Player object
+     * @return dicerolls Number of dice rolls for the player
      */
     public int determineNoOfDiceRolls(String country, Player player, boolean attacking) {
         int diceRolls = 0;

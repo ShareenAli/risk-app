@@ -178,15 +178,21 @@ public class Player {
     /**
      * Perform the attack phase on data structures
      *
-     * @param sourceCountry
-     * @param targetCountry
-     * @param armiesToTransfer
+     * @param sourceCountry    Name of the attacking country
+     * @param targetCountry    Name of the country being attacked
+     * @param armiesToTransfer Number of armies transferred by the player from source to target country
      */
     public void attackPhase(String sourceCountry, String targetCountry, int armiesToTransfer) {
         this.addArmies(targetCountry, armiesToTransfer);
         this.removeArmies(sourceCountry, armiesToTransfer);
     }
 
+    /**
+     * Get number of armies present in the country
+     *
+     * @param country Country object
+     * @return Integer Number of armies in the country
+     */
     public int getArmiesInCountry(String country) {
         return this.countries.get(country);
     }
