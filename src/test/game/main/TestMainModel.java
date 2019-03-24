@@ -64,7 +64,7 @@ public class TestMainModel {
      * Test Case method for calculation of reinforcement armies
      */
     @Test
-    public void reinforcementArmies() {
+    public void mareinforcementArmies() {
         int armiesToAssign, controlValue = 0;
         armiesToAssign = (int) (int) Math.round(Math.floor((float) 3 / 3) < 3
                 ? 3 : Math.floor((float) 3 / 3));

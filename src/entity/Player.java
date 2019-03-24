@@ -28,6 +28,8 @@ public class Player {
     private String name;
     private int type;
     private Color color;
+    private int NoOfDiceRolls;
+    private ArrayList<String> cards = new ArrayList<>();
     private HashMap<String, Integer> countries = new HashMap<>();
 
 
@@ -49,8 +51,6 @@ public class Player {
         this.cards = cards;
     }
 
-    private ArrayList<String> cards = new ArrayList<>();
-
     /**
      * It initializes the player
      *
@@ -60,6 +60,7 @@ public class Player {
     public Player(String name, int type) {
         this.name = name;
         this.type = type;
+        this.NoOfDiceRolls = 0;
     }
 
     /**
@@ -182,8 +183,8 @@ public class Player {
      * @param targetCountry    Name of the country being attacked
      * @param armiesToTransfer Number of armies transferred by the player from source to target country
      */
-    public void attackPhase(String sourceCountry, String targetCountry, int armiesToTransfer) {
-        this.addArmies(targetCountry, armiesToTransfer);
+    public void postAttackPhase(String sourceCountry, String targetCountry, int armiesToTransfer) {
+        this.addArmies(targetCountry, armiesToTransfer - 1);
         this.removeArmies(sourceCountry, armiesToTransfer);
     }
 
@@ -205,4 +206,23 @@ public class Player {
         Integer armies = this.countries.remove(countryName);
         return armies;
     }
+
+    /**
+     * Get the Number of dice rolls for the attack phase
+     *
+     * @return Integer Returns the number of dice rolls determined for the player
+     */
+    public int getNoOfDiceRolls() {
+        return NoOfDiceRolls;
+    }
+
+    /**
+     * Set the value for the dice rolls
+     *
+     * @param noOfDiceRolls Value of dice rolls for attack phase
+     */
+    public void setNoOfDiceRolls(int noOfDiceRolls) {
+        NoOfDiceRolls = noOfDiceRolls;
+    }
+
 }

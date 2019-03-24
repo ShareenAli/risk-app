@@ -224,94 +224,31 @@ public class MainController extends ActivityController {
         Player attacker = this.model.getPlayer(this.attacker);
         Player defendant = this.model.getPlayer(this.defendant);
 
-        boolean outcome = executeAttack(attacker, defendant, this.attackSourceCountry, this.attackTargetCountry);
+        boolean outcome = this.model.attackPhase(this.attacker, this.defendant, this.attackSourceCountry, this.attackTargetCountry);
         // if won --> attacker moves the armies to the newly conquered country, update the players countries and armies, award a card
 
 
         if (outcome) {
-            int armiesInSourceCountry = attacker.getArmiesInCountry(attackSourceCountry);
+            HashMap<String, Player> players = this.model.getPlayers();
 
-            NoOfArmiesDialog dialog = new NoOfArmiesDialog();
-            dialog.setNoOfArmies(armiesInSourceCountry);
+            if (players.size() == 1) {
+                this.logsController.log(attacker.getName() + " HAS WON THE GAME!!");
+                return;
+            } else {
+                int armiesInSourceCountry = attacker.getArmiesInCountry(attackSourceCountry);
 
-            int armiesMoved = isComputerPlayer ? (new Random()).nextInt(armiesInSourceCountry + 1)
-                    : dialog.showUi(attackSourceCountry);
+                NoOfArmiesDialog dialog = new NoOfArmiesDialog();
+                dialog.setNoOfArmies(armiesInSourceCountry);
 
-            this.model.attackPhase(attacker.getName(), defendant.getName(), this.attackSourceCountry, this.attackTargetCountry, armiesMoved);
+                int armiesMoved = isComputerPlayer ? (new Random()).nextInt(armiesInSourceCountry)
+                        : dialog.showUi(attackSourceCountry);
 
-            this.logsController.log(attacker.getName() + " won the battle");
+                this.model.processPostAttackPhase(attacker, this.attackSourceCountry, this.attackTargetCountry, armiesMoved);
+
+                this.logsController.log(attacker.getName() + " won the battle");
+            }
         } else
             this.logsController.log(attacker.getName() + " lost the battle");
-    }
-
-    /**
-     * To perform attack execution
-     *
-     * @param attacker     Name of the attacker
-     * @param defendant    Name of the defendant
-     * @param attackSource The attacking country
-     * @param attackTarget The defending country
-     * @return Boolean true or false depending on whether the attack was a success
-     */
-    public boolean executeAttack(Player attacker, Player defendant, String attackSource, String attackTarget) {
-        int battleCount = 0, i = 0, rollDiceAttacker = 0, rollDiceDefendant = 0;
-        boolean victory = false;
-
-        int attackerDiceRolls = this.model.determineNoOfDiceRolls(attackSource, attacker, true);
-        int defendantDiceRolls = this.model.determineNoOfDiceRolls(attackTarget, defendant, false);
-
-        while (i < defendantDiceRolls) {
-            rollDiceAttacker = (int) (Math.random() * 5 + 1);
-            rollDiceDefendant = (int) (Math.random() * 5 + 1);
-
-            if (rollDiceAttacker > rollDiceDefendant) {
-                battleCount++;
-                HashMap<String, Integer> countries = attacker.getCountries();
-                Integer armies = countries.get(attackTarget);
-                if (armies == 1) {
-                    return victory = false;
-                } else
-                    armies--;
-
-                countries.put(attackTarget, armies);
-            } else if (rollDiceAttacker < rollDiceDefendant) {
-                battleCount--;
-                HashMap<String, Integer> countries = defendant.getCountries();
-                Integer armies = countries.get(attackSource);
-                if (armies == 1) {
-                    return victory = true;
-                } else
-                    armies--;
-                countries.put(attackSource, armies);
-            } else {
-                battleCount--;
-                HashMap<String, Integer> countries = attacker.getCountries();
-                Integer armies = countries.get(attackSource);
-                if (armies == 1) {
-                    return victory = true;
-                } else
-                    armies--;
-                armies--;
-                countries.put(attackSource, armies);
-            }
-
-            this.logsController.log(attacker.getName() + " rolled dice " + rollDiceAttacker);
-            this.logsController.log(defendant.getName() + " rolled dice " + rollDiceDefendant);
-
-            if (i == defendantDiceRolls - 1 && attackerDiceRolls == 3) {
-                if (battleCount < 1)
-                    victory = false;
-                else if (battleCount > 1)
-                    victory = true;
-                else
-                    victory = true;
-            }
-            i++;
-        }
-        if (battleCount > 0)
-            victory = true;
-
-        return victory;
     }
 
     /**
