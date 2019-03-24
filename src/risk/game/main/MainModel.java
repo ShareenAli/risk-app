@@ -281,37 +281,164 @@ public class MainModel extends Observable {
     /**
      * Attack phase to perform post attack operations in case an attack is successful
      *
-     * @param attackerName     Name of the attacker
-     * @param defendantName    Name of the defendant
-     * @param sourceCountry    Name of the attacking country
-     * @param targetCountry    Name of the defending country
-     * @param armiesToTransfer Number of armies to transfer
+     * @param attackerName  Name of the attacker
+     * @param defendantName Name of the defendant
+     * @param sourceCountry Name of the attacking country
+     * @param targetCountry Name of the defending country
+     * @param allOutMode    States whether user has opted for alloutmode
      */
-    void attackPhase(String attackerName, String defendantName, String sourceCountry, String targetCountry, int armiesToTransfer) {
+    public boolean attackPhase(String attackerName, String defendantName, String sourceCountry, String targetCountry, boolean allOutMode) {
         Player attacker = this.players.get(attackerName);
         Player defendant = this.players.get(defendantName);
-        HashMap<String, Integer> defendantCountries = defendant.getCountries();
-        Integer armies = defendant.removeCountry(targetCountry);
+        boolean outcome;
 
-        if (armies != null) {
+        determineNoOfDiceRolls(sourceCountry, attacker, true);
+        determineNoOfDiceRolls(targetCountry, defendant, false);
+
+        outcome = executeAttack(attacker, defendant, sourceCountry, targetCountry);
+
+        if (!outcome && allOutMode) {
+            if (attacker.getArmiesInCountry(sourceCountry) > 1) {
+                outcome = attackPhase(attackerName, defendantName, sourceCountry, targetCountry, allOutMode);
+                this.updatePlayer(attacker.getName(), attacker);
+                this.updatePlayer(defendant.getName(), defendant);
+                return outcome;
+            } else {
+                this.updatePlayer(attacker.getName(), attacker);
+                this.updatePlayer(defendant.getName(), defendant);
+                return outcome;
+            }
+        }
+
+        if (outcome) {
+            HashMap<String, Integer> defendantCountries = defendant.getCountries();
             Country country = this.countries.get(targetCountry);
-            ArrayList<String> cards = attacker.getCards();
+            ArrayList<String> attackerCards = attacker.getCards();
+            ArrayList<String> defendantCards = defendant.getCards();
 
+            defendant.removeCountry(targetCountry);
             attacker.assignCountry(targetCountry);
-            attacker.setArmies(targetCountry, armies);
 
             if (defendantCountries.size() == 1) {
-                cards = defendant.getCards();
+                // remove the defendant from the game if that was his last country
                 this.playerNames.remove(defendant);
                 this.players.remove(defendant);
-            }
 
-            cards.add(country.getCardType());
-            attacker.setCards(cards);
-            attacker.attackPhase(sourceCountry, targetCountry, armiesToTransfer);
-            this.updatePlayer(attacker.getName(), attacker);
-            this.updatePlayer(defendant.getName(), defendant);
+                if (defendantCards.size() > 0) {
+                    for (String card : defendantCards) {
+                        attackerCards.add(card);
+                    }
+                }
+            }
+            attackerCards.add(country.getCardType());
+            attacker.setCards(attackerCards);
         }
+        this.updatePlayer(attacker.getName(), attacker);
+        this.updatePlayer(defendant.getName(), defendant);
+        return outcome;
+    }
+
+    /**
+     * Execution of the attack
+     *
+     * @param attacker     Player object of attacker
+     * @param defendant    Player object of defendant
+     * @param attackSource Country of the attacker
+     * @param attackTarget Country of the defender
+     * @return boolean Gives back Victory or Failure
+     */
+    private boolean executeAttack(Player attacker, Player defendant, String attackSource, String attackTarget) {
+        ArrayList<Integer> attackerDiceRolls = new ArrayList<>();
+        ArrayList<Integer> defendantDiceRolls = new ArrayList<>();
+        int i = 0;
+
+        while (i < 2) {
+            attackerDiceRolls.add(rollDice());
+            defendantDiceRolls.add(rollDice());
+            i++;
+        }
+
+        Collections.sort(attackerDiceRolls, Collections.reverseOrder());
+        Collections.sort(defendantDiceRolls, Collections.reverseOrder());
+
+        boolean victory = processAttackOutcome(attackerDiceRolls, defendantDiceRolls, attacker, defendant, attackSource, attackTarget);
+
+        return victory;
+    }
+
+    /**
+     * Process the dice rolls and produce an outcome
+     *
+     * @param attackerDiceRolls  Dice Rolls of the attacker
+     * @param defendantDiceRolls Dice Rolls of the defender
+     * @param attacker           Player object of the attacker
+     * @param defendant          Player object of the defender
+     * @param attackSource       Country of the attacker
+     * @param attackTarget       Country of the defender
+     * @return boolean Produces the outcome of battle
+     */
+    private boolean processAttackOutcome(ArrayList<Integer> attackerDiceRolls, ArrayList<Integer> defendantDiceRolls, Player attacker, Player defendant, String attackSource, String attackTarget) {
+        int attackCount = 0, defendCount = 0;
+        int attackerArmies = attacker.getArmiesInCountry(attackSource);
+        int defendantArmies = defendant.getArmiesInCountry(attackTarget);
+
+        for (int j = 0; j < 2; j++) {
+            if (attackerArmies == 1)
+                return false;
+
+            if (attackerDiceRolls.get(j) > defendantDiceRolls.get(j)) {
+                defendantArmies--;
+                attackCount++;
+            } else if (attackerDiceRolls.get(j) < defendantDiceRolls.get(j)) {
+                attackerArmies--;
+                defendCount++;
+            } else {
+                attackerArmies--;
+                defendCount++;
+            }
+        }
+
+        attacker.setArmies(attackSource, attackerArmies);
+        defendant.setArmies(attackTarget, defendantArmies);
+
+        if (attackCount > defendCount) {
+            if (defendantArmies == 0)
+                return true;
+            else
+                return false;
+        } else if (attackCount < defendCount)
+            return false;
+        else {
+            if (defendantArmies == 1) {
+                if (attacker.getNoOfDiceRolls() == 3)
+                    return true;
+                else
+                    return false;
+            } else
+                return false;
+        }
+    }
+
+    /**
+     * Process the post attack phase operations
+     *
+     * @param attacker         Player object of the attacker
+     * @param sourceCountry    Country of the attacker
+     * @param targetCountry    Country of the defender
+     * @param armiesToTransfer No of armies to Transfer to the conquered countries
+     */
+    public void processPostAttackPhase(Player attacker, String sourceCountry, String targetCountry, int armiesToTransfer) {
+        attacker.postAttackPhase(sourceCountry, targetCountry, armiesToTransfer);
+    }
+
+    /**
+     * Roll the Dice for attack
+     *
+     * @return Integer Return the number on the dice rolled
+     */
+    private int rollDice() {
+        int diceRoll = (int) (Math.random() * 6 + 1);
+        return diceRoll;
     }
 
     /**
@@ -455,18 +582,14 @@ public class MainModel extends Observable {
      *
      * @param country Country object
      * @param player  Player object
-     * @return dicerolls Number of dice rolls for the player
      */
-    public int determineNoOfDiceRolls(String country, Player player, boolean attacking) {
-        int diceRolls = 0;
+    public void determineNoOfDiceRolls(String country, Player player, boolean attacking) {
         int armies = player.getArmiesInCountry(country);
 
         if (attacking)
-            diceRolls = (armies >= 3) ? 3 : 2;
+            player.setNoOfDiceRolls((armies >= 3) ? 3 : 2);
         else
-            diceRolls = (armies < 2) ? 1 : 2;
-
-        return diceRolls;
+            player.setNoOfDiceRolls((armies >= 3) ? 3 : 2);
     }
 
 }
