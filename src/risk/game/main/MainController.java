@@ -195,8 +195,9 @@ public class MainController extends ActivityController {
      *
      * @param command          action command that contains the owner and name of the country
      * @param isComputerPlayer identifier to check the type of player
+     * @param allOutMode       States whether user has opted for alloutmode or not
      */
-    private void doAttackPhase(String command, boolean isComputerPlayer) {
+    private void doAttackPhase(String command, boolean isComputerPlayer, boolean allOutMode) {
         String owner = command.split(":")[0];
         String country = command.split(":")[1];
 
@@ -224,7 +225,7 @@ public class MainController extends ActivityController {
         Player attacker = this.model.getPlayer(this.attacker);
         Player defendant = this.model.getPlayer(this.defendant);
 
-        boolean outcome = this.model.attackPhase(this.attacker, this.defendant, this.attackSourceCountry, this.attackTargetCountry);
+        boolean outcome = this.model.attackPhase(this.attacker, this.defendant, this.attackSourceCountry, this.attackTargetCountry, allOutMode);
         // if won --> attacker moves the armies to the newly conquered country, update the players countries and armies, award a card
 
 

@@ -202,9 +202,13 @@ public class Player {
         return MainModel.UPDATE_PLAYER + ":" + this.name;
     }
 
-    public Integer removeCountry(String countryName) {
-        Integer armies = this.countries.remove(countryName);
-        return armies;
+    /**
+     * Remove the country from player's conquered countries
+     *
+     * @param countryName Name of the country
+     */
+    public void removeCountry(String countryName) {
+        this.countries.remove(countryName);
     }
 
     /**

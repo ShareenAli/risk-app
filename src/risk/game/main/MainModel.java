@@ -285,14 +285,30 @@ public class MainModel extends Observable {
      * @param defendantName Name of the defendant
      * @param sourceCountry Name of the attacking country
      * @param targetCountry Name of the defending country
+     * @param allOutMode    States whether user has opted for alloutmode
      */
-    public boolean attackPhase(String attackerName, String defendantName, String sourceCountry, String targetCountry) {
+    public boolean attackPhase(String attackerName, String defendantName, String sourceCountry, String targetCountry, boolean allOutMode) {
         Player attacker = this.players.get(attackerName);
         Player defendant = this.players.get(defendantName);
+        boolean outcome;
+
         determineNoOfDiceRolls(sourceCountry, attacker, true);
         determineNoOfDiceRolls(targetCountry, defendant, false);
 
-        boolean outcome = executeAttack(attacker, defendant, sourceCountry, targetCountry);
+        outcome = executeAttack(attacker, defendant, sourceCountry, targetCountry);
+
+        if (!outcome && allOutMode) {
+            if (attacker.getArmiesInCountry(sourceCountry) > 1) {
+                outcome = attackPhase(attackerName, defendantName, sourceCountry, targetCountry, allOutMode);
+                this.updatePlayer(attacker.getName(), attacker);
+                this.updatePlayer(defendant.getName(), defendant);
+                return outcome;
+            } else {
+                this.updatePlayer(attacker.getName(), attacker);
+                this.updatePlayer(defendant.getName(), defendant);
+                return outcome;
+            }
+        }
 
         if (outcome) {
             HashMap<String, Integer> defendantCountries = defendant.getCountries();
@@ -314,16 +330,23 @@ public class MainModel extends Observable {
                     }
                 }
             }
-
             attackerCards.add(country.getCardType());
             attacker.setCards(attackerCards);
         }
         this.updatePlayer(attacker.getName(), attacker);
         this.updatePlayer(defendant.getName(), defendant);
-
         return outcome;
     }
 
+    /**
+     * Execution of the attack
+     *
+     * @param attacker     Player object of attacker
+     * @param defendant    Player object of defendant
+     * @param attackSource Country of the attacker
+     * @param attackTarget Country of the defender
+     * @return boolean Gives back Victory or Failure
+     */
     private boolean executeAttack(Player attacker, Player defendant, String attackSource, String attackTarget) {
         ArrayList<Integer> attackerDiceRolls = new ArrayList<>();
         ArrayList<Integer> defendantDiceRolls = new ArrayList<>();
@@ -343,6 +366,17 @@ public class MainModel extends Observable {
         return victory;
     }
 
+    /**
+     * Process the dice rolls and produce an outcome
+     *
+     * @param attackerDiceRolls  Dice Rolls of the attacker
+     * @param defendantDiceRolls Dice Rolls of the defender
+     * @param attacker           Player object of the attacker
+     * @param defendant          Player object of the defender
+     * @param attackSource       Country of the attacker
+     * @param attackTarget       Country of the defender
+     * @return boolean Produces the outcome of battle
+     */
     private boolean processAttackOutcome(ArrayList<Integer> attackerDiceRolls, ArrayList<Integer> defendantDiceRolls, Player attacker, Player defendant, String attackSource, String attackTarget) {
         int attackCount = 0, defendCount = 0;
         int attackerArmies = attacker.getArmiesInCountry(attackSource);
@@ -385,8 +419,16 @@ public class MainModel extends Observable {
         }
     }
 
-    public void processPostAttackPhase(Player player, String sourceCountry, String targetCountry, int armiesToTransfer) {
-        player.postAttackPhase(sourceCountry, targetCountry, armiesToTransfer);
+    /**
+     * Process the post attack phase operations
+     *
+     * @param attacker         Player object of the attacker
+     * @param sourceCountry    Country of the attacker
+     * @param targetCountry    Country of the defender
+     * @param armiesToTransfer No of armies to Transfer to the conquered countries
+     */
+    public void processPostAttackPhase(Player attacker, String sourceCountry, String targetCountry, int armiesToTransfer) {
+        attacker.postAttackPhase(sourceCountry, targetCountry, armiesToTransfer);
     }
 
     /**
