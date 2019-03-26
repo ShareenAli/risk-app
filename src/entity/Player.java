@@ -4,6 +4,7 @@ import risk.game.main.MainModel;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -33,6 +34,7 @@ public class Player {
     private int cardsAvailCount = 0;
     private boolean hasPlayedBefore = false;
     private HashMap<String, Integer> countries = new HashMap<>();
+    private boolean victory;
 
 
     /**
@@ -63,6 +65,7 @@ public class Player {
         this.name = name;
         this.type = type;
         this.NoOfDiceRolls = 0;
+        this.victory = false;
     }
 
     /**
@@ -233,6 +236,120 @@ public class Player {
     }
 
     /**
+
+     * Execution of the attack
+     *
+     * @param attacker     Player object of attacker
+     * @param defendant    Player object of defendant
+     * @param attackSource Country of the attacker
+     * @param attackTarget Country of the defender
+     * @return boolean Gives back Victory or Failure
+     */
+    public Player executeAttack(Player attacker, Player defendant, String attackSource, String attackTarget) {
+        ArrayList<Integer> attackerDiceRolls = new ArrayList<>();
+        ArrayList<Integer> defendantDiceRolls = new ArrayList<>();
+        int i = 0;
+
+        while (i < 2) {
+            attackerDiceRolls.add(rollDice());
+            defendantDiceRolls.add(rollDice());
+            i++;
+        }
+
+        Collections.sort(attackerDiceRolls, Collections.reverseOrder());
+        Collections.sort(defendantDiceRolls, Collections.reverseOrder());
+
+        boolean outcome = processAttackOutcome(attackerDiceRolls, defendantDiceRolls, attacker, defendant, attackSource, attackTarget);
+
+        if (outcome)
+            defendant.victory = false;
+        else
+            defendant.victory = true;
+
+        return defendant;
+    }
+
+    /**
+     * Process the dice rolls and produce an outcome
+     *
+     * @param attackerDiceRolls  Dice Rolls of the attacker
+     * @param defendantDiceRolls Dice Rolls of the defender
+     * @param attacker           Player object of the attacker
+     * @param defendant          Player object of the defender
+     * @param attackSource       Country of the attacker
+     * @param attackTarget       Country of the defender
+     * @return boolean Produces the outcome of battle
+     */
+    private boolean processAttackOutcome(ArrayList<Integer> attackerDiceRolls, ArrayList<Integer> defendantDiceRolls, Player attacker, Player defendant, String attackSource, String attackTarget) {
+        int attackCount = 0, defendCount = 0;
+        int attackerArmies = attacker.getArmiesInCountry(attackSource);
+        int defendantArmies = defendant.getArmiesInCountry(attackTarget);
+
+        for (int j = 0; j < 2; j++) {
+            if (attackerArmies == 1)
+                return false;
+
+            if (attackerDiceRolls.get(j) > defendantDiceRolls.get(j)) {
+                defendantArmies--;
+                attackCount++;
+            } else if (attackerDiceRolls.get(j) < defendantDiceRolls.get(j)) {
+                attackerArmies--;
+                defendCount++;
+            } else {
+                attackerArmies--;
+                defendCount++;
+            }
+        }
+
+        attacker.setArmies(attackSource, attackerArmies);
+        defendant.setArmies(attackTarget, defendantArmies);
+
+        if (attackCount > defendCount) {
+            if (defendantArmies == 0)
+                return true;
+            else
+                return false;
+        } else if (attackCount < defendCount) {
+            return false;
+        } else {
+            if (defendantArmies == 1) {
+                if (attacker.getNoOfDiceRolls() == 3)
+                    return true;
+                else
+                    return false;
+            } else
+                return false;
+        }
+    }
+
+    /**
+     * Roll the Dice for attack
+     *
+     * @return Integer Return the number on the dice rolled
+     */
+    private int rollDice() {
+        int diceRoll = (int) (Math.random() * 6 + 1);
+        return diceRoll;
+    }
+
+    /**
+     * To get the value of victory variable
+     *
+     * @return Boolean True if defender won the battle
+     */
+    public boolean isVictory() {
+        return victory;
+    }
+
+    /**
+     * To set whether defender has won the battle
+     *
+     * @param victory True if defender won the battle
+     */
+    public void setVictory(boolean victory) {
+        this.victory = victory;
+    }
+
      * Checks if the player has played once or not
 
 
@@ -256,4 +373,5 @@ public class Player {
 
      */
     public void setCardsAvailCount (int availCount){ cardsAvailCount = availCount; }
+
 }
