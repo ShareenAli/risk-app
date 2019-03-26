@@ -174,12 +174,20 @@ public class MainModel extends Observable {
     }
 
     /**
+     * notify all the observers
+     */
+    void changeWorldView() {
+        setChanged();
+        notifyObservers(MainModel.CHANGE_ARMY);
+    }
+
+    /**
      * Update the state of the player and notify all the observers
      *
      * @param name   name of the player
      * @param player object to update
      */
-    private void updatePlayer(String name, Player player) {
+    void updatePlayer(String name, Player player) {
         this.players.put(name, player);
         setChanged();
         notifyObservers(player.notifyString());

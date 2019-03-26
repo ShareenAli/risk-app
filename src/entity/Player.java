@@ -5,6 +5,7 @@ import risk.game.main.MainModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -233,6 +234,34 @@ public class Player {
      */
     public void setNoOfDiceRolls(int noOfDiceRolls) {
         NoOfDiceRolls = noOfDiceRolls;
+    }
+
+    public Player attack(Player target, String targetCountry, String sourceCountry, ArrayList<Integer> attackerDices,
+                       ArrayList<Integer> defenderDices) {
+        int attackerArmies = this.getArmiesInCountry(sourceCountry);
+        int defenderArmies = target.getArmiesInCountry(targetCountry);
+        attackerDices.sort((Integer o1, Integer o2) -> o2 - o1);
+        defenderDices.sort((Integer o1, Integer o2) -> o2 - o1);
+
+        for (int i = 0; i < defenderDices.size(); i++) {
+            System.out.println(attackerDices.get(i) + ", " + defenderDices.get(i));
+            if (attackerDices.get(i) > defenderDices.get(i)) {
+                defenderArmies--;
+
+                if (defenderArmies == 0)
+                    break;
+            } else {
+                attackerArmies--;
+
+                if (attackerArmies == 1)
+                    break;
+            }
+        }
+
+        target.setArmies(targetCountry, defenderArmies);
+        this.setArmies(sourceCountry, attackerArmies);
+
+        return target;
     }
 
     /**

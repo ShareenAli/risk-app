@@ -65,7 +65,7 @@ public class SettingsController extends ActivityController {
         this.buttonStartLs = (ActionEvent e) -> startGame();
 
         this.buttonMapLs = (ActionEvent e) -> {
-            this.fileChooser.updateExtension("risk/map");
+            this.fileChooser.updateExtension("map");
             File file = this.fileChooser.openFile();
 
             if (file != null) {
