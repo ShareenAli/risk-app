@@ -350,9 +350,10 @@ public class Player {
         this.victory = victory;
     }
 
-     * Checks if the player has played once or not
-
-
+    /**
+     * Checks if the player has exchanged the card before
+     *
+     * @return Boolean True if player has done an exchange
      */
     public boolean playedBefore() { return hasPlayedBefore; }
 

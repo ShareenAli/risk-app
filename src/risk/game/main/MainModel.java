@@ -332,8 +332,8 @@ public class MainModel extends Observable {
             attacker.assignCountry(targetCountry);
 
             if (defendantCountries.size() == 0) {
-                this.playerNames.remove(defendant);
-                this.players.remove(defendant);
+                this.playerNames.remove(defendant.getName());
+                this.players.remove(defendant.getName());
 
                 if (defendantCards.size() > 0) {
                     for (String card : defendantCards) {

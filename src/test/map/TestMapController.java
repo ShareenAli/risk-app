@@ -6,14 +6,16 @@ import org.junit.Before;
 import org.junit.Test;
 import risk.map.MapController;
 
+import java.io.File;
 import java.util.HashMap;
 
+import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
 /**
  * This test class verifies map controller functionality
  *
- * @author iamdc003, shareenali
+ * @author iamdc003, shareenali, Jasmeet8
  * @version 0.2
  */
 
@@ -37,13 +39,17 @@ public class TestMapController {
         this.continents.put("Asia", new Continent("Asia", 3));
         this.continents.put("Africa", new Continent("Africa", 3));
     }
-
+    /**
+     * Test Case method to check if graph is subconnected
+     */
     @Test
     public void isSubConnectedGraph() {
         this.mapController.setupValues(this.countries, this.continents);
         assertTrue(this.mapController.isErrorInSubConnectedGraph());
     }
-
+    /**
+     * Test Case method to check there is no continent for a country
+     */
     @Test
     public void isNoContinent() {
         Country chili = new Country("Chili", "", 33, 12);
@@ -52,6 +58,9 @@ public class TestMapController {
         assertTrue(this.mapController.validateNoContinent());
     }
 
+    /**
+     * Test Case method to check there is no neighbour for a country
+     */
     @Test
     public void isNoNeighbours() {
         Country chili = new Country("Chili", "North America", 24, 14);
@@ -59,7 +68,9 @@ public class TestMapController {
         this.mapController.setupValues(this.countries, this.continents);
         assertTrue(this.mapController.validateNoNeighbours());
     }
-
+    /**
+     * Test Case method to check there is no country in continent
+     */
     @Test
     public void isNoCountryInContinent() {
         Continent continent = new Continent("Europe", 3);
@@ -67,7 +78,9 @@ public class TestMapController {
         this.mapController.setupValues(this.countries, this.continents);
         assertTrue(this.mapController.validateNoCountryInContinent());
     }
-
+    /**
+     * Test Case method to check ghost neighbours
+     */
     @Test
     public void isGhostNeighbours() {
         Country kenya = new Country("Kenya", "Africa", 32, 16);
@@ -76,4 +89,5 @@ public class TestMapController {
         this.mapController.setupValues(this.countries, this.continents);
         assertTrue(this.mapController.validateGhostNeighboursNolink());
     }
+
 }
