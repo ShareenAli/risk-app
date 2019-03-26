@@ -619,4 +619,20 @@ public class MainModel extends Observable {
             this.countries.put(country.getKey(), tempCountry);
         }
     }
+
+
+    /**
+     * Calculates and adds the armies when the cards are availed
+     */
+    public void addArmiesOnCardsAvail(Player player){
+        int availCount = player.getCardsAvailCount();
+        int updatedCount = availCount + 1;
+        player.setCardsAvailCount(updatedCount);
+        this.armiesAvailableToAssign += updatedCount * 5;
+        ArrayList<String> cards = player.getCards();
+        int cardListSize = cards.size();
+        for (int i = cardListSize - 1; i > cardListSize - 4; i--)
+            cards.remove(i);
+        player.setCards(cards);
+    }
 }

@@ -30,6 +30,8 @@ public class Player {
     private Color color;
     private int NoOfDiceRolls;
     private ArrayList<String> cards = new ArrayList<>();
+    private int cardsAvailCount = 0;
+    private boolean hasPlayedBefore = false;
     private HashMap<String, Integer> countries = new HashMap<>();
 
 
@@ -174,6 +176,7 @@ public class Player {
     public void fortificationPhase(String sourceCountryName, String targetCountryName, int armiesToTransfer) {
         this.addArmies(targetCountryName, armiesToTransfer);
         this.removeArmies(sourceCountryName, armiesToTransfer);
+        hasPlayedBefore = true;
     }
 
     /**
@@ -229,4 +232,28 @@ public class Player {
         NoOfDiceRolls = noOfDiceRolls;
     }
 
+    /**
+     * Checks if the player has played once or not
+
+
+     */
+    public boolean playedBefore() { return hasPlayedBefore; }
+
+
+
+    /**
+     * Retruns the number of times current player has availed his/her cards
+
+
+     */
+    public int getCardsAvailCount(){ return cardsAvailCount; }
+
+
+
+    /**
+     * Sets the number of times current player has availed his/her cards
+     * @param availCount Updated number of times player has availed his/her cards
+
+     */
+    public void setCardsAvailCount (int availCount){ cardsAvailCount = availCount; }
 }

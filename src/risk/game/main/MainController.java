@@ -437,4 +437,13 @@ public class MainController extends ActivityController {
 
         this.changePhase();
     }
+
+
+    /**
+     * This method is called when a player presses the Avail Cards button on the UI
+     */
+    public void availCards(){
+        Player player = this.model.getPlayer(this.phaseController.activePlayer());
+        this.model.addArmiesOnCardsAvail(player);
+    }
 }
