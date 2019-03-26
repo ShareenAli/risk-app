@@ -256,4 +256,85 @@ public class TestMainModel {
 
     }
 
+
+    /**
+     * Test case method  to Check the number of cards assigned after start up phase should be 1
+     */
+    @Test
+    public void checkCardAssignmentAfterStartUp() {
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 4);
+        HashMap<String, Country> countries = this.mainModel.getCountries();
+        this.mainModel.assignInitialCards();
+        Country country = countries.get("Russia");
+        boolean cardTypeFlag = country.getCardType().length() == 0;
+        assertEquals(false, cardTypeFlag);
+    }
+
+
+    /**
+     * Test case method  to  player will initially get 5 armies
+     */
+    @Test
+    public void checkInitialCardExchange() {
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 4);
+        ArrayList<String> al = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            al.add("Cavalry");
+        }
+        this.mainModel.resetArmiesToAssign("shareen");
+        this.mainModel.getPlayer("shareen").setCards(al);
+        this.mainModel.addArmiesOnCardsAvail(this.mainModel.getPlayer("shareen"));
+        int armyCount = this.mainModel.getArmiesAvailableToAssign();
+        assertEquals(8, armyCount);
+
+    }
+
+    /**
+     * Test case method  to Check the player will get 5+5 armies once card is availed
+     */
+    @Test
+    public void checkArmyAssignmentWhenCardIsAvailedMoreThanOnce() {
+        this.mainModel.getPlayer("dhaval").setArmies("Russia", 4);
+        ArrayList<String> al = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            al.add("Infantry");
+        }
+        this.mainModel.resetArmiesToAssign("dhaval");
+        this.mainModel.getPlayer("dhaval").setCards(al);
+        this.mainModel.addArmiesOnCardsAvail(this.mainModel.getPlayer("dhaval"));
+        this.mainModel.addArmiesOnCardsAvail(this.mainModel.getPlayer("dhaval"));
+        int armyCount = this.mainModel.getArmiesAvailableToAssign();
+        assertEquals(18, armyCount);
+    }
+
+    /**
+     * Test case method  to verify cards can be exchanged for armies if player has three cards of same sort or different sorts
+     */
+    @Test
+    public void checkCardAssignedProperly() {
+        ArrayList<String> al = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            al.add("Cavalry");
+        }
+        this.mainModel.getPlayer("dhaval").setCards(al);
+        this.mainModel.addArmiesOnCardsAvail(this.mainModel.getPlayer("dhaval"));
+        int cardCount = this.mainModel.getPlayer("dhaval").getCards().size();
+        assertEquals(3, cardCount);
+    }
+
+    /**
+     * Verify card is updated when Attacker wins
+     */
+    @Test
+    public void checkCardUpdate() {
+        this.mainModel.getPlayer("dhaval").setArmies("India", 12);
+        this.mainModel.getPlayer("shareen").setArmies("Pakistan", 2);
+        int cardBeforeAttack = this.mainModel.getPlayer("dhaval").getCards().size();
+        this.mainModel.getPlayer("shareen").setVictory(false);
+        this.mainModel.updateEntitiesAfterAttack(this.mainModel.getPlayer("shareen"), this.mainModel.getPlayer("dhaval"), "Pakistan");
+        int cardsAfterAttack = this.mainModel.getPlayer("dhaval").getCards().size();
+        boolean result = (cardBeforeAttack == cardsAfterAttack);
+        assertEquals(false, result);
+    }
+
 }
