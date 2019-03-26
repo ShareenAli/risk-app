@@ -336,6 +336,7 @@ public class MainController extends ActivityController {
     private void startupPhase() {
         this.model.assignCountry();
         this.model.assignArmies();
+        this.model.assignInitialCards();
     }
 
     /**
@@ -435,5 +436,14 @@ public class MainController extends ActivityController {
         this.doFortificationPhase(player.getName() + ":" + countryName, true, armiesToMove);
 
         this.changePhase();
+    }
+
+
+    /**
+     * This method is called when a player presses the Avail Cards button on the UI
+     */
+    public void availCards(){
+        Player player = this.model.getPlayer(this.phaseController.activePlayer());
+        this.model.addArmiesOnCardsAvail(player);
     }
 }

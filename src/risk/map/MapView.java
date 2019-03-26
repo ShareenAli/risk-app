@@ -59,6 +59,7 @@ public class MapView implements Observer {
 
     /**
      * Bind action listener to change map
+     *
      * @param listener listener to change map
      */
     void bindChangeMapListener(ActionListener listener) {
@@ -67,7 +68,8 @@ public class MapView implements Observer {
 
     /**
      * Bind action listeners to continent buttons
-     * @param add add continent
+     *
+     * @param add    add continent
      * @param update update continent
      * @param delete delete continent
      */
@@ -79,6 +81,7 @@ public class MapView implements Observer {
 
     /**
      * Bind the continent combo listeners
+     *
      * @param listener listener for the combo
      */
     void bindContinentComboListener(ListSelectionListener listener) {
@@ -87,6 +90,7 @@ public class MapView implements Observer {
 
     /**
      * Bind the mouse actions
+     *
      * @param listener mouse listener
      */
     void bindMouseListener(MouseListener listener) {
@@ -95,6 +99,7 @@ public class MapView implements Observer {
 
     /**
      * Bind country listener
+     *
      * @param listener click listener
      */
     void bindCountryListener(ActionListener listener) {
@@ -103,6 +108,7 @@ public class MapView implements Observer {
 
     /**
      * Bind save listener
+     *
      * @param listener click listener
      */
     void bindSaveListener(ActionListener listener) {
@@ -111,7 +117,8 @@ public class MapView implements Observer {
 
     /**
      * Notifies changes
-     * @param o model class
+     *
+     * @param o   model class
      * @param arg notifier action
      */
     @Override
@@ -141,6 +148,7 @@ public class MapView implements Observer {
 
     /**
      * Edit continent
+     *
      * @param continent continent to edit
      */
     void editContinent(Continent continent) {
@@ -150,12 +158,13 @@ public class MapView implements Observer {
 
     /**
      * Get the selected continent
+     *
      * @return continent
      */
     String selectedContinent() {
         return (this.listContinents.getSelectedIndex() > -1)
-            ? this.modelContinents.get(this.listContinents.getSelectedIndex())
-            : null;
+                ? this.modelContinents.get(this.listContinents.getSelectedIndex())
+                : null;
     }
 
     /**
@@ -167,6 +176,7 @@ public class MapView implements Observer {
 
     /**
      * Update the countries on the view
+     *
      * @param countries list of countries
      */
     private void updateCountries(HashMap<String, Country> countries) {
@@ -199,6 +209,7 @@ public class MapView implements Observer {
 
     /**
      * Update the continent on view
+     *
      * @param continents list of continents
      */
     @SuppressWarnings("unchecked")
@@ -214,6 +225,7 @@ public class MapView implements Observer {
 
     /**
      * Updates the image file
+     *
      * @param file image file
      */
     private void updateMap(File file) {
@@ -234,6 +246,7 @@ public class MapView implements Observer {
 
     /**
      * Makes the continent object
+     *
      * @return continent
      */
     Continent constructContinentDetails() {

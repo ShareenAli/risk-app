@@ -592,4 +592,47 @@ public class MainModel extends Observable {
             player.setNoOfDiceRolls((armies >= 3) ? 3 : 2);
     }
 
+
+    /**
+     * Initially assigns one card to every country
+     */
+    public void assignInitialCards(){
+        int cardNumber, max=2, min=0;
+        Country tempCountry;
+        String cardType = null;
+        for(Map.Entry<String, Country> country : this.countries.entrySet()){
+            cardNumber = new Random().nextInt(3);
+            switch(cardNumber){
+                case 0:
+                    cardType = "Infantry";
+                    break;
+                case 1:
+                    cardType = "Cavalry";
+                    break;
+                case 2:
+                    cardType = "Artillery";
+                    break;
+            }
+
+            tempCountry = country.getValue();
+            tempCountry.setCardType(cardType);
+            this.countries.put(country.getKey(), tempCountry);
+        }
+    }
+
+
+    /**
+     * Calculates and adds the armies when the cards are availed
+     */
+    public void addArmiesOnCardsAvail(Player player){
+        int availCount = player.getCardsAvailCount();
+        int updatedCount = availCount + 1;
+        player.setCardsAvailCount(updatedCount);
+        this.armiesAvailableToAssign += updatedCount * 5;
+        ArrayList<String> cards = player.getCards();
+        int cardListSize = cards.size();
+        for (int i = cardListSize - 1; i > cardListSize - 4; i--)
+            cards.remove(i);
+        player.setCards(cards);
+    }
 }
