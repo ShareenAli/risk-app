@@ -336,6 +336,7 @@ public class MainController extends ActivityController {
     private void startupPhase() {
         this.model.assignCountry();
         this.model.assignArmies();
+        this.model.assignInitialCards();
     }
 
     /**
