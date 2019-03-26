@@ -7,6 +7,7 @@ import java.util.Observer;
 
 /**
  * View that displays Logs
+ *
  * @author shareenali
  * @version 0.1
  */
@@ -33,7 +34,8 @@ public class LogsView implements Observer {
 
     /**
      * Updates the view the observable notifies
-     * @param o the model
+     *
+     * @param o   the model
      * @param arg identification string
      */
     @Override

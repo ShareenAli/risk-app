@@ -15,6 +15,7 @@ import java.util.*;
 
 /**
  * View that implements the World UI
+ *
  * @author shareenali
  * @version 0.1
  */
@@ -27,7 +28,8 @@ public class WorldView implements Observer {
 
     /**
      * Updates the view the observable notifies
-     * @param o the model
+     *
+     * @param o   the model
      * @param arg identification string
      */
     @Override
@@ -48,6 +50,7 @@ public class WorldView implements Observer {
 
     /**
      * Prepares the world ui
+     *
      * @param bmpFile image of the map
      */
     void prepUi(File bmpFile) {
@@ -69,7 +72,8 @@ public class WorldView implements Observer {
 
     /**
      * Loads countries into the UI
-     * @param countries list of countries
+     *
+     * @param countries       list of countries
      * @param buttonCountryLs button listeners when countries are clicked
      */
     void loadCountries(ArrayList<Country> countries, ActionListener buttonCountryLs) {
@@ -95,6 +99,7 @@ public class WorldView implements Observer {
 
     /**
      * Selects a country
+     *
      * @param country name of the country
      */
     void selectCountry(String country) {
@@ -109,6 +114,7 @@ public class WorldView implements Observer {
 
     /**
      * Updates a countries of player
+     *
      * @param player player for which the country is to updated
      */
     private void updateCountryOfPlayer(Player player) {
@@ -119,6 +125,7 @@ public class WorldView implements Observer {
 
     /**
      * Update countries of all the players
+     *
      * @param players list of players
      */
     private void distributeCountriesToPlayers(HashMap<String, Player> players) {

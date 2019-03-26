@@ -101,7 +101,7 @@ public class CountryDialog {
 
     public int showUi() {
         return JOptionPane.showOptionDialog(null, this.$$$getRootComponent$$$(), "Add a country",
-            JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
     }
 
     {

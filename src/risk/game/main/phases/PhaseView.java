@@ -10,6 +10,7 @@ import java.util.*;
 
 /**
  * View that displays UI
+ *
  * @author shareeali
  * @version 0.1
  */
@@ -42,6 +43,7 @@ public class PhaseView implements Observer {
 
     /**
      * Bind the change phase listener
+     *
      * @param listener listener to bind
      */
     void bindChangePhaseListener(ActionListener listener) {
@@ -50,6 +52,7 @@ public class PhaseView implements Observer {
 
     /**
      * It adds players to the domination table in order to initialize the table
+     *
      * @param players list of players
      */
     void addPlayers(ArrayList<String> players) {
@@ -63,6 +66,7 @@ public class PhaseView implements Observer {
 
     /**
      * It executes set of actions when the phase has been changed
+     *
      * @param model the model which had been changed
      */
     private void onPhaseChanged(PhaseModel model) {
@@ -71,6 +75,7 @@ public class PhaseView implements Observer {
 
     /**
      * It executes set of actions when the player has been changed
+     *
      * @param model the model which had been changed
      */
     private void onPlayerChanged(PhaseModel model) {
@@ -80,7 +85,8 @@ public class PhaseView implements Observer {
 
     /**
      * Updates the view the observable notifies
-     * @param o the model
+     *
+     * @param o   the model
      * @param arg identification string
      */
     @Override
@@ -107,8 +113,9 @@ public class PhaseView implements Observer {
 
     /**
      * Add player to the view
+     *
      * @param mainModel the root model
-     * @param name name of the player to add
+     * @param name      name of the player to add
      */
     private void addPlayer(MainModel mainModel, String name) {
         String row[] = mainModel.getDominationRow(mainModel.getPlayer(name));
@@ -119,7 +126,8 @@ public class PhaseView implements Observer {
 
     /**
      * Add players to the view
-     * @param players list of players
+     *
+     * @param players     list of players
      * @param playerNames names of players
      */
     private void addPlayers(HashMap<String, String[]> players, ArrayList<String> playerNames) {

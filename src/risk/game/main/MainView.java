@@ -7,6 +7,7 @@ import java.util.Observer;
 
 /**
  * Displays the UI of the main game play
+ *
  * @author shareenali
  * @version 0.1
  */
@@ -19,7 +20,8 @@ public class MainView implements Observer {
 
     /**
      * Updates the view the observable notifies
-     * @param o the model
+     *
+     * @param o   the model
      * @param arg identification string
      */
     @Override
@@ -29,8 +31,9 @@ public class MainView implements Observer {
 
     /**
      * Prepares the view w.r.t. children
+     *
      * @param panelPhase phase view
-     * @param panelLogs logs view
+     * @param panelLogs  logs view
      * @param panelWorld world view
      */
     void prepareView(JPanel panelPhase, JPanel panelLogs, JPanel panelWorld) {
@@ -41,6 +44,7 @@ public class MainView implements Observer {
 
     /**
      * Adds phase view into the UI
+     *
      * @param panel panel that contains phase view
      */
     private void addPhaseView(JPanel panel) {
@@ -54,6 +58,7 @@ public class MainView implements Observer {
 
     /**
      * Adds logs view into the UI
+     *
      * @param panel panel that contains the logs view
      */
     private void addLogsView(JPanel panel) {
@@ -67,6 +72,7 @@ public class MainView implements Observer {
 
     /**
      * Adds world view into the UI
+     *
      * @param panel panel that contains the world view
      */
     private void addWorldView(JPanel panel) {
