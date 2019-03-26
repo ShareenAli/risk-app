@@ -17,7 +17,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -35,7 +34,7 @@ public class MainController extends ActivityController {
     private WorldController worldController;
     private ActionListener buttonCountryLs, buttonChangePhaseLs;
     private String fortSource, fortTarget;
-    private String attackSourceCountry, attackTargetCountry, attacker, defendant;
+    private String attackSourceCountry, attackTargetCountry, attackerName, defendantName;
 
     public MainController() {
         this.view = new MainView();
@@ -202,13 +201,13 @@ public class MainController extends ActivityController {
         String country = command.split(":")[1];
 
         if (this.attackSourceCountry == null) {
-            this.attacker = owner;
+            this.attackerName = owner;
             this.attackSourceCountry = country;
             this.worldController.selectCountry(country);
             return;
         }
 
-        this.defendant = owner;
+        this.defendantName = owner;
         this.attackTargetCountry = country;
 
         if (owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
@@ -217,19 +216,20 @@ public class MainController extends ActivityController {
             return;
         }
 
-        boolean feasible = isAttackPossible(attacker, this.attackSourceCountry, this.attackTargetCountry);
+        boolean feasible = isAttackPossible(attackerName, this.attackSourceCountry, this.attackTargetCountry);
 
         if (!feasible)
             return;
 
-        Player attacker = this.model.getPlayer(this.attacker);
-        Player defendant = this.model.getPlayer(this.defendant);
+        Player attacker = this.model.getPlayer(this.attackerName);
+        Player defendant = this.model.getPlayer(this.defendantName);
 
-        boolean outcome = this.model.attackPhase(this.attacker, this.defendant, this.attackSourceCountry, this.attackTargetCountry, allOutMode);
-        // if won --> attacker moves the armies to the newly conquered country, update the players countries and armies, award a card
+        boolean outcome = this.model.attackPhase(this.attackerName, this.defendantName, this.attackSourceCountry, this.attackTargetCountry, allOutMode);
+        // if won --> attackerName moves the armies to the newly conquered country, update the players countries and armies, award a card
 
+        if (!outcome) {
+            this.model.updateEntitiesAfterAttack(defendant, attacker, attackTargetCountry);
 
-        if (outcome) {
             HashMap<String, Player> players = this.model.getPlayers();
 
             if (players.size() == 1) {
