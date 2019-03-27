@@ -32,10 +32,64 @@ public class Player {
     private Color color;
     private int NoOfDiceRolls;
     private ArrayList<String> cards = new ArrayList<>();
-    private int cardsAvailCount = 0;
-    private boolean hasPlayedBefore = false;
+    private int cardsAvailCount = 0, cardsUsedCount = 0;
+    private boolean hasPlayedBefore = false, cardHasBeenUsed = false;
     private HashMap<String, Integer> countries = new HashMap<>();
     private boolean victory;
+
+    /**
+     * Removes one Infantry, Artillery and Cavalry cards
+     */
+    public void useDistinctCards () {
+        this.cards.remove(MainModel.CARD_TYPE_ARTILLERY);
+        this.cards.remove(MainModel.CARD_TYPE_CAVALRY);
+        this.cards.remove(MainModel.CARD_TYPE_INFANTRY);
+
+        this.useCard();
+    }
+
+    /**
+     * Use the same kind of card
+     * @param type type of card
+     */
+    public void useSameCard(String type) {
+        this.cards.remove(type);
+        this.cards.remove(type);
+        this.cards.remove(type);
+
+        this.useCard();
+    }
+
+    /**
+     * Use the card
+     */
+    private void useCard() {
+        this.cardHasBeenUsed = true;
+        this.cardsUsedCount++;
+    }
+
+    /**
+     * Check if the card has been used
+     * @return true if it has been
+     */
+    public boolean hasCardBeenUsed() {
+        return this.cardHasBeenUsed;
+    }
+
+    /**
+     * Reset the flag for the card has been used
+     */
+    public void resetCardUsed() {
+        this.cardHasBeenUsed = false;
+    }
+
+    /**
+     * Get the times the cards have been used
+     * @return the count
+     */
+    public int getCardsUsedCount() {
+        return this.cardsUsedCount;
+    }
 
 
     /**
@@ -48,9 +102,17 @@ public class Player {
     }
 
     /**
+     * Add the card
+     * @param card type of card
+     */
+    public void addCard(String card) {
+        this.cards.add(card);
+    }
+
+    /**
      * Sets the value of cards owned by a player
      *
-     * @param cards
+     * @param cards list of cards
      */
     public void setCards(ArrayList<String> cards) {
         this.cards = cards;
@@ -403,5 +465,112 @@ public class Player {
 
      */
     public void setCardsAvailCount (int availCount){ cardsAvailCount = availCount; }
+
+    /**
+     * Checks if player have Infantry card
+     *
+     * @return true if player has infantry card
+     */
+    public boolean haveInfantryCard () {
+        for (String card : this.cards) {
+            if (card.equals(MainModel.CARD_TYPE_INFANTRY)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if player have Cavalry Card
+     *
+     * @return true if player have Cavalry Card otherwise false
+     */
+    public boolean haveCavalryCard () {
+        for (String card : this.cards) {
+            if (card.equals(MainModel.CARD_TYPE_CAVALRY)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if player have Artillery Card
+     *
+     * @return true if player have Artillery Card otherwise false
+     */
+    public boolean haveArtilleryCard () {
+        for (String card : this.cards) {
+            if (card.equals(MainModel.CARD_TYPE_ARTILLERY)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if player have Infantry, Artillery and Cavalry Cards
+     *
+     * @return true if player have Infantry, Artillery and Cavalry Cards
+     * otherwise false
+     */
+    public boolean haveDistinctCards () {
+        return (this.haveInfantryCard() && this.haveArtilleryCard() && this.haveCavalryCard());
+    }
+
+    /**
+     * Checks if player have three Artillery cards
+     *
+     * @return true if player have three Artillery cards otherwise false
+     */
+    public boolean haveThreeArtilleryCards () {
+        int artillery = 0;
+        for (String card : this.cards) {
+            if (card.equals(MainModel.CARD_TYPE_ARTILLERY)) {
+                artillery++;
+            }
+        }
+        return (artillery == 3);
+    }
+
+    /**
+     * Checks if player have three Cavalry cards
+     *
+     * @return true if player have three Cavalry cards otherwise false
+     */
+    public boolean haveThreeCavalryCards () {
+        int cavalry = 0;
+        for (String card : this.cards) {
+            if (card.equals(MainModel.CARD_TYPE_CAVALRY)) {
+                cavalry++;
+            }
+        }
+        return (cavalry == 3);
+    }
+
+    /**
+     * Checks if player have three Infantry cards
+     *
+     * @return true if player have three Infantry Cards otherwise false
+     */
+    public boolean haveThreeInfantryCards () {
+        int infantry = 0;
+        for (String card : this.cards) {
+            if (card.equals(MainModel.CARD_TYPE_INFANTRY)) {
+                infantry++;
+            }
+        }
+        return (infantry == 3);
+    }
+
+    /**
+     * Checks if player have either three Cavalry, Artillery or Infantry cards
+     *
+     * @return true if player have either three Cavalry, Artillery or Infantry
+     * cards otherwise false
+     */
+    public boolean haveThreeSameTypeCards () {
+        return (this.haveThreeCavalryCards() || this.haveThreeArtilleryCards() || this.haveThreeInfantryCards());
+    }
 
 }

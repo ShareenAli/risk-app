@@ -258,20 +258,6 @@ public class TestMainModel {
 
 
     /**
-     * Test case method  to Check the number of cards assigned after start up phase should be 1
-     */
-    @Test
-    public void checkCardAssignmentAfterStartUp() {
-        this.mainModel.getPlayer("shareen").setArmies("Russia", 4);
-        HashMap<String, Country> countries = this.mainModel.getCountries();
-        this.mainModel.assignInitialCards();
-        Country country = countries.get("Russia");
-        boolean cardTypeFlag = country.getCardType().length() == 0;
-        assertEquals(false, cardTypeFlag);
-    }
-
-
-    /**
      * Test case method  to  player will initially get 5 armies
      */
     @Test

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="risk.game.main.dialog.CardDialog">
+  <grid id="27dc6" binding="panelContent" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="424" height="222"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <scrollpane id="1b206" binding="scrollContent">
+        <constraints border-constraint="Center"/>
+        <properties>
+          <preferredSize width="50" height="200"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="7bda7" class="javax.swing.JList" binding="listContent">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </scrollpane>
+    </children>
+  </grid>
+</form>

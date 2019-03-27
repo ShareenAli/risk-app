@@ -64,7 +64,7 @@ public class Country {
      * Sets type of the card assigned to the country
      * @param type type of card
      */
-    public void setCardType(String type) {
+    public void setCard(String type) {
         this.cardType = type;
     }
 

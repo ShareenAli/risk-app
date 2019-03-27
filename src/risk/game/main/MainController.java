@@ -4,6 +4,7 @@ import entity.Continent;
 import entity.Country;
 import entity.Player;
 import risk.RiskApp;
+import risk.game.main.dialog.CardDialog;
 import risk.game.main.dialog.NoOfArmiesDialog;
 import risk.game.main.logs.LogsController;
 import risk.game.main.phases.PhaseController;
@@ -119,7 +120,6 @@ public class MainController extends ActivityController {
                     this.doFortificationPhase(e.getActionCommand(), false, 0);
                     break;
                 case PhaseModel.PHASE_ATTACK:
-                    System.out.println(e.getActionCommand());
                     this.doAttackPhase(e.getActionCommand(), false);
                     break;
             }
@@ -170,11 +170,19 @@ public class MainController extends ActivityController {
 
         if (this.attackerName == null) {
             if (!owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
+                if (isComputerPlayer) {
+                    this.logsController.log(this.attackerName + " chose not to attack!");
+                    return;
+                }
                 JOptionPane.showMessageDialog(new JFrame(), "You have to choose your own country to attack",
                     "Wrong move!", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if (this.model.getPlayer(owner).getArmiesInCountry(country) < 2) {
+                if (isComputerPlayer) {
+                    this.logsController.log(this.attackerName + " chose not to attack!");
+                    return;
+                }
                 JOptionPane.showMessageDialog(new JFrame(), "You don't have enough armies to attack",
                     "Wrong move!", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -192,12 +200,20 @@ public class MainController extends ActivityController {
         }
 
         if (owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
+            if (isComputerPlayer) {
+                this.logsController.log(this.attackerName + " chose not to attack!");
+                return;
+            }
             JOptionPane.showMessageDialog(new JFrame(), "You can not attack your own country!",
                 "Wrong move!", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (!this.model.checkForLink(new ArrayList<>(), this.attackSource, country)) {
+            if (isComputerPlayer) {
+                this.logsController.log(this.attackerName + " chose not to attack!");
+                return;
+            }
             JOptionPane.showMessageDialog(new JFrame(), this.attackSource + " is not connected to " + country,
                 "Wrong move!", JOptionPane.ERROR_MESSAGE);
             return;
@@ -206,10 +222,14 @@ public class MainController extends ActivityController {
         this.defenderName = owner;
         this.attackTarget = country;
 
-        // ask for all out mode?
-        int isAllOut = JOptionPane.showConfirmDialog(null, "Would you like to attack with all out mode?",
-            "Attack Phase", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-        boolean isAllOutMode = (isAllOut == JOptionPane.YES_OPTION);
+        boolean isAllOutMode = true;
+
+        if (!isComputerPlayer) {
+            // ask for all out mode?
+            int isAllOut = JOptionPane.showConfirmDialog(null, "Would you like to attack with all out mode?",
+                "Attack Phase", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            isAllOutMode = (isAllOut == JOptionPane.YES_OPTION);
+        }
 
         performAttack(isAllOutMode);
 
@@ -257,6 +277,12 @@ public class MainController extends ActivityController {
             }
             attacker.setArmies(this.attackTarget, toMove);
             attacker.setArmies(this.attackSource, diff);
+
+            if (this.model.getCard(this.attackTarget) != null) {
+                attacker.addCard(this.model.getCard(this.attackTarget));
+                this.model.useCard(this.attackTarget);
+            }
+
             this.logsController.log(attacker.getName() + " has won " + this.attackTarget + " from " + defender.getName());
             this.model.updatePlayer(defender.getName(), defender);
             this.model.updatePlayer(attacker.getName(), attacker);
@@ -271,6 +297,12 @@ public class MainController extends ActivityController {
 
         if (isAllOutMode)
             this.performAttack(true);
+
+        if (this.model.hasPlayerWon(attacker)) {
+            JOptionPane.showMessageDialog(new JFrame(), attacker.getName() + " has won the game!",
+                "Yeyy!", JOptionPane.INFORMATION_MESSAGE);
+            System.exit(0);
+        }
     }
 
     /**
@@ -317,6 +349,10 @@ public class MainController extends ActivityController {
 
         boolean isConnected = this.model.checkForLink(new ArrayList<>(), this.fortSource, country);
         if (!isConnected) {
+            if (isComputerPlayer) {
+                this.logsController.log(owner + " skipped the fortification phase!");
+                return;
+            }
             JOptionPane.showMessageDialog(new JFrame(), this.fortSource + " and " + country +
                     " are not connected!", "No more moves allowed!", JOptionPane.ERROR_MESSAGE);
             return;
@@ -357,7 +393,6 @@ public class MainController extends ActivityController {
     private void startupPhase() {
         this.model.assignCountry();
         this.model.assignArmies();
-        this.model.assignInitialCards();
     }
 
     /**
@@ -388,8 +423,6 @@ public class MainController extends ActivityController {
         this.fortSource = this.fortTarget = null;
         this.resetAttackValues();
         this.phaseController.changePhase();
-        this.model.resetArmiesToAssign(this.phaseController.activePlayer());
-
 
         this.onPhaseChanged();
     }
@@ -400,11 +433,51 @@ public class MainController extends ActivityController {
     private void onPhaseChanged() {
         switch (this.phaseController.activePhase()) {
             case PhaseModel.PHASE_REINFORCEMENT:
-                automateReinforcementPhase();
+                this.startCardPhase();
+                this.model.resetArmiesToAssign(this.phaseController.activePlayer());
+                this.automateReinforcementPhase();
                 break;
             case PhaseModel.PHASE_FORTIFICATION:
-                automateFortificationPhase();
+                this.automateFortificationPhase();
                 break;
+            case PhaseModel.PHASE_ATTACK:
+                this.automateAttackPhase();
+                break;
+        }
+    }
+
+    private void startCardPhase() {
+        Player player = this.model.getPlayer(this.phaseController.activePlayer());
+        if (player.getType() == Player.TYPE_COMPUTER)
+            return;
+
+        ArrayList<String> cards = player.getCards();
+
+        if (cards.size() == 0)
+            return;
+
+        CardDialog dialog = new CardDialog();
+        dialog.setupCards(cards);
+
+        int result = dialog.showUi();
+
+        ArrayList<String> selectedCards = dialog.getSelectedCards();
+
+        if (cards.size() == 5 && selectedCards.size() < 3)
+            this.startCardPhase();
+
+        if (selectedCards.size() > 2) {
+            String cardType1 = selectedCards.get(0), cardType2 = selectedCards.get(1), cardType3 = selectedCards.get(2);
+            if (cardType1.equalsIgnoreCase(cardType2) && cardType2.equalsIgnoreCase(cardType3)) {
+                player.useSameCard(cardType1);
+                this.logsController.log(player.getName() + " exchanged three " + cardType1 + " cards for armies!");
+            }
+            if (!cardType1.equalsIgnoreCase(cardType2) && !cardType2.equalsIgnoreCase(cardType3)) {
+                player.useDistinctCards();
+                this.logsController.log(player.getName() + " exchanged three different cards for armies!");
+            }
+
+            this.model.updatePlayerWithoutNotify(player.getName(), player);
         }
     }
 
@@ -455,6 +528,37 @@ public class MainController extends ActivityController {
 
         int armiesToMove = (new Random()).nextInt(player.getArmiesInCountry(this.fortSource) - 1);
         this.doFortificationPhase(player.getName() + ":" + countryName, true, armiesToMove);
+
+        this.changePhase();
+    }
+
+    private void automateAttackPhase() {
+        Player player = this.model.getPlayer(this.phaseController.activePlayer());
+
+        if (player.getType() == Player.TYPE_HUMAN)
+            return;
+
+        ArrayList<String> list = new ArrayList<>(player.getCountries().keySet());
+        String countryName = list.get((new Random()).nextInt(list.size()));
+
+        if (player.getArmiesInCountry(countryName) == 1) {
+            this.logsController.log(player.getName() + " chose not to attack!");
+            this.changePhase();
+            return;
+        }
+
+        this.doAttackPhase(player.getName() + ":" + countryName, true);
+
+        ArrayList<String> countries = new ArrayList<>(this.model.getCountries().keySet());
+        String anotherName = countries.get((new Random()).nextInt(list.size()));
+
+        if (!this.model.checkForLink(new ArrayList<>(), this.fortSource, anotherName)) {
+            this.logsController.log(player.getName() + " chose not to attack!");
+            this.changePhase();
+            return;
+        }
+
+        this.doAttackPhase(player.getName() + ":" + anotherName, true);
 
         this.changePhase();
     }

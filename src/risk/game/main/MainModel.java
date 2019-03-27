@@ -16,6 +16,10 @@ import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class MainModel extends Observable {
+    public static final String CARD_TYPE_INFANTRY = "Infantry";
+    public static final String CARD_TYPE_CAVALRY = "Cavalry";
+    public static final String CARD_TYPE_ARTILLERY = "Artillery";
+
     public static final String CHANGE_ARMY = "main:army";
     public static final String UPDATE_PLAYER = "update:player";
 
@@ -114,6 +118,25 @@ public class MainModel extends Observable {
     }
 
     /**
+     * Get the card
+     * @param country name of the country
+     * @return type of card
+     */
+    public String getCard(String country) {
+        return this.countries.get(country).getCardType();
+    }
+
+    /**
+     * Use the card
+     * @param country name of the country
+     */
+    public void useCard(String country) {
+        Country data = this.countries.get(country);
+        data.useCard();
+        this.countries.put(data.getName(), data);
+    }
+
+    /**
      * Get the row for the domination table.
      * It will display name, no of continents conquered, no of armies the player posses
      * and percent of the map conquered.
@@ -179,6 +202,31 @@ public class MainModel extends Observable {
     void changeWorldView() {
         setChanged();
         notifyObservers(MainModel.CHANGE_ARMY);
+    }
+
+    /**
+     * Checks if the player has won or not
+     *
+     * @param player player object
+     * @return true if won
+     */
+    public boolean hasPlayerWon(Player player) {
+        int totalCountries = this.countries.size();
+        int playerCountries = player.getCountries().size();
+
+        double limit = ((double) totalCountries) * (3.0 / 4.0);
+
+        return (playerCountries >= limit);
+    }
+
+    /**
+     * Update the state of the player
+     *
+     * @param name   name of the player
+     * @param player object to update
+     */
+    void updatePlayerWithoutNotify(String name, Player player) {
+        this.players.put(name, player);
     }
 
     /**
@@ -418,6 +466,12 @@ public class MainModel extends Observable {
         this.armiesAvailableToAssign = (int) Math.round(Math.floor((float) countriesConquered / 3) < 3
                 ? 3 : Math.floor((float) countriesConquered / 3));
         this.armiesAvailableToAssign += this.checkControlValueArmies(player);
+        if (player.hasCardBeenUsed()) {
+            int cardsArmies = player.getCardsUsedCount() * 5;
+            this.armiesAvailableToAssign += cardsArmies;
+            player.resetCardUsed();
+        }
+        this.players.put(player.getName(), player);
     }
 
     /**
@@ -526,35 +580,6 @@ public class MainModel extends Observable {
 
         this.players.put(player.getName(), player);
     }
-
-
-    /**
-     * Initially assigns one card to every country
-     */
-    public void assignInitialCards(){
-        int cardNumber, max=2, min=0;
-        Country tempCountry;
-        String cardType = null;
-        for(Map.Entry<String, Country> country : this.countries.entrySet()){
-            cardNumber = new Random().nextInt(3);
-            switch(cardNumber){
-                case 0:
-                    cardType = "Infantry";
-                    break;
-                case 1:
-                    cardType = "Cavalry";
-                    break;
-                case 2:
-                    cardType = "Artillery";
-                    break;
-            }
-
-            tempCountry = country.getValue();
-            tempCountry.setCardType(cardType);
-            this.countries.put(country.getKey(), tempCountry);
-        }
-    }
-
 
     /**
      * Calculates and adds the armies when the cards are availed

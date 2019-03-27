@@ -3,12 +3,14 @@ package risk.game.settings;
 import entity.Continent;
 import entity.Country;
 import entity.Player;
+import risk.game.main.MainModel;
 
 import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -171,11 +173,90 @@ class SettingsModel {
                     this.countries.add(country);
                 }
             }
+            this.assignCardsToCountry();
             return true;
         } catch (IOException ioe) {
             ioe.printStackTrace();
             return false;
         }
+    }
+
+    private void assignCardsToCountry() {
+        ArrayList<Country> countryList = new ArrayList<>();
+        int totalCountries = this.countries.size();
+        int assignment[] = new int[3];
+        assignment[0] = totalCountries / 3; // infantry
+        assignment[1] = totalCountries / 3; // cavalry
+        assignment[2] = totalCountries / 3; // artillery
+        Random random = new Random();
+
+        for (int i = 0; i < totalCountries; i++) {
+            int s = random.nextInt(3);
+            if (s == 3)
+                s--;
+
+            Country data = this.countries.get(i);
+            switch (s) {
+                case 0:
+                    if (assignment[0] == 0) {
+                        if (assignment[1] != 0) {
+                            data.setCard(MainModel.CARD_TYPE_CAVALRY);
+                            assignment[1]--;
+                            if (assignment[1] < 0)
+                                assignment[1] = 0;
+                        } else {
+                            data.setCard(MainModel.CARD_TYPE_ARTILLERY);
+                            assignment[2]--;
+                            if (assignment[2] < 0)
+                                assignment[2] = 0;
+                        }
+                    } else {
+                        data.setCard(MainModel.CARD_TYPE_INFANTRY);
+                        assignment[0]--;
+                    }
+                    break;
+                case 1:
+                    if (assignment[1] == 0) {
+                        if (assignment[0] != 0) {
+                            data.setCard(MainModel.CARD_TYPE_INFANTRY);
+                            assignment[0]--;
+                            if (assignment[0] < 0)
+                                assignment[0] = 0;
+                        } else {
+                            data.setCard(MainModel.CARD_TYPE_ARTILLERY);
+                            assignment[2]--;
+                            if (assignment[2] < 0)
+                                assignment[2] = 0;
+                        }
+                    } else {
+                        data.setCard(MainModel.CARD_TYPE_CAVALRY);
+                        assignment[1]--;
+                    }
+                    break;
+                case 2:
+                    if (assignment[2] == 0) {
+                        if (assignment[1] != 0) {
+                            data.setCard(MainModel.CARD_TYPE_CAVALRY);
+                            assignment[1]--;
+                            if (assignment[1] < 0)
+                                assignment[1] = 0;
+                        } else {
+                            data.setCard(MainModel.CARD_TYPE_INFANTRY);
+                            assignment[0]--;
+                            if (assignment[0] < 0)
+                                assignment[0] = 0;
+                        }
+                    } else {
+                        data.setCard(MainModel.CARD_TYPE_ARTILLERY);
+                        assignment[2]--;
+                    }
+                    break;
+            }
+
+            countryList.add(data);
+        }
+
+        this.countries = countryList;
     }
 
     /**
