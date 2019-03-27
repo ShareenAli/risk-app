@@ -181,6 +181,9 @@ class SettingsModel {
         }
     }
 
+    /**
+     * Assign the cards to the countries
+     */
     private void assignCardsToCountry() {
         ArrayList<Country> countryList = new ArrayList<>();
         int totalCountries = this.countries.size();

@@ -298,6 +298,16 @@ public class Player {
         NoOfDiceRolls = noOfDiceRolls;
     }
 
+    /**
+     * Attack for attack phase
+     *
+     * @param target Target player of the attack
+     * @param targetCountry Target country of the attack
+     * @param sourceCountry Source country of the attack
+     * @param attackerDices Dice rolls of the attacker
+     * @param defenderDices Dice rolls of the defender
+     * @return Player player object of the defendant
+     */
     public Player attack(Player target, String targetCountry, String sourceCountry, ArrayList<Integer> attackerDices,
                        ArrayList<Integer> defenderDices) {
         int attackerArmies = this.getArmiesInCountry(sourceCountry);

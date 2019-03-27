@@ -164,6 +164,12 @@ public class MainController extends ActivityController {
         this.logsController.log(owner + " reinforced " + country + " with " + armiesAssigned + " armies ");
     }
 
+    /**
+     * Start the attack phase
+     *
+     * @param command action command that contains the owner and name of the country
+     * @param isComputerPlayer identifier to check the type of player
+     */
     private void doAttackPhase(String command, boolean isComputerPlayer) {
         String owner = command.split(":")[0];
         String country = command.split(":")[1];
@@ -237,6 +243,11 @@ public class MainController extends ActivityController {
         this.model.changeWorldView();
     }
 
+    /**
+     * Perform the attack
+     *
+     * @param isAllOutMode Attacker can select if they want an all out mode before attacking
+     */
     private void performAttack(boolean isAllOutMode) {
         Player attacker = this.model.getPlayer(this.attackerName);
         Player defender = this.model.getPlayer(this.defenderName);
@@ -446,6 +457,9 @@ public class MainController extends ActivityController {
         }
     }
 
+    /**
+     * Start the card phase for the player
+     */
     private void startCardPhase() {
         Player player = this.model.getPlayer(this.phaseController.activePlayer());
         if (player.getType() == Player.TYPE_COMPUTER)
@@ -532,6 +546,9 @@ public class MainController extends ActivityController {
         this.changePhase();
     }
 
+    /**
+     * Automate the attack phase for a computer player
+     */
     private void automateAttackPhase() {
         Player player = this.model.getPlayer(this.phaseController.activePlayer());
 
