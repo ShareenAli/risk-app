@@ -237,7 +237,7 @@ public class MainController extends ActivityController {
             isAllOutMode = (isAllOut == JOptionPane.YES_OPTION);
         }
 
-        performAttack(isAllOutMode);
+        performAttack(isAllOutMode, isComputerPlayer);
 
         this.resetAttackValues();
         this.model.changeWorldView();
@@ -248,7 +248,7 @@ public class MainController extends ActivityController {
      *
      * @param isAllOutMode Attacker can select if they want an all out mode before attacking
      */
-    private void performAttack(boolean isAllOutMode) {
+    private void performAttack(boolean isAllOutMode, boolean isComputer) {
         Player attacker = this.model.getPlayer(this.attackerName);
         Player defender = this.model.getPlayer(this.defenderName);
 
@@ -282,6 +282,13 @@ public class MainController extends ActivityController {
             int used = attackerArmies - attacker.getArmiesInCountry(this.attackSource);
             int toMove = maxAttacker - used;
             int diff = attacker.getArmiesInCountry(this.attackSource) - toMove;
+            if(!isComputer && diff > 1) {
+                NoOfArmiesDialog noOfArmiesDialog = new NoOfArmiesDialog();
+                noOfArmiesDialog.setNoOfArmies(diff);
+                int result = noOfArmiesDialog.showUi("No. of armies to move");
+                toMove += result;
+                diff -= result;
+            }
             if (diff < 1) {
                 toMove--;
                 diff++;
@@ -307,7 +314,7 @@ public class MainController extends ActivityController {
             this.logsController.log("Round ended without results");
 
         if (isAllOutMode)
-            this.performAttack(true);
+            this.performAttack(true, isComputer);
 
         if (this.model.hasPlayerWon(attacker)) {
             JOptionPane.showMessageDialog(new JFrame(), attacker.getName() + " has won the game!",
