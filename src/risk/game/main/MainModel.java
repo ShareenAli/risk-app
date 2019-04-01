@@ -119,6 +119,7 @@ public class MainModel extends Observable {
 
     /**
      * Get the card
+     *
      * @param country name of the country
      * @return type of card
      */
@@ -128,6 +129,7 @@ public class MainModel extends Observable {
 
     /**
      * Use the card
+     *
      * @param country name of the country
      */
     public void useCard(String country) {
@@ -333,95 +335,6 @@ public class MainModel extends Observable {
         this.updatePlayer(player.getName(), player);
     }
 
-
-    /**
-     * Attack phase to perform post attack operations in case an attack is successful
-     *
-     * @param attackerName  Name of the attacker
-     * @param defendantName Name of the defendant
-     * @param sourceCountry Name of the attacking country
-     * @param targetCountry Name of the defending country
-     * @param allOutMode    States whether user has opted for alloutmode
-     */
-    public boolean attackPhase(String attackerName, String defendantName, String sourceCountry, String targetCountry, boolean allOutMode) {
-        Player attacker = this.players.get(attackerName);
-        Player defendant = this.players.get(defendantName);
-        boolean outcome = false;
-
-        determineNoOfDiceRolls(sourceCountry, attacker, true);
-        determineNoOfDiceRolls(targetCountry, defendant, false);
-
-        defendant = attacker.executeAttack(attacker, defendant, sourceCountry, targetCountry);
-
-        if (allOutMode) {
-            if (attacker.getArmiesInCountry(sourceCountry) > 1) {
-                outcome = attackPhase(attackerName, defendantName, sourceCountry, targetCountry, allOutMode);
-                defendant.setVictory(outcome);
-            } else {
-                return outcome;
-            }
-        }
-
-        this.players.put(attacker.getName(), attacker);
-        this.players.put(defendant.getName(), defendant);
-        this.updatePlayer(attacker.getName(), attacker);
-        this.updatePlayer(defendant.getName(), defendant);
-        return defendant.isVictory();
-    }
-
-    /**
-     * Perform necessary updates on the entities in the game
-     *
-     * @param defendant Player object of the defendant
-     * @param attacker Player object of the attacker
-     * @param targetCountry Name of the target country
-     */
-    public void updateEntitiesAfterAttack(Player defendant, Player attacker, String targetCountry) {
-
-        if (!defendant.isVictory()) {
-            HashMap<String, Integer> defendantCountries = defendant.getCountries();
-            Country country = this.countries.get(targetCountry);
-            ArrayList<String> attackerCards = attacker.getCards();
-            ArrayList<String> defendantCards = defendant.getCards();
-
-            defendant.removeCountry(targetCountry);
-            attacker.assignCountry(targetCountry);
-
-            if (defendantCountries.size() == 0) {
-                this.playerNames.remove(defendant.getName());
-                this.players.remove(defendant.getName());
-
-                if (defendantCards.size() > 0) {
-                    for (String card : defendantCards) {
-                        attackerCards.add(card);
-                    }
-                }
-            }
-            attackerCards.add(country.getCardType());
-            attacker.setCards(attackerCards);
-        }
-
-        if (this.players.containsKey(defendant.getName()))
-            this.players.put(defendant.getName(), defendant);
-
-        this.players.put(attacker.getName(), attacker);
-        this.updatePlayer(attacker.getName(), attacker);
-        this.updatePlayer(defendant.getName(), defendant);
-    }
-
-    /**
-     * Process the post attack phase operations
-     *
-     * @param attacker         Player object of the attacker
-     * @param sourceCountry    Country of the attacker
-     * @param targetCountry    Country of the defender
-     * @param armiesToTransfer No of armies to Transfer to the conquered countries
-     */
-    public void processPostAttackPhase(Player attacker, String sourceCountry, String targetCountry, int armiesToTransfer) {
-        attacker.postAttackPhase(sourceCountry, targetCountry, armiesToTransfer);
-        this.players.put(attacker.getName(), attacker);
-    }
-
     /**
      * It checks the Source country is interconnected with the target country to which armies are to be transferred
      *
@@ -528,71 +441,5 @@ public class MainModel extends Observable {
                 cv += continent.getControlValue();
         }
         return cv;
-    }
-
-    /**
-     * Checks if the attack is possible or not
-     *
-     * @param attackingCountry Name of the attacking country
-     * @param defendingCountry Name of the defending country
-     * @return boolean true if attack is feasible
-     */
-    public boolean checkIfAttackFeasible(Player player, String attackingCountry, String defendingCountry) {
-        Country attackingCountryObject = this.countries.get(attackingCountry);
-
-        ArrayList<String> neighbours = attackingCountryObject.getNeighbours();
-
-        if (neighbours.contains(defendingCountry))
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Check the minimum armies required to perform the attack
-     *
-     * @param player  Player object
-     * @param country Country object
-     * @return boolean true if armies meet the min. army criteria
-     */
-    public boolean checkMinArmiesForAttack(Player player, String country) {
-        int armies = player.getArmiesInCountry(country);
-
-        if (armies < 2)
-            return false;
-        else
-            return true;
-    }
-
-    /**
-     * Determine the number of dice rolls for each player
-     *
-     * @param country Country object
-     * @param player  Player object
-     */
-    public void determineNoOfDiceRolls(String country, Player player, boolean attacking) {
-        int armies = player.getArmiesInCountry(country);
-
-        if (attacking)
-            player.setNoOfDiceRolls((armies >= 3) ? 3 : 2);
-        else
-            player.setNoOfDiceRolls((armies >= 3) ? 3 : 2);
-
-        this.players.put(player.getName(), player);
-    }
-
-    /**
-     * Calculates and adds the armies when the cards are availed
-     */
-    public void addArmiesOnCardsAvail(Player player){
-        int availCount = player.getCardsAvailCount();
-        int updatedCount = availCount + 1;
-        player.setCardsAvailCount(updatedCount);
-        this.armiesAvailableToAssign += updatedCount * 5;
-        ArrayList<String> cards = player.getCards();
-        int cardListSize = cards.size();
-        for (int i = cardListSize - 1; i > cardListSize - 4; i--)
-            cards.remove(i);
-        player.setCards(cards);
     }
 }

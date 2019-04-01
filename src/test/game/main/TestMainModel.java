@@ -3,6 +3,7 @@ package test.game.main;
 import entity.Continent;
 import entity.Country;
 import entity.Player;
+import risk.game.main.MainController;
 import risk.game.main.MainModel;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import static junit.framework.TestCase.*;
  */
 public class TestMainModel {
     private MainModel mainModel = new MainModel();
+    private MainController mainController = new MainController();
 
     @Before
     public void before() {
@@ -157,7 +159,7 @@ public class TestMainModel {
     public void checkAttackPosibility() {
         this.mainModel.getPlayer("shareen").setArmies("Russia", 10);
         this.mainModel.getPlayer("dhaval").setArmies("India", 4);
-        boolean result = this.mainModel.checkIfAttackFeasible(this.mainModel.getPlayer("shareen"), "Russia", "India");
+        boolean result = this.mainController.doAttackPhase(, false);
         assertEquals(true, result);
     }
 

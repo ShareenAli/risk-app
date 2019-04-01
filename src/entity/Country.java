@@ -86,14 +86,6 @@ public class Country {
         if (this.neighbours.indexOf(name) == -1)
             this.neighbours.add(name);
     }
-    
-    /**
-     * Adds a list of neighbors to the country
-     * @return neighbours of the country
-     */
-    public void setNeighbours(ArrayList<String> neighbours) {
-    	this.neighbours = neighbours;
-    }
 
     /**
      * It returns name of the country
