@@ -48,6 +48,11 @@ public class MainModel extends Observable {
         }
     }
 
+    /**
+     * Removes the player from the game
+     *
+     * @param playerName Name of the player
+     */
     public void removePlayer(String playerName) {
         this.players.remove(playerName);
         this.playerNames.remove(playerName);

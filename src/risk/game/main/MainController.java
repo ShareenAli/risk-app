@@ -325,6 +325,12 @@ public class MainController extends ActivityController {
         }
     }
 
+    /**
+     * Determines the dice rolls for attacker and defender
+     *
+     * @param attacker Player object of the attacker
+     * @param defender Player object of the defender
+     */
     public void determineDiceRolls(Player attacker, Player defender) {
         int attackerArmies = attacker.getArmiesInCountry(this.attackSource);
         int defenderArmies = defender.getArmiesInCountry(this.attackTarget);
@@ -337,6 +343,11 @@ public class MainController extends ActivityController {
         defender.setNoOfDiceRolls(maxDiceRollsDefender);
     }
 
+    /**
+     * Removes the player if they do not have any countries in possession
+     *
+     * @param defender Player object
+     */
     public void postAttackOperations(Player defender) {
         defender.removeCountry(this.attackTarget);
         HashMap<String, Integer> countries = defender.getCountries();
@@ -522,6 +533,13 @@ public class MainController extends ActivityController {
         }
     }
 
+    /**
+     * Perform the card exchange for additional armies
+     *
+     * @param selectedCards The cards selected by the user
+     * @param player Player object
+     * @return String returns the card type
+     */
     public String performExchange(ArrayList<String> selectedCards, Player player) {
         if (selectedCards.size() > 2) {
             String cardType1 = selectedCards.get(0), cardType2 = selectedCards.get(1), cardType3 = selectedCards.get(2);
@@ -631,22 +649,47 @@ public class MainController extends ActivityController {
         this.attackSource = this.attackTarget = this.attackerName = this.defenderName = null;
     }
 
+    /**
+     * Set the attacking country
+     *
+     * @param attackSource Name of the attacking country
+     */
     public void setAttackSource(String attackSource) {
         this.attackSource = attackSource;
     }
 
+    /**
+     * Set the attack target
+     *
+     * @param attackTarget Name of the target country
+     */
     public void setAttackTarget(String attackTarget) {
         this.attackTarget = attackTarget;
     }
 
+    /**
+     * Set the model object
+     *
+     * @param model Model object for data manipulation
+     */
     public void setModel(MainModel model) {
         this.model = model;
     }
 
+    /**
+     * Set the Name of the attacker
+     *
+     * @param attackerName Name of the attacker
+     */
     public void setAttackerName(String attackerName) {
         this.attackerName = attackerName;
     }
 
+    /**
+     * Set the Name of the defender
+     *
+     * @param defenderName Name of the defender
+     */
     public void setDefenderName(String defenderName) {
         this.defenderName = defenderName;
     }
