@@ -35,7 +35,6 @@ public class Player {
     private int cardsUsedCount = 0;
     private boolean cardHasBeenUsed = false;
     private HashMap<String, Integer> countries = new HashMap<>();
-    private boolean victory;
 
     /**
      * Removes one Infantry, Artillery and Cavalry cards
@@ -128,7 +127,6 @@ public class Player {
         this.name = name;
         this.type = type;
         this.NoOfDiceRolls = 0;
-        this.victory = false;
     }
 
     /**

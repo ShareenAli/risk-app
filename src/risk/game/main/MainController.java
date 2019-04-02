@@ -95,7 +95,7 @@ public class MainController extends ActivityController {
     /**
      * Prepare the logs controller
      */
-    private void prepLogsController() {
+    public void prepLogsController() {
         this.logsController = new LogsController();
         this.logsController.initializeValues();
     }
@@ -248,7 +248,7 @@ public class MainController extends ActivityController {
      *
      * @param isAllOutMode Attacker can select if they want an all out mode before attacking
      */
-    private void performAttack(boolean isAllOutMode, boolean isComputer) {
+    public void performAttack(boolean isAllOutMode, boolean isComputer) {
         Player attacker = this.model.getPlayer(this.attackerName);
         Player defender = this.model.getPlayer(this.defenderName);
 
@@ -275,26 +275,25 @@ public class MainController extends ActivityController {
         defender = attacker.attack(defender, this.attackTarget, this.attackSource, attackerDices, defenderDices);
 
         if (defender.getArmiesInCountry(this.attackTarget) == 0) {
-            defender.removeCountry(this.attackTarget);
+            postAttackOperations(defender);
 
-            defenderHasLost(defender);
-
-            int used = attackerArmies - attacker.getArmiesInCountry(this.attackSource);
-            int toMove = attacker.getNoOfDiceRolls() - used;
-            int diff = attacker.getArmiesInCountry(this.attackSource) - toMove;
-            if (!isComputer && diff > 1) {
+            int armiesUsed = attackerArmies - attacker.getArmiesInCountry(this.attackSource);
+            int armiesToMove = attacker.getNoOfDiceRolls() - armiesUsed;
+            int differenceInArmies = attacker.getArmiesInCountry(this.attackSource) - armiesToMove;
+            if (!isComputer && differenceInArmies > 1) {
                 NoOfArmiesDialog noOfArmiesDialog = new NoOfArmiesDialog();
-                noOfArmiesDialog.setNoOfArmies(diff);
+                noOfArmiesDialog.setNoOfArmies(differenceInArmies);
                 int result = noOfArmiesDialog.showUi("No. of armies to move");
-                toMove += result;
-                diff -= result;
+                armiesToMove += result;
+                differenceInArmies -= result;
             }
-            if (diff < 1) {
-                toMove--;
-                diff++;
+
+            if (differenceInArmies < 1) {
+                armiesToMove--;
+                differenceInArmies++;
             }
-            attacker.setArmies(this.attackTarget, toMove);
-            attacker.setArmies(this.attackSource, diff);
+            attacker.setArmies(this.attackTarget, armiesToMove);
+            attacker.setArmies(this.attackSource, differenceInArmies);
 
             if (this.model.getCard(this.attackTarget) != null) {
                 attacker.addCard(this.model.getCard(this.attackTarget));
@@ -330,15 +329,16 @@ public class MainController extends ActivityController {
         int attackerArmies = attacker.getArmiesInCountry(this.attackSource);
         int defenderArmies = defender.getArmiesInCountry(this.attackTarget);
 
-        int maxAttacker = (attackerArmies >= 3) ? 3 : attackerArmies;
-        int maxDefender = (defenderArmies >= 2) ? 2 : defenderArmies;
-        maxDefender = (maxAttacker == maxDefender) ? maxAttacker - 1 : maxDefender;
+        int maxDiceRollsAttacker = (attackerArmies >= 3) ? 3 : attackerArmies;
+        int maxDiceRollsDefender = (defenderArmies >= 2) ? 2 : defenderArmies;
+        maxDiceRollsDefender = (maxDiceRollsAttacker == maxDiceRollsDefender) ? maxDiceRollsAttacker - 1 : maxDiceRollsDefender;
 
-        attacker.setNoOfDiceRolls(maxAttacker);
-        defender.setNoOfDiceRolls(maxDefender);
+        attacker.setNoOfDiceRolls(maxDiceRollsAttacker);
+        defender.setNoOfDiceRolls(maxDiceRollsDefender);
     }
 
-    public void defenderHasLost(Player defender) {
+    public void postAttackOperations(Player defender) {
+        defender.removeCountry(this.attackTarget);
         HashMap<String, Integer> countries = defender.getCountries();
 
         if (countries.size() == 0)
@@ -548,8 +548,8 @@ public class MainController extends ActivityController {
         if (player.getType() == Player.TYPE_HUMAN)
             return;
 
-        ArrayList<String> list = new ArrayList<>(player.getCountries().keySet());
-        String countryName = list.get((new Random()).nextInt(list.size()));
+        ArrayList<String> countries = new ArrayList<>(player.getCountries().keySet());
+        String countryName = countries.get((new Random()).nextInt(countries.size()));
 
         while (this.model.getArmiesAvailableToAssign() != 0) {
             this.doReinforcementPhase(player.getName() + ":" + countryName, true);
@@ -567,8 +567,8 @@ public class MainController extends ActivityController {
         if (player.getType() == Player.TYPE_HUMAN)
             return;
 
-        ArrayList<String> list = new ArrayList<>(player.getCountries().keySet());
-        String countryName = list.get((new Random()).nextInt(list.size()));
+        ArrayList<String> countries = new ArrayList<>(player.getCountries().keySet());
+        String countryName = countries.get((new Random()).nextInt(countries.size()));
 
         if (player.getArmiesInCountry(countryName) == 1) {
             this.logsController.log(player.getName() + " skipped the fortification phase!");
@@ -579,7 +579,7 @@ public class MainController extends ActivityController {
         this.doFortificationPhase(player.getName() + ":" + countryName, true, 0);
 
         do {
-            countryName = list.get((new Random()).nextInt(list.size()));
+            countryName = countries.get((new Random()).nextInt(countries.size()));
             if (this.model.checkForLink(new ArrayList<>(), this.fortSource, countryName))
                 break;
         } while (!countryName.equalsIgnoreCase(this.fortSource));
@@ -599,8 +599,8 @@ public class MainController extends ActivityController {
         if (player.getType() == Player.TYPE_HUMAN)
             return;
 
-        ArrayList<String> list = new ArrayList<>(player.getCountries().keySet());
-        String countryName = list.get((new Random()).nextInt(list.size()));
+        ArrayList<String> countryList = new ArrayList<>(player.getCountries().keySet());
+        String countryName = countryList.get((new Random()).nextInt(countryList.size()));
 
         if (player.getArmiesInCountry(countryName) == 1) {
             this.logsController.log(player.getName() + " chose not to attack!");
@@ -611,7 +611,7 @@ public class MainController extends ActivityController {
         this.doAttackPhase(player.getName() + ":" + countryName, true);
 
         ArrayList<String> countries = new ArrayList<>(this.model.getCountries().keySet());
-        String anotherName = countries.get((new Random()).nextInt(list.size()));
+        String anotherName = countries.get((new Random()).nextInt(countryList.size()));
 
         if (!this.model.checkForLink(new ArrayList<>(), this.fortSource, anotherName)) {
             this.logsController.log(player.getName() + " chose not to attack!");
@@ -638,4 +638,17 @@ public class MainController extends ActivityController {
     public void setAttackTarget(String attackTarget) {
         this.attackTarget = attackTarget;
     }
+
+    public void setModel(MainModel model) {
+        this.model = model;
+    }
+
+    public void setAttackerName(String attackerName) {
+        this.attackerName = attackerName;
+    }
+
+    public void setDefenderName(String defenderName) {
+        this.defenderName = defenderName;
+    }
+
 }

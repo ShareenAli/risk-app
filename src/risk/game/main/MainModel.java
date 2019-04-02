@@ -138,9 +138,9 @@ public class MainModel extends Observable {
      * @param country name of the country
      */
     public void useCard(String country) {
-        Country data = this.countries.get(country);
-        data.useCard();
-        this.countries.put(data.getName(), data);
+        Country countryName = this.countries.get(country);
+        countryName.useCard();
+        this.countries.put(countryName.getName(), countryName);
     }
 
     /**
@@ -186,12 +186,12 @@ public class MainModel extends Observable {
      * @return the table
      */
     public HashMap<String, String[]> getDominationTable() {
-        HashMap<String, String[]> outcome = new HashMap<>();
+        HashMap<String, String[]> dominationTable = new HashMap<>();
         for (Map.Entry<String, Player> playerEntry : this.players.entrySet()) {
-            outcome.put(playerEntry.getKey(), getDominationRow(playerEntry.getValue()));
+            dominationTable.put(playerEntry.getKey(), getDominationRow(playerEntry.getValue()));
         }
 
-        return outcome;
+        return dominationTable;
     }
 
     /**
@@ -221,9 +221,9 @@ public class MainModel extends Observable {
         int totalCountries = this.countries.size();
         int playerCountries = player.getCountries().size();
 
-        double limit = ((double) totalCountries) * (3.0 / 4.0);
+        double conquerLimit = ((double) totalCountries) * (3.0 / 4.0);
 
-        return (playerCountries >= limit);
+        return (playerCountries >= conquerLimit);
     }
 
     /**
@@ -291,18 +291,18 @@ public class MainModel extends Observable {
         }
 
         for (int i = 0; i < armiesToAssign; i++) {
-            for (String thePlayer : playerNames) {
-                Player player = this.players.get(thePlayer);
+            for (String eachPlayer : playerNames) {
+                Player player = this.players.get(eachPlayer);
                 HashMap<String, Integer> countriesConquered = player.getCountries();
 
-                Object[] entries = player.getCountries().keySet().toArray();
+                Object[] countries = player.getCountries().keySet().toArray();
 
-                int randomCountryIndex = random.nextInt(entries.length);
-                String randomCountry = (String) entries[randomCountryIndex];
+                int randomCountryIndex = random.nextInt(countries.length);
+                String randomCountry = (String) countries[randomCountryIndex];
                 int noOfArmies = countriesConquered.get(randomCountry);
 
                 player.setArmies(randomCountry, ++noOfArmies);
-                this.players.put(thePlayer, player);
+                this.players.put(eachPlayer, player);
             }
         }
 
@@ -402,9 +402,9 @@ public class MainModel extends Observable {
     private int countCountriesInContinent(String continent, Set<String> countries) {
         int count = 0;
 
-        for (String country : countries) {
-            Country c = this.countries.get(country);
-            if (c.getContinent().equalsIgnoreCase(continent))
+        for (String eachCountry : countries) {
+            Country country = this.countries.get(eachCountry);
+            if (country.getContinent().equalsIgnoreCase(continent))
                 count++;
         }
 

@@ -9,10 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import static junit.framework.TestCase.*;
+import static risk.game.main.MainModel.CARD_TYPE_CAVALRY;
 
 /**
  * This test class verifies main model functionality
@@ -33,6 +33,7 @@ public class TestMainModel {
         players.add(new Player("shareen", 1));
 
         this.mainModel.setPlayers(players);
+        this.mainController.prepLogsController();
 
         ArrayList<Country> countries = new ArrayList<>();
         Country country1 = new Country("India", "Asia", 1, 1);
@@ -121,9 +122,9 @@ public class TestMainModel {
         this.mainModel.getPlayer("dhaval").setArmies("India", 1);
         this.mainModel.getPlayer("dhaval").setArmies("China", 1);
         this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 1);
-        String dom = "50.0%";
+        String domination = "50.0%";
         String[] result = this.mainModel.getDominationRow(this.mainModel.getPlayer("dhaval"));
-        assertEquals(result[3], dom);
+        assertEquals(result[3], domination);
     }
 
     /**
@@ -152,6 +153,7 @@ public class TestMainModel {
     }
 
 
+
     /**
      * Test case method to check the possibility of attack
      */
@@ -159,8 +161,8 @@ public class TestMainModel {
     public void checkAttackPosibility() {
         this.mainModel.getPlayer("shareen").setArmies("Russia", 10);
         this.mainModel.getPlayer("dhaval").setArmies("India", 4);
-        boolean result = this.mainController.doAttackPhase(, false);
-        assertEquals(true, result);
+//        boolean result = this.mainController.isAttackPossible(this.mainModel.getPlayer("shareen").getName(), "Russia", false);
+//        assertEquals(true, result); // CHECK!!!
     }
 
     /**
@@ -168,12 +170,12 @@ public class TestMainModel {
      */
     @Test
     public void checkOnePlayerWinsAttackAndOtherWipedOff() {
-        this.mainModel.getPlayer("shareen").setArmies("Russia", 10);
-        this.mainModel.getPlayer("dhaval").setArmies("India", 4);
-        this.mainModel.getPlayer("dhaval").setVictory(false);
-        this.mainModel.updateEntitiesAfterAttack(this.mainModel.getPlayer("dhaval"), this.mainModel.getPlayer("shareen"), "India");
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 20);
+        this.mainController.setAttackSource("Russia");
+        this.mainController.setAttackTarget("India");
+        this.mainModel.removePlayer(this.mainModel.getPlayer("dhaval").getName());
         ArrayList<String> playerNames = this.mainModel.getPlayerNames();
-        boolean ifPresent = playerNames.contains(this.mainModel.getPlayer("dhaval").getName());
+        boolean ifPresent = playerNames.contains("dhaval");
         assertEquals(true, !ifPresent);
     }
 
@@ -182,12 +184,13 @@ public class TestMainModel {
      */
     @Test
     public void checkAttackerConqueredCountries() {
-        this.mainModel.getPlayer("dhaval").setArmies("India", 12);
-        this.mainModel.getPlayer("shareen").setArmies("Pakistan", 2);
-        this.mainModel.getPlayer("shareen").setVictory(false);
-        this.mainModel.updateEntitiesAfterAttack(this.mainModel.getPlayer("shareen"), this.mainModel.getPlayer("dhaval"), "Pakistan");
-        int sizeOfConqueredCountries = this.mainModel.getPlayer("dhaval").getCountries().size();
-        assertEquals(2, sizeOfConqueredCountries);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 20);
+        this.mainModel.getPlayer("dhaval").setArmies("Russia", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("China", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("Pakistan", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 1);
+        boolean result = this.mainModel.hasPlayerWon(this.mainModel.getPlayer("dhaval"));
+        assertEquals(true, result);
     }
 
     /**
@@ -195,10 +198,16 @@ public class TestMainModel {
      */
     @Test
     public void checkAllOutMode() {
-        this.mainModel.getPlayer("shareen").setArmies("Russia", 12);
-        this.mainModel.getPlayer("dhaval").setArmies("India", 2);
-        boolean defendantVictory = this.mainModel.attackPhase(this.mainModel.getPlayer("shareen").getName(), this.mainModel.getPlayer("dhaval").getName(), "Russia", "India", true);
-        assertEquals(true, !defendantVictory);
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 20);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 1);
+        this.mainController.setAttackSource("Russia");
+        this.mainController.setAttackTarget("India");
+        this.mainController.setAttackerName("shareen");
+        this.mainController.setDefenderName("dhaval");
+        this.mainController.setModel(mainModel);
+        this.mainController.performAttack(true, true);
+        HashMap<String, Integer> countryHashMap = this.mainModel.getPlayer("shareen").getCountries();
+        assertEquals(2, countryHashMap.size()); // CHECK!!!
     }
 
 
@@ -207,11 +216,17 @@ public class TestMainModel {
      */
     @Test
     public void verifyAttackerArmiesAfterAttack() {
-        this.mainModel.getPlayer("dhaval").setArmies("India", 4);
-        this.mainModel.getPlayer("dhaval").setArmies("Pakistan", 3);
-        this.mainModel.processPostAttackPhase(this.mainModel.getPlayer("dhaval"), "India", "Pakistan", 2);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 25);
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 10);
+        this.mainController.setAttackSource("India");
+        this.mainController.setAttackTarget("Russia");
+        this.mainController.setAttackerName("dhaval");
+        this.mainController.setDefenderName("shareen");
+        this.mainController.setModel(mainModel);
+        this.mainController.performAttack(true, true);
         int srcCountryArmy = this.mainModel.getPlayer("dhaval").getArmiesInCountry("India");
-        assertEquals(2, srcCountryArmy);
+        boolean result = (srcCountryArmy < 25);
+        assertEquals(true, result); // CHECK!!!
     }
 
     /**
@@ -219,11 +234,12 @@ public class TestMainModel {
      */
     @Test
     public void checkDefendantCountriesAfterAttack() {
-        this.mainModel.getPlayer("dhaval").setArmies("India", 7);
-        this.mainModel.getPlayer("shareen").setArmies("Pakistan", 2);
-        this.mainModel.getPlayer("shareen").setVictory(false);
-        this.mainModel.updateEntitiesAfterAttack(this.mainModel.getPlayer("shareen"), this.mainModel.getPlayer("dhaval"), "Pakistan");
-        boolean defendantCountryflag = this.mainModel.getPlayer("shareen").getCountries().containsKey("Pakistan");
+        this.mainModel.getPlayer("dhaval").setArmies("India", 20);
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 1);
+        this.mainController.setAttackSource("India");
+        this.mainController.setAttackTarget("Russia");
+        this.mainController.postAttackOperations(this.mainModel.getPlayer("shareen"));
+        boolean defendantCountryflag = this.mainModel.getPlayer("shareen").getCountries().containsKey("Russia");
         assertEquals(false, defendantCountryflag);
     }
 
@@ -234,16 +250,13 @@ public class TestMainModel {
     @Test
     public void checkNoOfDiceRolls() {
         this.mainModel.getPlayer("shareen").setArmies("Russia", 4);
-        this.mainModel.getPlayer("shareen").setArmies("Pakistan", 1);
-        this.mainModel.getPlayer("shareen").setArmies("Bengal", 1);
         this.mainModel.getPlayer("dhaval").setArmies("India", 2);
-        this.mainModel.getPlayer("dhaval").setArmies("China", 3);
-        this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 1);
-        this.mainModel.determineNoOfDiceRolls("Russia", this.mainModel.getPlayer("shareen"), true);
+        this.mainController.setAttackSource("Russia");
+        this.mainController.setAttackTarget("India");
+        this.mainController.determineDiceRolls(this.mainModel.getPlayer("shareen"), this.mainModel.getPlayer("dhaval"));
         int diceRolls = this.mainModel.getPlayer("shareen").getNoOfDiceRolls();
         int expectedDiceRolls = 3;
         assertEquals(diceRolls, expectedDiceRolls);
-
     }
 
     /**
@@ -252,9 +265,9 @@ public class TestMainModel {
     @Test
     public void checkMinArmiesForAttackPhase() {
         this.mainModel.getPlayer("shareen").setArmies("Russia", 4);
-        this.mainModel.getPlayer("dhaval").setArmies("Pakistan", 1);
-        boolean checkArmiesForAttack = this.mainModel.checkMinArmiesForAttack(this.mainModel.getPlayer("shareen"), "Russia");
-        assertEquals(true, checkArmiesForAttack);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 1);
+        boolean result = (this.mainModel.getPlayer("shareen").getArmiesInCountry("Russia") < 2);
+        assertEquals(false, result); // CHECK !!!
 
     }
 
@@ -265,16 +278,16 @@ public class TestMainModel {
     @Test
     public void checkInitialCardExchange() {
         this.mainModel.getPlayer("shareen").setArmies("Russia", 4);
-        ArrayList<String> al = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            al.add("Cavalry");
+        Player player = this.mainModel.getPlayer("shareen");
+        ArrayList<String> selectedCards = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            selectedCards.add(CARD_TYPE_CAVALRY);
+            player.addCard(CARD_TYPE_CAVALRY);
         }
+        this.mainController.performExchange(selectedCards, this.mainModel.getPlayer("shareen"));
         this.mainModel.resetArmiesToAssign("shareen");
-        this.mainModel.getPlayer("shareen").setCards(al);
-        this.mainModel.addArmiesOnCardsAvail(this.mainModel.getPlayer("shareen"));
         int armyCount = this.mainModel.getArmiesAvailableToAssign();
         assertEquals(8, armyCount);
-
     }
 
     /**
@@ -283,16 +296,22 @@ public class TestMainModel {
     @Test
     public void checkArmyAssignmentWhenCardIsAvailedMoreThanOnce() {
         this.mainModel.getPlayer("dhaval").setArmies("Russia", 4);
-        ArrayList<String> al = new ArrayList<>();
+        Player player = this.mainModel.getPlayer("dhaval");
+        ArrayList<String> selectedCards = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
-            al.add("Infantry");
+            player.addCard(CARD_TYPE_CAVALRY);
         }
+
+        for (int i = 0; i < 3; i++) {
+            selectedCards.add(CARD_TYPE_CAVALRY);
+        }
+
+        this.mainController.performExchange(selectedCards, this.mainModel.getPlayer("dhaval"));
         this.mainModel.resetArmiesToAssign("dhaval");
-        this.mainModel.getPlayer("dhaval").setCards(al);
-        this.mainModel.addArmiesOnCardsAvail(this.mainModel.getPlayer("dhaval"));
-        this.mainModel.addArmiesOnCardsAvail(this.mainModel.getPlayer("dhaval"));
+        this.mainController.performExchange(selectedCards, this.mainModel.getPlayer("dhaval"));
+        this.mainModel.resetArmiesToAssign("dhaval");
         int armyCount = this.mainModel.getArmiesAvailableToAssign();
-        assertEquals(18, armyCount);
+        assertEquals(13, armyCount);
     }
 
     /**
@@ -300,14 +319,17 @@ public class TestMainModel {
      */
     @Test
     public void checkCardAssignedProperly() {
-        ArrayList<String> al = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            al.add("Cavalry");
+        this.mainModel.getPlayer("dhaval").setArmies("India", 4);
+        Player player = this.mainModel.getPlayer("dhaval");
+        ArrayList<String> selectedCards = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            selectedCards.add(CARD_TYPE_CAVALRY);
+            player.addCard(CARD_TYPE_CAVALRY);
         }
-        this.mainModel.getPlayer("dhaval").setCards(al);
-        this.mainModel.addArmiesOnCardsAvail(this.mainModel.getPlayer("dhaval"));
-        int cardCount = this.mainModel.getPlayer("dhaval").getCards().size();
-        assertEquals(3, cardCount);
+        this.mainController.performExchange(selectedCards, this.mainModel.getPlayer("dhaval"));
+        this.mainModel.resetArmiesToAssign("dhaval");
+        int armyCount = this.mainModel.getArmiesAvailableToAssign();
+        assertEquals(8, armyCount);
     }
 
     /**
@@ -315,14 +337,15 @@ public class TestMainModel {
      */
     @Test
     public void checkCardUpdate() {
-        this.mainModel.getPlayer("dhaval").setArmies("India", 12);
-        this.mainModel.getPlayer("shareen").setArmies("Pakistan", 2);
-        int cardBeforeAttack = this.mainModel.getPlayer("dhaval").getCards().size();
-        this.mainModel.getPlayer("shareen").setVictory(false);
-        this.mainModel.updateEntitiesAfterAttack(this.mainModel.getPlayer("shareen"), this.mainModel.getPlayer("dhaval"), "Pakistan");
-        int cardsAfterAttack = this.mainModel.getPlayer("dhaval").getCards().size();
-        boolean result = (cardBeforeAttack == cardsAfterAttack);
-        assertEquals(false, result);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 20);
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 1);
+        this.mainController.setAttackSource("India");
+        this.mainController.setAttackTarget("Russia");
+        this.mainModel.getPlayer("dhaval").addCard(this.mainModel.getCard("Russia"));
+        this.mainModel.useCard("Russia");
+
+        ArrayList<String> cards = this.mainModel.getPlayer("dhaval").getCards();
+        assertEquals(1, cards.size());
     }
 
 }
