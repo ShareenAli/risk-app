@@ -48,6 +48,11 @@ public class MainModel extends Observable {
         }
     }
 
+    public void removePlayer(String playerName) {
+        this.players.remove(playerName);
+        this.playerNames.remove(playerName);
+    }
+
     /**
      * Set the content from the map
      *
