@@ -187,10 +187,10 @@ class SettingsModel {
     private void assignCardsToCountry() {
         ArrayList<Country> countryList = new ArrayList<>();
         int totalCountries = this.countries.size();
-        int assignment[] = new int[3];
-        assignment[0] = totalCountries / 3; // infantry
-        assignment[1] = totalCountries / 3; // cavalry
-        assignment[2] = totalCountries / 3; // artillery
+        int assignCard[] = new int[3];
+        assignCard[0] = totalCountries / 3; // infantry
+        assignCard[1] = totalCountries / 3; // cavalry
+        assignCard[2] = totalCountries / 3; // artillery
         Random random = new Random();
 
         for (int i = 0; i < totalCountries; i++) {
@@ -201,57 +201,57 @@ class SettingsModel {
             Country data = this.countries.get(i);
             switch (s) {
                 case 0:
-                    if (assignment[0] == 0) {
-                        if (assignment[1] != 0) {
+                    if (assignCard[0] == 0) {
+                        if (assignCard[1] != 0) {
                             data.setCard(MainModel.CARD_TYPE_CAVALRY);
-                            assignment[1]--;
-                            if (assignment[1] < 0)
-                                assignment[1] = 0;
+                            assignCard[1]--;
+                            if (assignCard[1] < 0)
+                                assignCard[1] = 0;
                         } else {
                             data.setCard(MainModel.CARD_TYPE_ARTILLERY);
-                            assignment[2]--;
-                            if (assignment[2] < 0)
-                                assignment[2] = 0;
+                            assignCard[2]--;
+                            if (assignCard[2] < 0)
+                                assignCard[2] = 0;
                         }
                     } else {
                         data.setCard(MainModel.CARD_TYPE_INFANTRY);
-                        assignment[0]--;
+                        assignCard[0]--;
                     }
                     break;
                 case 1:
-                    if (assignment[1] == 0) {
-                        if (assignment[0] != 0) {
+                    if (assignCard[1] == 0) {
+                        if (assignCard[0] != 0) {
                             data.setCard(MainModel.CARD_TYPE_INFANTRY);
-                            assignment[0]--;
-                            if (assignment[0] < 0)
-                                assignment[0] = 0;
+                            assignCard[0]--;
+                            if (assignCard[0] < 0)
+                                assignCard[0] = 0;
                         } else {
                             data.setCard(MainModel.CARD_TYPE_ARTILLERY);
-                            assignment[2]--;
-                            if (assignment[2] < 0)
-                                assignment[2] = 0;
+                            assignCard[2]--;
+                            if (assignCard[2] < 0)
+                                assignCard[2] = 0;
                         }
                     } else {
                         data.setCard(MainModel.CARD_TYPE_CAVALRY);
-                        assignment[1]--;
+                        assignCard[1]--;
                     }
                     break;
                 case 2:
-                    if (assignment[2] == 0) {
-                        if (assignment[1] != 0) {
+                    if (assignCard[2] == 0) {
+                        if (assignCard[1] != 0) {
                             data.setCard(MainModel.CARD_TYPE_CAVALRY);
-                            assignment[1]--;
-                            if (assignment[1] < 0)
-                                assignment[1] = 0;
+                            assignCard[1]--;
+                            if (assignCard[1] < 0)
+                                assignCard[1] = 0;
                         } else {
                             data.setCard(MainModel.CARD_TYPE_INFANTRY);
-                            assignment[0]--;
-                            if (assignment[0] < 0)
-                                assignment[0] = 0;
+                            assignCard[0]--;
+                            if (assignCard[0] < 0)
+                                assignCard[0] = 0;
                         }
                     } else {
                         data.setCard(MainModel.CARD_TYPE_ARTILLERY);
-                        assignment[2]--;
+                        assignCard[2]--;
                     }
                     break;
             }

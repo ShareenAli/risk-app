@@ -95,7 +95,7 @@ public class MainController extends ActivityController {
     /**
      * Prepare the logs controller
      */
-    private void prepLogsController() {
+    public void prepLogsController() {
         this.logsController = new LogsController();
         this.logsController.initializeValues();
     }
@@ -167,7 +167,7 @@ public class MainController extends ActivityController {
     /**
      * Start the attack phase
      *
-     * @param command action command that contains the owner and name of the country
+     * @param command          action command that contains the owner and name of the country
      * @param isComputerPlayer identifier to check the type of player
      */
     private void doAttackPhase(String command, boolean isComputerPlayer) {
@@ -181,7 +181,7 @@ public class MainController extends ActivityController {
                     return;
                 }
                 JOptionPane.showMessageDialog(new JFrame(), "You have to choose your own country to attack",
-                    "Wrong move!", JOptionPane.ERROR_MESSAGE);
+                        "Wrong move!", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if (this.model.getPlayer(owner).getArmiesInCountry(country) < 2) {
@@ -190,7 +190,7 @@ public class MainController extends ActivityController {
                     return;
                 }
                 JOptionPane.showMessageDialog(new JFrame(), "You don't have enough armies to attack",
-                    "Wrong move!", JOptionPane.ERROR_MESSAGE);
+                        "Wrong move!", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             this.attackerName = owner;
@@ -211,7 +211,7 @@ public class MainController extends ActivityController {
                 return;
             }
             JOptionPane.showMessageDialog(new JFrame(), "You can not attack your own country!",
-                "Wrong move!", JOptionPane.ERROR_MESSAGE);
+                    "Wrong move!", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -221,7 +221,7 @@ public class MainController extends ActivityController {
                 return;
             }
             JOptionPane.showMessageDialog(new JFrame(), this.attackSource + " is not connected to " + country,
-                "Wrong move!", JOptionPane.ERROR_MESSAGE);
+                    "Wrong move!", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -233,7 +233,7 @@ public class MainController extends ActivityController {
         if (!isComputerPlayer) {
             // ask for all out mode?
             int isAllOut = JOptionPane.showConfirmDialog(null, "Would you like to attack with all out mode?",
-                "Attack Phase", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                    "Attack Phase", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
             isAllOutMode = (isAllOut == JOptionPane.YES_OPTION);
         }
 
@@ -248,28 +248,25 @@ public class MainController extends ActivityController {
      *
      * @param isAllOutMode Attacker can select if they want an all out mode before attacking
      */
-    private void performAttack(boolean isAllOutMode, boolean isComputer) {
+    public void performAttack(boolean isAllOutMode, boolean isComputer) {
         Player attacker = this.model.getPlayer(this.attackerName);
         Player defender = this.model.getPlayer(this.defenderName);
 
         ArrayList<Integer> attackerDices = new ArrayList<>();
         ArrayList<Integer> defenderDices = new ArrayList<>();
+
         int attackerArmies = attacker.getArmiesInCountry(this.attackSource);
-        int defenderArmies = defender.getArmiesInCountry(this.attackTarget);
+        determineDiceRolls(attacker, defender);
 
-        int maxAttacker = (attackerArmies >= 3) ? 3 : attackerArmies;
-        int maxDefender = (defenderArmies >= 2) ? 2 : defenderArmies;
-        maxDefender = (maxAttacker == maxDefender) ? maxAttacker - 1 : maxDefender;
-
-        if (maxAttacker < 2)
+        if (attacker.getNoOfDiceRolls() < 2)
             return;
 
-        for (int i = 0; i < maxAttacker; i++) {
+        for (int i = 0; i < attacker.getNoOfDiceRolls(); i++) {
             int roll = new Random().nextInt(6) + 1;
             attackerDices.add(roll);
             this.logsController.log(attacker.getName() + " rolled " + roll + " to attack");
         }
-        for (int i = 0; i < maxDefender; i++) {
+        for (int i = 0; i < defender.getNoOfDiceRolls(); i++) {
             int roll = new Random().nextInt(6) + 1;
             defenderDices.add(roll);
             this.logsController.log(defender.getName() + " rolled " + roll + " to defend");
@@ -278,28 +275,33 @@ public class MainController extends ActivityController {
         defender = attacker.attack(defender, this.attackTarget, this.attackSource, attackerDices, defenderDices);
 
         if (defender.getArmiesInCountry(this.attackTarget) == 0) {
-            defender.removeCountry(this.attackTarget);
-            int used = attackerArmies - attacker.getArmiesInCountry(this.attackSource);
-            int toMove = maxAttacker - used;
-            int diff = attacker.getArmiesInCountry(this.attackSource) - toMove;
-            if(!isComputer && diff > 1) {
+            postAttackOperations(defender);
+
+            int armiesUsed = attackerArmies - attacker.getArmiesInCountry(this.attackSource);
+            int armiesToMove = attacker.getNoOfDiceRolls() - armiesUsed;
+            int differenceInArmies = attacker.getArmiesInCountry(this.attackSource) - armiesToMove;
+            if (!isComputer && differenceInArmies > 1) {
                 NoOfArmiesDialog noOfArmiesDialog = new NoOfArmiesDialog();
-                noOfArmiesDialog.setNoOfArmies(diff);
+                noOfArmiesDialog.setNoOfArmies(differenceInArmies);
                 int result = noOfArmiesDialog.showUi("No. of armies to move");
-                toMove += result;
-                diff -= result;
+                armiesToMove += result;
+                differenceInArmies -= result;
             }
-            if (diff < 1) {
-                toMove--;
-                diff++;
+
+            if (differenceInArmies < 1) {
+                armiesToMove--;
+                differenceInArmies++;
             }
-            attacker.setArmies(this.attackTarget, toMove);
-            attacker.setArmies(this.attackSource, diff);
+            attacker.setArmies(this.attackTarget, armiesToMove);
+            attacker.setArmies(this.attackSource, differenceInArmies);
 
             if (this.model.getCard(this.attackTarget) != null) {
                 attacker.addCard(this.model.getCard(this.attackTarget));
                 this.model.useCard(this.attackTarget);
             }
+
+            attacker.setNoOfDiceRolls(0);
+            defender.setNoOfDiceRolls(0);
 
             this.logsController.log(attacker.getName() + " has won " + this.attackTarget + " from " + defender.getName());
             this.model.updatePlayer(defender.getName(), defender);
@@ -318,10 +320,42 @@ public class MainController extends ActivityController {
 
         if (this.model.hasPlayerWon(attacker)) {
             JOptionPane.showMessageDialog(new JFrame(), attacker.getName() + " has won the game!",
-                "Yeyy!", JOptionPane.INFORMATION_MESSAGE);
+                    "Yeyy!", JOptionPane.INFORMATION_MESSAGE);
             System.exit(0);
         }
     }
+
+    /**
+     * Determines the dice rolls for attacker and defender
+     *
+     * @param attacker Player object of the attacker
+     * @param defender Player object of the defender
+     */
+    public void determineDiceRolls(Player attacker, Player defender) {
+        int attackerArmies = attacker.getArmiesInCountry(this.attackSource);
+        int defenderArmies = defender.getArmiesInCountry(this.attackTarget);
+
+        int maxDiceRollsAttacker = (attackerArmies >= 3) ? 3 : attackerArmies;
+        int maxDiceRollsDefender = (defenderArmies >= 2) ? 2 : defenderArmies;
+        maxDiceRollsDefender = (maxDiceRollsAttacker == maxDiceRollsDefender) ? maxDiceRollsAttacker - 1 : maxDiceRollsDefender;
+
+        attacker.setNoOfDiceRolls(maxDiceRollsAttacker);
+        defender.setNoOfDiceRolls(maxDiceRollsDefender);
+    }
+
+    /**
+     * Removes the player if they do not have any countries in possession
+     *
+     * @param defender Player object
+     */
+    public void postAttackOperations(Player defender) {
+        defender.removeCountry(this.attackTarget);
+        HashMap<String, Integer> countries = defender.getCountries();
+
+        if (countries.size() == 0)
+            this.model.removePlayer(defender.getName());
+    }
+
 
     /**
      * Checks whether the fortification phase is possible or not.
@@ -487,19 +521,40 @@ public class MainController extends ActivityController {
         if (cards.size() == 5 && selectedCards.size() < 3)
             this.startCardPhase();
 
+
+        String cardType = performExchange(selectedCards, player);
+        if (!cardType.equalsIgnoreCase("")) {
+            if (cardType.equalsIgnoreCase("distinct"))
+                this.logsController.log(player.getName() + " exchanged three different cards for armies!");
+            else
+                this.logsController.log(player.getName() + " exchanged three " + cardType + " cards for armies!");
+
+            this.model.updatePlayerWithoutNotify(player.getName(), player);
+        }
+    }
+
+    /**
+     * Perform the card exchange for additional armies
+     *
+     * @param selectedCards The cards selected by the user
+     * @param player Player object
+     * @return String returns the card type
+     */
+    public String performExchange(ArrayList<String> selectedCards, Player player) {
         if (selectedCards.size() > 2) {
             String cardType1 = selectedCards.get(0), cardType2 = selectedCards.get(1), cardType3 = selectedCards.get(2);
             if (cardType1.equalsIgnoreCase(cardType2) && cardType2.equalsIgnoreCase(cardType3)) {
                 player.useSameCard(cardType1);
-                this.logsController.log(player.getName() + " exchanged three " + cardType1 + " cards for armies!");
+                return cardType1;
+
             }
             if (!cardType1.equalsIgnoreCase(cardType2) && !cardType2.equalsIgnoreCase(cardType3)) {
                 player.useDistinctCards();
-                this.logsController.log(player.getName() + " exchanged three different cards for armies!");
-            }
+                return "distinct";
 
-            this.model.updatePlayerWithoutNotify(player.getName(), player);
+            }
         }
+        return "";
     }
 
     /**
@@ -511,8 +566,8 @@ public class MainController extends ActivityController {
         if (player.getType() == Player.TYPE_HUMAN)
             return;
 
-        ArrayList<String> list = new ArrayList<>(player.getCountries().keySet());
-        String countryName = list.get((new Random()).nextInt(list.size()));
+        ArrayList<String> countries = new ArrayList<>(player.getCountries().keySet());
+        String countryName = countries.get((new Random()).nextInt(countries.size()));
 
         while (this.model.getArmiesAvailableToAssign() != 0) {
             this.doReinforcementPhase(player.getName() + ":" + countryName, true);
@@ -530,8 +585,8 @@ public class MainController extends ActivityController {
         if (player.getType() == Player.TYPE_HUMAN)
             return;
 
-        ArrayList<String> list = new ArrayList<>(player.getCountries().keySet());
-        String countryName = list.get((new Random()).nextInt(list.size()));
+        ArrayList<String> countries = new ArrayList<>(player.getCountries().keySet());
+        String countryName = countries.get((new Random()).nextInt(countries.size()));
 
         if (player.getArmiesInCountry(countryName) == 1) {
             this.logsController.log(player.getName() + " skipped the fortification phase!");
@@ -542,7 +597,7 @@ public class MainController extends ActivityController {
         this.doFortificationPhase(player.getName() + ":" + countryName, true, 0);
 
         do {
-            countryName = list.get((new Random()).nextInt(list.size()));
+            countryName = countries.get((new Random()).nextInt(countries.size()));
             if (this.model.checkForLink(new ArrayList<>(), this.fortSource, countryName))
                 break;
         } while (!countryName.equalsIgnoreCase(this.fortSource));
@@ -562,8 +617,8 @@ public class MainController extends ActivityController {
         if (player.getType() == Player.TYPE_HUMAN)
             return;
 
-        ArrayList<String> list = new ArrayList<>(player.getCountries().keySet());
-        String countryName = list.get((new Random()).nextInt(list.size()));
+        ArrayList<String> countryList = new ArrayList<>(player.getCountries().keySet());
+        String countryName = countryList.get((new Random()).nextInt(countryList.size()));
 
         if (player.getArmiesInCountry(countryName) == 1) {
             this.logsController.log(player.getName() + " chose not to attack!");
@@ -574,7 +629,7 @@ public class MainController extends ActivityController {
         this.doAttackPhase(player.getName() + ":" + countryName, true);
 
         ArrayList<String> countries = new ArrayList<>(this.model.getCountries().keySet());
-        String anotherName = countries.get((new Random()).nextInt(list.size()));
+        String anotherName = countries.get((new Random()).nextInt(countryList.size()));
 
         if (!this.model.checkForLink(new ArrayList<>(), this.fortSource, anotherName)) {
             this.logsController.log(player.getName() + " chose not to attack!");
@@ -587,19 +642,56 @@ public class MainController extends ActivityController {
         this.changePhase();
     }
 
-
-    /**
-     * This method is called when a player presses the Avail Cards button on the UI
-     */
-    public void availCards(){
-        Player player = this.model.getPlayer(this.phaseController.activePlayer());
-        this.model.addArmiesOnCardsAvail(player);
-    }
-
     /**
      * It resets the values associated with the attack phase
      */
     private void resetAttackValues() {
         this.attackSource = this.attackTarget = this.attackerName = this.defenderName = null;
     }
+
+    /**
+     * Set the attacking country
+     *
+     * @param attackSource Name of the attacking country
+     */
+    public void setAttackSource(String attackSource) {
+        this.attackSource = attackSource;
+    }
+
+    /**
+     * Set the attack target
+     *
+     * @param attackTarget Name of the target country
+     */
+    public void setAttackTarget(String attackTarget) {
+        this.attackTarget = attackTarget;
+    }
+
+    /**
+     * Set the model object
+     *
+     * @param model Model object for data manipulation
+     */
+    public void setModel(MainModel model) {
+        this.model = model;
+    }
+
+    /**
+     * Set the Name of the attacker
+     *
+     * @param attackerName Name of the attacker
+     */
+    public void setAttackerName(String attackerName) {
+        this.attackerName = attackerName;
+    }
+
+    /**
+     * Set the Name of the defender
+     *
+     * @param defenderName Name of the defender
+     */
+    public void setDefenderName(String defenderName) {
+        this.defenderName = defenderName;
+    }
+
 }
