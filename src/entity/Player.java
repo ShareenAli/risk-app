@@ -301,7 +301,6 @@ public class Player {
         defenderDices.sort((Integer o1, Integer o2) -> o2 - o1);
 
         for (int i = 0; i < defenderDices.size(); i++) {
-            System.out.println(attackerDices.get(i) + ", " + defenderDices.get(i));
             if (attackerDices.get(i) > defenderDices.get(i)) {
                 defenderArmies--;
 

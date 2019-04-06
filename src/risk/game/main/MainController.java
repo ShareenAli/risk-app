@@ -279,7 +279,7 @@ public class MainController extends ActivityController {
 
             int armiesUsed = attackerArmies - attacker.getArmiesInCountry(this.attackSource);
             int armiesToMove = attacker.getNoOfDiceRolls() - armiesUsed;
-            int differenceInArmies = attacker.getArmiesInCountry(this.attackSource) - armiesToMove;
+            int differenceInArmies = attacker.getArmiesInCountry(this.attackSource) - armiesToMove - 1;
             if (!isComputer && differenceInArmies > 1) {
                 NoOfArmiesDialog noOfArmiesDialog = new NoOfArmiesDialog();
                 noOfArmiesDialog.setNoOfArmies(differenceInArmies);
@@ -619,6 +619,8 @@ public class MainController extends ActivityController {
 
         ArrayList<String> countryList = new ArrayList<>(player.getCountries().keySet());
         String countryName = countryList.get((new Random()).nextInt(countryList.size()));
+        ArrayList<String> countries = this.model.getPotentialCountriesForAttack(countryList);
+        int trials = countries.size();
 
         if (player.getArmiesInCountry(countryName) == 1) {
             this.logsController.log(player.getName() + " chose not to attack!");
@@ -628,16 +630,25 @@ public class MainController extends ActivityController {
 
         this.doAttackPhase(player.getName() + ":" + countryName, true);
 
-        ArrayList<String> countries = new ArrayList<>(this.model.getCountries().keySet());
-        String anotherName = countries.get((new Random()).nextInt(countryList.size()));
+        String anotherName;
+        do {
+            trials--;
+            int randomIdx = new Random().nextInt(countries.size());
+            anotherName = countries.get(randomIdx);
+            System.out.println("randomIdx " + randomIdx + " " + trials + " " + anotherName + " | " + this.attackSource);
+            if (this.model.checkForLink(new ArrayList<>(), this.attackSource, anotherName))
+                break;
+        } while (trials != 0);
 
-        if (!this.model.checkForLink(new ArrayList<>(), this.fortSource, anotherName)) {
+        if (!this.model.checkForLink(new ArrayList<>(), this.attackSource, anotherName)) {
             this.logsController.log(player.getName() + " chose not to attack!");
+            this.model.changeWorldView();
             this.changePhase();
             return;
         }
 
-        this.doAttackPhase(player.getName() + ":" + anotherName, true);
+        this.doAttackPhase(this.model.getPlayerNameFromCountry(anotherName) + ":" + anotherName,
+            true);
 
         this.changePhase();
     }

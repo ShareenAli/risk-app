@@ -452,4 +452,30 @@ public class MainModel extends Observable {
         }
         return cv;
     }
+
+    ArrayList<String> getPotentialCountriesForAttack(ArrayList<String> discardCountries) {
+        ArrayList<String> finalList = new ArrayList<>();
+
+        for (String country : this.getCountries().keySet()) {
+            if (!discardCountries.contains(country)) {
+                finalList.add(country);
+            }
+        }
+
+        return finalList;
+    }
+
+    String getPlayerNameFromCountry(String country) {
+        for (Map.Entry<String, Player> entry : this.players.entrySet()) {
+            if (entry.getValue().getCountries().containsKey(country)) {
+                return entry.getKey();
+            }
+        }
+
+        return null;
+    }
+
+    public HashMap<String, Continent> getContinents() {
+        return this.continents;
+    }
 }
