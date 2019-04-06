@@ -694,4 +694,16 @@ public class MainController extends ActivityController {
         this.defenderName = defenderName;
     }
 
+    /**
+     * Saves the game state data into a file called Saved_Game_Data
+     *
+      */
+    public void saveGameState(){ this.model.saveGameState("Saved_Game_Data", this.phaseController, this.logsController); }
+
+    /**
+     * Loads the saved game state data from a file called Saved_Game_Data
+     *
+     */
+    public void loadGameState(){ this.model.saveGameState("Saved_Game_Data", this.phaseController, this.logsController); }
+
 }

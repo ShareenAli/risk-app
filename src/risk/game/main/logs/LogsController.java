@@ -1,6 +1,6 @@
 package risk.game.main.logs;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 /**
  * Handles the logs view
@@ -49,4 +49,13 @@ public class LogsController {
     public LogsView getView() {
         return this.view;
     }
+
+    /**
+     * Set the view
+     * @param logs new logs
+     */
+    public void setView(JList logs) {
+        this.view.setListLog(logs);
+    }
+
 }

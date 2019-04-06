@@ -1,10 +1,16 @@
 package risk.game.main;
 
+import com.sun.scenario.Settings;
 import entity.Continent;
 import entity.Country;
 import entity.Player;
+import risk.game.main.logs.LogsController;
+import risk.game.main.phases.PhaseController;
+import risk.game.settings.SettingsModel;
 
+import javax.swing.*;
 import java.awt.*;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -15,7 +21,7 @@ import java.util.*;
  */
 
 @SuppressWarnings("deprecation")
-public class MainModel extends Observable {
+public class MainModel extends Observable implements Serializable {
     public static final String CARD_TYPE_INFANTRY = "Infantry";
     public static final String CARD_TYPE_CAVALRY = "Cavalry";
     public static final String CARD_TYPE_ARTILLERY = "Artillery";
@@ -29,6 +35,8 @@ public class MainModel extends Observable {
     private HashMap<String, Continent> continents = new HashMap<>();
     private int armiesToAssign;
     private int armiesAvailableToAssign = -1;
+    private static MainModel mainModel;
+
 
     /**
      * Constructor used to extract the data from the map
@@ -97,6 +105,19 @@ public class MainModel extends Observable {
         }
 
         return colors;
+    }
+
+    /**
+     * Sets the colors of the players
+     *
+     * @return list of players with just their colors
+     */
+    void setPlayerColors(ArrayList<Color> colors) {
+        int i = 0;
+        for (Map.Entry<String, Player> playerEntry : this.players.entrySet()) {
+            playerEntry.getValue().setColor(colors.get(i));
+            i++;
+        }
     }
 
     /**
@@ -451,5 +472,70 @@ public class MainModel extends Observable {
                 cv += continent.getControlValue();
         }
         return cv;
+    }
+
+    /**
+     * Saves the state of the game
+     *
+     * @param filename name of the file to save it to
+     * @param phaseController current instance of the PhaseController Class
+     */
+    public void saveGameState (String filename, PhaseController phaseController, LogsController logs) {
+        try {
+            // Saving of object in a file
+            filename = filename.endsWith(".ser") ? filename : filename + ".ser";
+            FileOutputStream file = new FileOutputStream(filename);
+            ObjectOutputStream out = new ObjectOutputStream(file);
+            SettingsModel settings = SettingsModel.getInstance();
+
+            // Method for serialization of objects
+            out.writeObject(settings.getBmpFile());
+            out.writeObject(this.continents);
+            out.writeObject(this.countries);
+            out.writeObject(this.players);
+            //out.writeObject(phaseController.activePlayer());
+            //out.writeObject(phaseController.activePhase());
+            //out.writeObject(this.getPlayerColors());
+            //out.writeObject(logs.getView().getlistLog());
+
+            out.close();
+            file.close();
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Loads the state of the game from a file
+     *
+     * @param inputFile file to load the game from
+     */
+    public void loadSavedGame (File inputFile, PhaseController phaseController, LogsController logs) {
+        try {
+            FileInputStream file = new FileInputStream(inputFile);
+            ObjectInputStream in = new ObjectInputStream(file);
+            SettingsModel settings = SettingsModel.getInstance();
+            try {
+                settings.setBmpFile((File) in.readObject());
+                this.continents= (HashMap<String, Continent>) in.readObject();
+                this.countries = (HashMap<String, Country>) in.readObject();
+                this.players = (HashMap<String,Player>) in.readObject();
+                //phaseController.setActivePlayer((String) in.readObject());
+                //phaseController.setActivePhase((int) in.readObject());
+                //this.setPlayerColors((ArrayList<Color>) in.readObject());
+                //logs.setView((JList) in.readObject());
+
+            } catch (ClassNotFoundException e) {
+
+                e.printStackTrace();
+            }
+
+            in.close();
+            file.close();
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }

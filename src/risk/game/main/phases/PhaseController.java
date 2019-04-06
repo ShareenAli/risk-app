@@ -59,12 +59,24 @@ public class PhaseController {
     }
 
     /**
+     * Sets the active phase
+     * @param name name of the active phase
+     */
+    public void setActivePhase (int name){ this.model.setActivePhase(name); }
+
+    /**
      * It returns the active player's name
      * @return name of the player
      */
     public String activePlayer() {
         return this.model.getActivePlayer();
     }
+
+    /**
+     * Sets the player with name "name" as the current active player
+     * @param name name of the active player
+     */
+    public void setActivePlayer(String name){ this.model.setActivePlayer(name); }
 
     /**
      * Changes the active player

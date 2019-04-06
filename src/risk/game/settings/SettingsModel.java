@@ -19,7 +19,7 @@ import java.util.Scanner;
  * @author shareenali
  */
 
-class SettingsModel {
+public class SettingsModel {
     private static SettingsModel instance;
     private File mapFile, bmpFile;
     private ArrayList<Player> players = new ArrayList<>();
@@ -31,7 +31,7 @@ class SettingsModel {
      *
      * @return instance of the model
      */
-    static SettingsModel getInstance() {
+    public static SettingsModel getInstance() {
         if (instance == null)
             instance = new SettingsModel();
         return instance;
@@ -51,7 +51,7 @@ class SettingsModel {
      *
      * @param file bmp file
      */
-    void setBmpFile(File file) {
+    public void setBmpFile(File file) {
         this.bmpFile = file;
     }
 
@@ -112,7 +112,7 @@ class SettingsModel {
      *
      * @return image file
      */
-    File getBmpFile() {
+    public File getBmpFile() {
         return bmpFile;
     }
 

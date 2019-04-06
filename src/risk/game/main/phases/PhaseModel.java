@@ -69,6 +69,14 @@ public class PhaseModel extends Observable {
     }
 
     /**
+     * Set the active player's index
+     * @param name name of the active palyer
+     */
+    void setActivePlayer(String name){
+        this.playerIndex = this.players.indexOf(name);
+    }
+
+    /**
      * Get the active player's color
      * @return color of the player
      */
@@ -82,6 +90,14 @@ public class PhaseModel extends Observable {
      */
     int getActivePhase() {
         return this.phase;
+    }
+
+    /**
+     * Set the active phase
+     * @param name name of the active phase
+     */
+    void setActivePhase(int name){
+        this.phase = name;
     }
 
     /**

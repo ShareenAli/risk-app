@@ -20,6 +20,7 @@ import java.util.HashMap;
  */
 public class SettingsController extends ActivityController {
     private SettingsView view;
+    private SettingsModel model = SettingsModel.getInstance();
     private ActionListener comboNoPlayersLs, buttonStartLs, buttonMapLs, buttonBmpLs;
     private DisplayFileChooser fileChooser = new DisplayFileChooser("/Users/ndkcha/Documents/university/app/risk-maps");
 
