@@ -99,4 +99,12 @@ public class PhaseModel extends Observable {
     public int getPhase() {
         return this.phase;
     }
+
+    void setPhase(int phase) {
+        this.phase = phase;
+    }
+
+    void setPlayerIndex(int playerIndex) {
+        this.playerIndex = playerIndex;
+    }
 }

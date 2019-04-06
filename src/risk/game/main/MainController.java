@@ -65,6 +65,21 @@ public class MainController extends ActivityController {
         this.phaseController.setupValues(this.model.getPlayerNames(), this.model.getPlayerColors());
         this.worldController.configureView(bmpFile, countries, this.buttonCountryLs);
 
+        boolean isLoadedGame = (boolean) data.getOrDefault(RiskApp.MainIntent.KEY_LOAD_FLAG, false);
+
+        if (isLoadedGame) {
+            int phase = (int) data.get(RiskApp.MainIntent.KEY_PHASE);
+            int playerIdx = (int) data.get(RiskApp.MainIntent.KEY_PLAYER_IDX);
+            ArrayList<String> logs = (ArrayList<String>) data.get(RiskApp.MainIntent.KEY_LOGS);
+
+            this.phaseController.setLoadGameValues(phase, playerIdx);
+            this.logsController.setLogs(logs);
+            this.model.changeWorldView();
+
+            this.changePhase();
+            return;
+        }
+
         this.startGame();
     }
 

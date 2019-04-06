@@ -52,6 +52,10 @@ public class RiskApp {
         public static final String KEY_COUNTRIES = "countries";
         public static final String KEY_CONTINENT = "continents";
         public static final String kEY_BMP = "bmp";
+        public static final String KEY_PHASE = "phase";
+        public static final String KEY_PLAYER_IDX = "playerIdx";
+        public static final String KEY_LOGS = "logs";
+        public static final String KEY_LOAD_FLAG = "isLoadGame";
     }
 
     public static abstract class MapIntent {

@@ -94,4 +94,9 @@ public class PhaseController {
     public PhaseModel getModel() {
         return this.model;
     }
+
+    public void setLoadGameValues(int phase, int playerIdx) {
+        this.model.setPhase(phase);
+        this.model.setPlayerIndex(playerIdx);
+    }
 }
