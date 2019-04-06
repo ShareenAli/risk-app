@@ -503,7 +503,7 @@ public class MainController extends ActivityController {
      */
     private void startCardPhase() {
         Player player = this.model.getPlayer(this.phaseController.activePlayer());
-        if (player.getType() == Player.TYPE_COMPUTER)
+        if (player.getType() == Player.TYPE_RANDOM)
             return;
 
         ArrayList<String> cards = player.getCards();

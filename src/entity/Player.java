@@ -4,8 +4,6 @@ import risk.game.main.MainModel;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -22,10 +20,11 @@ public class Player {
      * A human player. It can be used as player type
      */
     public static final int TYPE_HUMAN = 0;
-    /**
-     * A computer player. It can be used as player type
-     */
-    public static final int TYPE_COMPUTER = 1;
+    /** A computer player. It can be used as player type */
+    public static final int TYPE_RANDOM = 1;
+    public static final int TYPE_AGGRESSIVE = 2;
+    public static final int TYPE_CHEATER = 3;
+    public static final int TYPE_BENEVOLENT = 4;
 
     private String name;
     private int type;
