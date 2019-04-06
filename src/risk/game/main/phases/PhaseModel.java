@@ -91,4 +91,12 @@ public class PhaseModel extends Observable {
     String getActivePhaseName() {
         return this.phaseNames[this.phase];
     }
+
+    public int getPlayerIndex() {
+        return this.playerIndex;
+    }
+
+    public int getPhase() {
+        return this.phase;
+    }
 }

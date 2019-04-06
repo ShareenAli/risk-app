@@ -26,6 +26,7 @@ public class PhaseView implements Observer {
     private JPanel panelPlayer;
     private JButton buttonChange;
     private JScrollPane scrollPanelPlayers;
+    private JButton buttonSaveGame;
 
     private DefaultTableModel modelPlayers = new DefaultTableModel();
 
@@ -48,6 +49,10 @@ public class PhaseView implements Observer {
      */
     void bindChangePhaseListener(ActionListener listener) {
         this.buttonChange.addActionListener(listener);
+    }
+
+    void bindSaveGameListener(ActionListener listener) {
+        this.buttonSaveGame.addActionListener(listener);
     }
 
     /**
@@ -176,6 +181,9 @@ public class PhaseView implements Observer {
         buttonChange = new JButton();
         buttonChange.setText("Change Phase");
         panelAction.add(buttonChange);
+        buttonSaveGame = new JButton();
+        buttonSaveGame.setText("Save Game");
+        panelAction.add(buttonSaveGame);
         panelPlayer = new JPanel();
         panelPlayer.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         panelContent.add(panelPlayer, BorderLayout.CENTER);

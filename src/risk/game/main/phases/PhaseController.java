@@ -25,10 +25,12 @@ public class PhaseController {
     /**
      * Initializes the values before displaying
      * @param buttonChangeLs change button listener
+     * @param buttonSaveLs save game listener
      */
-    public void initializeValues(ActionListener buttonChangeLs) {
+    public void initializeValues(ActionListener buttonChangeLs, ActionListener buttonSaveLs) {
         this.view.initializeValues();
         this.view.bindChangePhaseListener(buttonChangeLs);
+        this.view.bindSaveGameListener(buttonSaveLs);
 
         this.model.addObserver(this.view);
     }
@@ -87,5 +89,9 @@ public class PhaseController {
      */
     public PhaseView getView() {
         return this.view;
+    }
+
+    public PhaseModel getModel() {
+        return this.model;
     }
 }

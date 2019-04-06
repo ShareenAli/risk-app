@@ -5,6 +5,7 @@ import entity.Country;
 import entity.Player;
 
 import java.awt.*;
+import java.io.File;
 import java.util.*;
 
 /**
@@ -30,10 +31,19 @@ public class MainModel extends Observable {
     private int armiesToAssign;
     private int armiesAvailableToAssign = -1;
 
+    private File bmpFile;
+
     /**
      * Constructor used to extract the data from the map
      */
-    public MainModel() {
+    public MainModel() { }
+
+    void setBmpFile(File file) {
+        this.bmpFile = file;
+    }
+
+    public File getBmpFile() {
+        return this.bmpFile;
     }
 
     /**
@@ -451,5 +461,9 @@ public class MainModel extends Observable {
                 cv += continent.getControlValue();
         }
         return cv;
+    }
+
+    public HashMap<String, Continent> getContinents() {
+        return this.continents;
     }
 }

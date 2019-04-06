@@ -1,5 +1,6 @@
 package entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -9,7 +10,7 @@ import java.util.ArrayList;
  * @version 0.1
  */
 
-public class Continent {
+public class Continent implements Serializable {
     private String name;
     private int controlValue;
     private int countryCount;

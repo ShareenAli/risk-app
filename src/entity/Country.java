@@ -1,5 +1,6 @@
 package entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -9,7 +10,7 @@ import java.util.ArrayList;
  * @version 0.1
  */
 
-public class Country {
+public class Country implements Serializable {
     private String name, continent, cardType;
     private double latitude, longitude; // x and y of the coordinate system  respectively
     private ArrayList<String> neighbours;
