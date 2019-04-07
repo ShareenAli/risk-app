@@ -139,6 +139,7 @@ public class MainController extends ActivityController {
         String owner = command.split(":")[0];
         String country = command.split(":")[1];
         int reinforcementArmies = this.model.getArmiesAvailableToAssign();
+        int armiesAssigned;
 
         if (!owner.equalsIgnoreCase(this.phaseController.activePlayer())) {
             JOptionPane.showMessageDialog(new JFrame(), "You can't reinforce other player's country",
@@ -146,21 +147,24 @@ public class MainController extends ActivityController {
             return;
         }
 
-        if (reinforcementArmies == 0) {
+        if (reinforcementArmies < 0 && !isComputerPlayer) {
             JOptionPane.showMessageDialog(new JFrame(), "You don't have enough armies to reinforce",
                     "Reinforcement Phase", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        NoOfArmiesDialog dialog = new NoOfArmiesDialog();
-        dialog.setNoOfArmies(reinforcementArmies);
-        int armiesAssigned = isComputerPlayer ? (new Random()).nextInt(reinforcementArmies + 1)
-                : dialog.showUi(country);
+        if (!isComputerPlayer) {
+            NoOfArmiesDialog dialog = new NoOfArmiesDialog();
+            dialog.setNoOfArmies(reinforcementArmies);
+            armiesAssigned = dialog.showUi(country);
+        } else
+            armiesAssigned = reinforcementArmies;
 
-        if (armiesAssigned == 0)
+
+        if (armiesAssigned < 0)
             return;
 
-        this.model.reinforcementPhase(owner, country, armiesAssigned);
+        country = this.model.reinforcementPhase(owner, country, armiesAssigned);
         this.logsController.log(owner + " reinforced " + country + " with " + armiesAssigned + " armies ");
     }
 
@@ -503,7 +507,7 @@ public class MainController extends ActivityController {
      */
     private void startCardPhase() {
         Player player = this.model.getPlayer(this.phaseController.activePlayer());
-        if (player.getType() == Player.TYPE_RANDOM)
+        if (player.getType() != Player.TYPE_HUMAN)
             return;
 
         ArrayList<String> cards = player.getCards();
@@ -537,7 +541,7 @@ public class MainController extends ActivityController {
      * Perform the card exchange for additional armies
      *
      * @param selectedCards The cards selected by the user
-     * @param player Player object
+     * @param player        Player object
      * @return String returns the card type
      */
     public String performExchange(ArrayList<String> selectedCards, Player player) {
@@ -569,7 +573,7 @@ public class MainController extends ActivityController {
         ArrayList<String> countries = new ArrayList<>(player.getCountries().keySet());
         String countryName = countries.get((new Random()).nextInt(countries.size()));
 
-        while (this.model.getArmiesAvailableToAssign() != 0) {
+        while (this.model.getArmiesAvailableToAssign() > 0) {
             this.doReinforcementPhase(player.getName() + ":" + countryName, true);
         }
 
@@ -603,6 +607,7 @@ public class MainController extends ActivityController {
         } while (!countryName.equalsIgnoreCase(this.fortSource));
 
         int armiesToMove = (new Random()).nextInt(player.getArmiesInCountry(this.fortSource) - 1);
+
         this.doFortificationPhase(player.getName() + ":" + countryName, true, armiesToMove);
 
         this.changePhase();
@@ -647,8 +652,9 @@ public class MainController extends ActivityController {
             return;
         }
 
-        this.doAttackPhase(this.model.getPlayerNameFromCountry(anotherName) + ":" + anotherName,
-            true);
+        if(player.getType() != 4)
+            this.doAttackPhase(this.model.getPlayerNameFromCountry(anotherName) + ":" + anotherName,
+                    true);
 
         this.changePhase();
     }

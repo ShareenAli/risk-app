@@ -322,13 +322,14 @@ public class MainModel extends Observable {
      * @param countryName Name of the country to which armies are to be assigned
      * @param armiesToAdd Number of armies to be assigned
      */
-    public void reinforcementPhase(String playerName, String countryName, int armiesToAdd) {
+    public String reinforcementPhase(String playerName, String countryName, int armiesToAdd) {
         Player player = this.players.get(playerName);
         int controlValue = checkControlValueArmies(player);
         armiesToAdd += controlValue;
-        player.reinforcementPhase(countryName, armiesToAdd);
+        countryName = player.reinforcementPhase(countryName, armiesToAdd);
         this.armiesAvailableToAssign -= armiesToAdd;
         this.updatePlayer(player.getName(), player);
+        return countryName;
     }
 
     /**

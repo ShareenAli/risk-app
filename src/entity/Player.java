@@ -1,5 +1,9 @@
 package entity;
 
+import entity.behaviours.BenevolentBehaviour;
+import entity.behaviours.HumanBehaviour;
+import entity.behaviours.PlayerBehaviour;
+import entity.behaviours.RandomBehaviour;
 import risk.game.main.MainModel;
 
 import java.awt.*;
@@ -20,7 +24,9 @@ public class Player {
      * A human player. It can be used as player type
      */
     public static final int TYPE_HUMAN = 0;
-    /** A computer player. It can be used as player type */
+    /**
+     * A computer player. It can be used as player type
+     */
     public static final int TYPE_RANDOM = 1;
     public static final int TYPE_AGGRESSIVE = 2;
     public static final int TYPE_CHEATER = 3;
@@ -34,11 +40,12 @@ public class Player {
     private int cardsUsedCount = 0;
     private boolean cardHasBeenUsed = false;
     private HashMap<String, Integer> countries = new HashMap<>();
+    private PlayerBehaviour strategy;
 
     /**
      * Removes one Infantry, Artillery and Cavalry cards
      */
-    public void useDistinctCards () {
+    public void useDistinctCards() {
         this.cards.remove(MainModel.CARD_TYPE_ARTILLERY);
         this.cards.remove(MainModel.CARD_TYPE_CAVALRY);
         this.cards.remove(MainModel.CARD_TYPE_INFANTRY);
@@ -48,6 +55,7 @@ public class Player {
 
     /**
      * Use the same kind of card
+     *
      * @param type type of card
      */
     public void useSameCard(String type) {
@@ -68,6 +76,7 @@ public class Player {
 
     /**
      * Check if the card has been used
+     *
      * @return true if it has been
      */
     public boolean hasCardBeenUsed() {
@@ -83,6 +92,7 @@ public class Player {
 
     /**
      * Get the times the cards have been used
+     *
      * @return the count
      */
     public int getCardsUsedCount() {
@@ -100,7 +110,36 @@ public class Player {
     }
 
     /**
+     * Set a behaviour strategy for a player
+     *
+     * @return PlayerBehaviour return strategy for a player
+     */
+    public PlayerBehaviour getStrategy() {
+        return strategy;
+    }
+
+    public void setStrategy(int strategy) {
+        switch (strategy) {
+            case TYPE_RANDOM:
+                this.strategy = new RandomBehaviour();
+                break;
+            case TYPE_AGGRESSIVE:
+                break;
+            case TYPE_CHEATER:
+                break;
+            case TYPE_BENEVOLENT:
+                this.strategy = new BenevolentBehaviour();
+                break;
+
+            case TYPE_HUMAN:
+                this.strategy = new HumanBehaviour();
+                break;
+        }
+    }
+
+    /**
      * Add the card
+     *
      * @param card type of card
      */
     public void addCard(String card) {
@@ -139,6 +178,8 @@ public class Player {
         this.name = name;
         this.type = type;
         this.color = color;
+
+        setStrategy(this.type);
     }
 
     /**
@@ -225,8 +266,14 @@ public class Player {
     /**
      * Update the data structures for reinforcement phase
      */
-    public void reinforcementPhase(String countryName, int armiesToAdd) {
+    public String reinforcementPhase(String countryName, int armiesToAdd) {
+        if (this.type != 0) {
+            this.strategy.setPlayer(this);
+            countryName = this.strategy.reinforcementPhase(countryName, armiesToAdd);
+        }
+
         this.addArmies(countryName, armiesToAdd);
+        return countryName;
     }
 
     /**
@@ -237,6 +284,15 @@ public class Player {
      * @param armiesToTransfer  Number of armies to be transferred from a country to another
      */
     public void fortificationPhase(String sourceCountryName, String targetCountryName, int armiesToTransfer) {
+        ArrayList<String> countries;
+        if (this.type != 0) {
+            this.strategy.setPlayer(this);
+            countries = this.strategy.fortificationPhase(sourceCountryName, targetCountryName, armiesToTransfer);
+            this.addArmies(countries.get(1), Integer.parseInt(countries.get(2)));
+            this.removeArmies(countries.get(0), Integer.parseInt(countries.get(2)));
+            return;
+        }
+
         this.addArmies(targetCountryName, armiesToTransfer);
         this.removeArmies(sourceCountryName, armiesToTransfer);
     }
@@ -285,7 +341,7 @@ public class Player {
     /**
      * Attack for attack phase
      *
-     * @param target Target player of the attack
+     * @param target        Target player of the attack
      * @param targetCountry Target country of the attack
      * @param sourceCountry Source country of the attack
      * @param attackerDices Dice rolls of the attacker
@@ -293,28 +349,18 @@ public class Player {
      * @return Player player object of the defendant
      */
     public Player attack(Player target, String targetCountry, String sourceCountry, ArrayList<Integer> attackerDices,
-                       ArrayList<Integer> defenderDices) {
-        int attackerArmies = this.getArmiesInCountry(sourceCountry);
-        int defenderArmies = target.getArmiesInCountry(targetCountry);
-        attackerDices.sort((Integer o1, Integer o2) -> o2 - o1);
-        defenderDices.sort((Integer o1, Integer o2) -> o2 - o1);
+                         ArrayList<Integer> defenderDices) {
+        this.strategy.setPlayer(this);
+        Player defender = this.strategy.attack(target, targetCountry, sourceCountry, attackerDices, defenderDices);
 
-        for (int i = 0; i < defenderDices.size(); i++) {
-            if (attackerDices.get(i) > defenderDices.get(i)) {
-                defenderArmies--;
+        Player attacker = this.strategy.getPlayer();
 
-                if (defenderArmies == 0)
-                    break;
-            } else {
-                attackerArmies--;
-
-                if (attackerArmies == 1)
-                    break;
-            }
-        }
+        int attackerArmies = attacker.getArmiesInCountry(sourceCountry);
+        int defenderArmies = defender.getArmiesInCountry(targetCountry);
 
         target.setArmies(targetCountry, defenderArmies);
         this.setArmies(sourceCountry, attackerArmies);
+
 
         return target;
     }
