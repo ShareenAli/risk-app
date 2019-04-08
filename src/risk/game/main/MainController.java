@@ -338,6 +338,8 @@ public class MainController extends ActivityController {
 
         int attackerArmies = attacker.getArmiesInCountry(this.attackSource);
 
+        determineDiceRolls(attacker, defender);
+
         if (attacker.getType() != 4 && attacker.getType() != 3) {
             if (attacker.getNoOfDiceRolls() < 2)
                 return;
