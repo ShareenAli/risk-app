@@ -205,7 +205,7 @@ public class Player {
      * @param countryName name of the countries
      * @param armiesToAdd armies to append
      */
-    private void addArmies(String countryName, int armiesToAdd) {
+    public void addArmies(String countryName, int armiesToAdd) {
         int armies = this.countries.get(countryName);
         armies += armiesToAdd;
         this.countries.put(countryName, armies);

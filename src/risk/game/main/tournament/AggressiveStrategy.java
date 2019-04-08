@@ -29,9 +29,11 @@ public class AggressiveStrategy implements Strategy
 	 * @return message of successful allocation
 	 */
 	@Override
-	public String reinforce(int armiesToAllocate, String country) {
-		String countryName= getStrongestCountry();
-		return countryName;
+	public String reinforce(String country, int armiesToAllocate) 
+	{
+		String strongestCountry = getStrongestCountry();
+		player.addArmies(strongestCountry, armiesToAllocate);
+		return strongestCountry;
 	}
 
 	/**
@@ -39,11 +41,12 @@ public class AggressiveStrategy implements Strategy
 	 * @return number of armies to be moved
 	 */
 	@Override
-	public List<String> attack() { 
-		List<String> attackWithTarget = new ArrayList<>();
-		attackWithTarget.add(getStrongestCountry());
-		attackWithTarget.add(weakestNeighbourForAttack(attackWithTarget.get(0)));
-		return attackWithTarget;
+	public List<String> attack() 
+	{ 
+		List<String> attackerAndEnemy = new ArrayList<>();
+		attackerAndEnemy.add(getStrongestCountry());
+		attackerAndEnemy.add(getWeakestNeighbour(attackerAndEnemy.get(0)));
+		return attackerAndEnemy;
 	}
 
 	/**
@@ -51,23 +54,29 @@ public class AggressiveStrategy implements Strategy
 	 * @return message of successful fortification
 	 */
 	@Override
-	public String fortify() 
+	public ArrayList<String> fortify() 
 	{
-		String targetCountry=getStrongestCountry();
-		String sourceCountry=null;
+		ArrayList<String> fortifyData = new ArrayList<>();
+		String sourceCountry;
+		String targetCountry = getStrongestCountry();
 		Country country = data.getCountry(targetCountry);
 		List<String> CountryNeighbours = country.getNeighbours();
 
-		int maxArmy = -1;
+		int maxArmy = -999;
 		sourceCountry = "";
 		for (Map.Entry<String, Integer> entry : player.getCountries().entrySet()) {
-			if ((CountryNeighbours.indexOf(entry.getKey()) > -1) && (entry.getValue() > maxArmy)) {
+			if ((CountryNeighbours.indexOf(entry.getKey()) > -1) && (entry.getValue() > maxArmy)) 
+			{
 				maxArmy = entry.getValue();
 				sourceCountry = entry.getKey();
 			}
 		}
 
-		return sourceCountry+"-"+targetCountry+"-"+maxArmy;
+		fortifyData.add(sourceCountry);
+		fortifyData.add(targetCountry);
+		fortifyData.add(String.valueOf(maxArmy));
+		
+		return fortifyData;
 	}
 
 	/**
@@ -78,85 +87,78 @@ public class AggressiveStrategy implements Strategy
 	public String getWeakestNeighbour(String countryName) 
 	{
 		List<String> neighboursNotConquered = getNeighborsNotConquered(countryName);
-		String weakestNeighbour=null,tempneighbor = null;
-		int lowestArmies=0, noOfArmies=0;
+		String weakestTargetNeighbour = null, tempTarget= null;
+		int weakestArmyCount =999999, armyCount=0;
 		
-		//for each country in the neighbours list
-		for(int j=0;j<neighboursNotConquered.size();j++) 
+		for(int j=0;j<neighboursNotConquered.size();j++) //Traverse over the unconquered neighbours 
 		{
-			// for each player in the list
-			for (int i = 0; i < players.size(); i++) 
+			for (int i = 0; i < players.size(); i++) // Check for each player 
 			{
-				Player temp = players.get(i);
-				if (temp.getName().equalsIgnoreCase(player.getName()))
+				Player eachPlayer = players.get(i);
+			
+				if (eachPlayer .getName().equalsIgnoreCase(player.getName())) //If player is the source player
 					continue;
-				// get a particular player's conquered country list
-				HashMap<String, Integer> countriesConqueredTmp = temp.getCountries();
-				Iterator eachCountryConquered = countriesConqueredTmp.entrySet().iterator();// iterator for countries conqureeed by player
-				while (eachCountryConquered.hasNext()) 
+				
+				HashMap<String, Integer> countriesConquered = eachPlayer.getCountries(); //Get all countries for other player
+				Iterator eachCountryConquered = countriesConquered.entrySet().iterator();
+				
+				while (eachCountryConquered.hasNext()) //Iterate over all the countries owned by the other player
 				{
-					Map.Entry pair = (Map.Entry) eachCountryConquered.next();// if the player has the country in the conqueredcountry list
-					//if the key equal to the neighbor teh get number of armies in the country
-					if (pair.getKey().equals(neighboursNotConquered.get(j))) {
-						noOfArmies  = (int) pair.getValue();
-						tempneighbor=neighboursNotConquered.get(j);
-						if(lowestArmies==0) {
-							lowestArmies=noOfArmies;
-							weakestNeighbour=tempneighbor;
+					Map.Entry oneCountry = (Map.Entry) eachCountryConquered.next(); //get one country that belongs to the other player
+					if (oneCountry.getKey().equals(neighboursNotConquered.get(j))) //if that one country is not conquered by own player 
+					{
+						armyCount  = (int) oneCountry.getValue();
+						tempTarget=neighboursNotConquered.get(j);
+						if(armyCount < weakestArmyCount) 
+						{
+							weakestArmyCount = armyCount;
+							weakestTargetNeighbour = tempTarget;
 						}
-						System.out.println("Neigbour:: "+pair.getKey()+"armies::"+pair.getValue());
 					}
 				}
 			}
-			//if the number of armies in the neigbour country is lowest till now
-			if (noOfArmies < lowestArmies) {
-				lowestArmies = noOfArmies;
-				weakestNeighbour =tempneighbor;
+			if(armyCount < weakestArmyCount) 
+			{
+				weakestArmyCount = armyCount;
+				weakestTargetNeighbour = tempTarget;
 			}
 		}
-		System.out.println("The weakest neighbour is "+weakestNeighbour+" with number of armies:" +lowestArmies);
-		return weakestNeighbour;
+		return weakestTargetNeighbour;
 	}
 
 
 	public String getStrongestCountry() 
 	{
+		ArrayList<String> temp = new ArrayList<>();
 		String strongestCountryName = null;
-		int maximumArmies=0;
-		//get the active player
-
-		// retrieving the countries conquered by the player
-		HashMap<String, Integer> countriesConquered = player.getCountries();
-		List<String> tried = new ArrayList<>();
-		//a country can a strongest country if 1) it has a neighbour that is also conquered and 2) iff it has the highest number of armies
-
-		while (tried.size() != countriesConquered.size()) 
+		int maxArmies=0;
+		HashMap<String, Integer> countriesConquered = player.getCountries();	//get list of countries of player
+		
+		while (temp.size() != countriesConquered.size())	//traverse all the countries already owned  
 		{
-			maximumArmies = 0;
-			System.out.println(tried);
+			maxArmies = 0;
 			for (Entry<String, Integer> entry : countriesConquered.entrySet()) 
 			{
-				if (tried.indexOf(entry.getKey()) != -1)
+				if (temp.indexOf(entry.getKey()) != -1)	//if conquered country not there
 					continue;
 				Country countryObj = data.getCountries().get(entry.getKey());
-				List<String> neighbours = countryObj.getNeighbours();//list of neighbours of conquered country
+				List<String> neighbours = countryObj.getNeighbours(); // retrieve list of neighbors of conquered country
 
-				for (String neighbour : neighbours) 
+				for (String neighbour : neighbours) //for each neigbor that belong to a conqured country
 				{
-					if (countriesConquered.containsKey(neighbour) && (entry.getValue() > maximumArmies)) //also conquered 
+					if (countriesConquered.containsKey(neighbour) && (entry.getValue() > maxArmies)) //also conquered and check if it has max army 
 					{
-						maximumArmies = entry.getValue();
+						maxArmies = entry.getValue();
 						strongestCountryName = entry.getKey();
 					}
 				}
 			}
-			///here we are getting the strongest country
-			/*
+		
             if (strongestCountryName != null) 
             {
-                tried.add(strongestCountryName);
-                AttackController controller = new AttackController();
-                if (controller.getNeighboursForAttack(strongestCountryName).size() == 0) 
+            	temp.add(strongestCountryName);
+
+                if (getNeighborsNotConquered(strongestCountryName).size() == 0) 
                 {
                     strongestCountryName = null;
                 } 
@@ -164,7 +166,7 @@ public class AggressiveStrategy implements Strategy
                     break;
             } 
             else
-                break;*/
+                break;
 		}
 
 		return strongestCountryName;
