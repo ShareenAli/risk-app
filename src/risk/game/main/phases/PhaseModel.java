@@ -64,7 +64,7 @@ public class PhaseModel extends Observable {
      * Get the active player's name
      * @return name of player
      */
-    String getActivePlayer() {
+    public String getActivePlayer() {
         return this.players.get(this.playerIndex);
     }
 

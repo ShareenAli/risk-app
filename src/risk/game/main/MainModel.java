@@ -3,6 +3,7 @@ package risk.game.main;
 import entity.Continent;
 import entity.Country;
 import entity.Player;
+import risk.game.settings.SettingsModel;
 
 import java.awt.*;
 import java.io.File;
@@ -17,6 +18,7 @@ import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class MainModel extends Observable {
+	private static MainModel instance;
     public static final String CARD_TYPE_INFANTRY = "Infantry";
     public static final String CARD_TYPE_CAVALRY = "Cavalry";
     public static final String CARD_TYPE_ARTILLERY = "Artillery";
@@ -44,6 +46,17 @@ public class MainModel extends Observable {
 
     public File getBmpFile() {
         return this.bmpFile;
+    }
+    
+    /**
+     * Gets the singleton reference to the class
+     *
+     * @return instance of the Main Model
+     */
+    public static MainModel getInstance() {
+        if (instance == null)
+            instance = new MainModel();
+        return instance;
     }
 
     /**
@@ -126,6 +139,16 @@ public class MainModel extends Observable {
      */
     public Player getPlayer(String name) {
         return this.players.get(name);
+    }
+    
+    /**
+     * Fetch the Country object by providing country name
+     *
+     * @param name name of the country
+     * @return country country object 
+     */
+    public Country getCountry(String country) {
+        return this.countries.get(country);
     }
 
     /**
@@ -463,6 +486,18 @@ public class MainModel extends Observable {
                 cv += continent.getControlValue();
         }
         return cv;
+    }
+    
+    /**
+     * Get the player object against the player
+     *
+     * @param String player name
+     * @return Player object
+     */
+    
+    public Player getPlayerObject(String playerName)
+    {
+        return players.get(playerName);
     }
 
     /**
