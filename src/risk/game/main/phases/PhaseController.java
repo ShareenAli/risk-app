@@ -7,12 +7,13 @@ import java.util.ArrayList;
 
 /**
  * Controller that handles the phase functionality
- * @author shareenali
+ * @author shareenali, farhanrw
  * @version 0.1
  */
 public class PhaseController {
     private PhaseView view;
     private PhaseModel model;
+    private static PhaseController instance;
 
     /**
      * It initializes the view and the model
@@ -20,6 +21,14 @@ public class PhaseController {
     public PhaseController() {
         this.view = new PhaseView();
         this.model = new PhaseModel();
+    }
+    /**
+     * It returns the current active instance
+     */
+    public static PhaseController getInstance() {
+        if (instance == null)
+            instance = new PhaseController();
+        return instance;
     }
 
     /**
