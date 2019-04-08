@@ -7,12 +7,13 @@ import java.util.ArrayList;
 
 /**
  * Controller that handles the phase functionality
- * @author shareenali
+ * @author shareenali, farhanrw
  * @version 0.1
  */
 public class PhaseController {
     private PhaseView view;
     private PhaseModel model;
+    private static PhaseController instance;
 
     /**
      * It initializes the view and the model
@@ -21,14 +22,24 @@ public class PhaseController {
         this.view = new PhaseView();
         this.model = new PhaseModel();
     }
+    /**
+     * It returns the current active instance
+     */
+    public static PhaseController getInstance() {
+        if (instance == null)
+            instance = new PhaseController();
+        return instance;
+    }
 
     /**
      * Initializes the values before displaying
      * @param buttonChangeLs change button listener
+     * @param buttonSaveLs save game listener
      */
-    public void initializeValues(ActionListener buttonChangeLs) {
+    public void initializeValues(ActionListener buttonChangeLs, ActionListener buttonSaveLs) {
         this.view.initializeValues();
         this.view.bindChangePhaseListener(buttonChangeLs);
+        this.view.bindSaveGameListener(buttonSaveLs);
 
         this.model.addObserver(this.view);
     }
@@ -71,6 +82,7 @@ public class PhaseController {
     public String activePlayer() {
         return this.model.getActivePlayer();
     }
+    
 
     /**
      * Sets the player with name "name" as the current active player
@@ -99,5 +111,14 @@ public class PhaseController {
      */
     public PhaseView getView() {
         return this.view;
+    }
+
+    public PhaseModel getModel() {
+        return this.model;
+    }
+
+    public void setLoadGameValues(int phase, int playerIdx) {
+        this.model.setPhase(phase);
+        this.model.setPlayerIndex(playerIdx);
     }
 }

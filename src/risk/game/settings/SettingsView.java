@@ -158,7 +158,10 @@ public class SettingsView {
         JComboBox comboType = new JComboBox();
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         model.addElement("Human");
-        model.addElement("Computer");
+        model.addElement("Random");
+        model.addElement("Aggressive");
+        model.addElement("Cheater");
+        model.addElement("Benevolent");
         comboType.setModel(model);
         panel.add(comboType);
         JComboBox comboColor = new JComboBox();

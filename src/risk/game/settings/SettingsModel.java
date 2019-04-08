@@ -85,7 +85,7 @@ public class SettingsModel {
      *
      * @return players
      */
-    ArrayList<Player> getPlayers() {
+    public ArrayList<Player> getPlayers() {
         return players;
     }
 

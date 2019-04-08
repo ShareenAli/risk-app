@@ -64,7 +64,7 @@ public class PhaseModel extends Observable {
      * Get the active player's name
      * @return name of player
      */
-    String getActivePlayer() {
+    public String getActivePlayer() {
         return this.players.get(this.playerIndex);
     }
 
@@ -106,5 +106,21 @@ public class PhaseModel extends Observable {
      */
     String getActivePhaseName() {
         return this.phaseNames[this.phase];
+    }
+
+    public int getPlayerIndex() {
+        return this.playerIndex;
+    }
+
+    public int getPhase() {
+        return this.phase;
+    }
+
+    void setPhase(int phase) {
+        this.phase = phase;
+    }
+
+    void setPlayerIndex(int playerIndex) {
+        this.playerIndex = playerIndex;
     }
 }
