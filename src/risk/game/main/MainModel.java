@@ -332,13 +332,14 @@ public class MainModel extends Observable {
      * @param countryName Name of the country to which armies are to be assigned
      * @param armiesToAdd Number of armies to be assigned
      */
-    public void reinforcementPhase(String playerName, String countryName, int armiesToAdd) {
+    public String reinforcementPhase(String playerName, String countryName, int armiesToAdd) {
         Player player = this.players.get(playerName);
         int controlValue = checkControlValueArmies(player);
         armiesToAdd += controlValue;
-        player.reinforcementPhase(countryName, armiesToAdd);
+        player = player.reinforcementPhase(countryName, armiesToAdd);
         this.armiesAvailableToAssign -= armiesToAdd;
         this.updatePlayer(player.getName(), player);
+        return player.getModifiedCountries().get(0);
     }
 
     /**
@@ -349,10 +350,11 @@ public class MainModel extends Observable {
      * @param targetCountryName Name of the target country
      * @param armiesToTransfer  Number of armies to transfer
      */
-    void fortificationPhase(String playerName, String sourceCountryName, String targetCountryName, int armiesToTransfer) {
+    ArrayList<String> fortificationPhase(String playerName, String sourceCountryName, String targetCountryName, int armiesToTransfer) {
         Player player = this.players.get(playerName);
-        player.fortificationPhase(sourceCountryName, targetCountryName, armiesToTransfer);
+        player = player.fortificationPhase(this,sourceCountryName, targetCountryName, armiesToTransfer);
         this.updatePlayer(player.getName(), player);
+        return player.getModifiedCountries();
     }
 
     /**
@@ -463,6 +465,45 @@ public class MainModel extends Observable {
         return cv;
     }
 
+    /**
+     * Get potential target countries for automated attack
+     *
+     * @param discardCountries List of countries to avoid searching for
+     * @return ArrayList List of the countries
+     */
+    ArrayList<String> getPotentialCountriesForAttack(ArrayList<String> discardCountries) {
+        ArrayList<String> finalList = new ArrayList<>();
+
+        for (String country : this.getCountries().keySet()) {
+            if (!discardCountries.contains(country)) {
+                finalList.add(country);
+            }
+        }
+
+        return finalList;
+    }
+
+    /**
+     * Fetch the owner of the country by given country name
+     *
+     * @param country Name of the country
+     * @return String Name of the owner
+     */
+    String getPlayerNameFromCountry(String country) {
+        for (Map.Entry<String, Player> entry : this.players.entrySet()) {
+            if (entry.getValue().getCountries().containsKey(country)) {
+                return entry.getKey();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get list of continents
+     *
+     * @return HashMap HashMap of continents
+     */
     public HashMap<String, Continent> getContinents() {
         return this.continents;
     }
