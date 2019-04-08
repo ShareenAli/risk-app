@@ -4,6 +4,7 @@ import entity.behaviours.*;
 import risk.game.main.MainModel;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,10 +17,8 @@ import java.util.HashMap;
  * @version 0.1
  */
 
-public class Player {
-    /**
-     * A human player. It can be used as player type
-     */
+public class Player implements Serializable {
+    /** A human player. It can be used as player type */
     public static final int TYPE_HUMAN = 0;
     /**
      * A computer player. It can be used as player type

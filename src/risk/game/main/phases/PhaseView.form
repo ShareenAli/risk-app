@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="risk.game.main.phases.PhaseView">
   <grid id="27dc6" binding="panelMain" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="20" y="20" width="242" height="190"/>
+      <xy x="20" y="20" width="306" height="190"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -34,6 +34,12 @@
                 <constraints/>
                 <properties>
                   <text value="Change Phase"/>
+                </properties>
+              </component>
+              <component id="ec05b" class="javax.swing.JButton" binding="buttonSaveGame">
+                <constraints/>
+                <properties>
+                  <text value="Save Game"/>
                 </properties>
               </component>
             </children>

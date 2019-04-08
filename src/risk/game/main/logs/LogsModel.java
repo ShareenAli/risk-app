@@ -1,5 +1,6 @@
 package risk.game.main.logs;
 
+import java.util.ArrayList;
 import java.util.Observable;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Observable;
 @SuppressWarnings("deprecation")
 class LogsModel extends Observable {
     static final String ADD_LOG = "add:log";
-
+    private ArrayList<String> logs = new ArrayList<>();
     private String log;
 
     /**
@@ -24,6 +25,7 @@ class LogsModel extends Observable {
      */
     void recordLog(String log) {
         this.log = log;
+        this.logs.add(log);
         setChanged();
         notifyObservers(ADD_LOG);
     }
@@ -34,5 +36,13 @@ class LogsModel extends Observable {
      */
     String getLog() {
         return log;
+    }
+
+    /**
+     * Get list of logs
+     * @return list of logs as string
+     */
+    public ArrayList<String> getLogs() {
+        return logs;
     }
 }

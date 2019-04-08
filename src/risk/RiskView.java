@@ -19,6 +19,7 @@ public class RiskView {
     private JButton buttonNewGame;
     private JButton buttonEditMap;
     private JButton buttonNewMap;
+    private JButton buttonLoadGame;
 
     RiskView() {
     }
@@ -48,6 +49,10 @@ public class RiskView {
      */
     void bindEditMapListener(ActionListener listener) {
         this.buttonEditMap.addActionListener(listener);
+    }
+
+    void bindLoadGameListener(ActionListener listener) {
+        this.buttonLoadGame.addActionListener(listener);
     }
 
     {
@@ -93,6 +98,9 @@ public class RiskView {
         buttonNewMap = new JButton();
         buttonNewMap.setText("New Map");
         panelContent.add(buttonNewMap);
+        buttonLoadGame = new JButton();
+        buttonLoadGame.setText("Load Game");
+        panelContent.add(buttonLoadGame);
     }
 
     /**
