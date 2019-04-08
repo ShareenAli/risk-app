@@ -1,9 +1,6 @@
 package entity;
 
-import entity.behaviours.BenevolentBehaviour;
-import entity.behaviours.HumanBehaviour;
-import entity.behaviours.PlayerBehaviour;
-import entity.behaviours.RandomBehaviour;
+import entity.behaviours.*;
 import risk.game.main.MainModel;
 
 import java.awt.*;
@@ -41,6 +38,9 @@ public class Player {
     private boolean cardHasBeenUsed = false;
     private HashMap<String, Integer> countries = new HashMap<>();
     private PlayerBehaviour strategy;
+    private ArrayList<String> modifiedCountries = new ArrayList<>();
+    private HashMap<Integer, ArrayList<Integer>> attackerDices = new HashMap<>();
+    private HashMap<Integer, ArrayList<Integer>> defenderDices = new HashMap<>();
 
     /**
      * Removes one Infantry, Artillery and Cavalry cards
@@ -118,19 +118,25 @@ public class Player {
         return strategy;
     }
 
+    /**
+     * Initialize strategy for particular player
+     *
+     * @param strategy Code for strategy
+     */
     public void setStrategy(int strategy) {
         switch (strategy) {
             case TYPE_RANDOM:
                 this.strategy = new RandomBehaviour();
                 break;
             case TYPE_AGGRESSIVE:
+                this.strategy = new AggressiveBehaviour();
                 break;
             case TYPE_CHEATER:
+                this.strategy = new CheaterBehaviour();
                 break;
             case TYPE_BENEVOLENT:
                 this.strategy = new BenevolentBehaviour();
                 break;
-
             case TYPE_HUMAN:
                 this.strategy = new HumanBehaviour();
                 break;
@@ -228,6 +234,67 @@ public class Player {
     }
 
     /**
+     * Get the list of modified countries which are being operated on
+     *
+     * @return Arraylist List of modified countries
+     */
+    public ArrayList<String> getModifiedCountries() {
+        return this.modifiedCountries;
+    }
+
+    /**
+     * Clears the list of modified countries
+     */
+    public void clearModifiedCountries() {
+        this.modifiedCountries.clear();
+    }
+
+    /**
+     * Add country to the modified countries list
+     *
+     * @param modifiedCountries List of modified countries
+     */
+    public void setModifiedCountries(ArrayList<String> modifiedCountries) {
+        this.modifiedCountries = modifiedCountries;
+    }
+
+    /**
+     * Get attacker dices list
+     *
+     * @return HashMap Dices of attacker
+     */
+    public HashMap<Integer, ArrayList<Integer>> getAttackerDices() {
+        return attackerDices;
+    }
+
+    /**
+     * Set attacker dices list
+     *
+     * @param attackerDices Attacker dices used in attack mode
+     */
+    public void setAttackerDices(HashMap<Integer, ArrayList<Integer>> attackerDices) {
+        this.attackerDices = attackerDices;
+    }
+
+    /**
+     * Get the defender dices list
+     *
+     * @return HashMap Dices of defender
+     */
+    public HashMap<Integer, ArrayList<Integer>> getDefenderDices() {
+        return defenderDices;
+    }
+
+    /**
+     * Set defender dices list
+     *
+     * @param defenderDices Defender dices used in attack mode
+     */
+    public void setDefenderDices(HashMap<Integer, ArrayList<Integer>> defenderDices) {
+        this.defenderDices = defenderDices;
+    }
+
+    /**
      * Assign armies to the countries
      * It will replace the number of armies.
      *
@@ -245,7 +312,7 @@ public class Player {
      * @param countryName name of the countries
      * @param armiesToAdd armies to append
      */
-    private void addArmies(String countryName, int armiesToAdd) {
+    public void addArmies(String countryName, int armiesToAdd) {
         int armies = this.countries.get(countryName);
         armies += armiesToAdd;
         this.countries.put(countryName, armies);
@@ -257,7 +324,7 @@ public class Player {
      * @param countryName    Name of the country
      * @param armiesToRemove Number of armies to remove from the country
      */
-    private void removeArmies(String countryName, int armiesToRemove) {
+    public void removeArmies(String countryName, int armiesToRemove) {
         int armies = this.countries.get(countryName);
         armies -= armiesToRemove;
         this.countries.put(countryName, armies);
@@ -265,36 +332,41 @@ public class Player {
 
     /**
      * Update the data structures for reinforcement phase
+     *
+     * @param countryName Name of the country
+     * @param armiesToAdd No. of armies to reinforce with
+     * @return Player Returns the player object
      */
-    public String reinforcementPhase(String countryName, int armiesToAdd) {
-        if (this.type != 0) {
-            this.strategy.setPlayer(this);
-            countryName = this.strategy.reinforcementPhase(countryName, armiesToAdd);
-        }
+    public Player reinforcementPhase(String countryName, int armiesToAdd) {
+        this.strategy.setPlayer(this);
+        countryName = this.strategy.reinforcementPhase(countryName, armiesToAdd);
 
-        this.addArmies(countryName, armiesToAdd);
-        return countryName;
+        Player player = this.strategy.getPlayer();
+        if (player.type != 3) {
+            player.modifiedCountries.clear();
+            player.modifiedCountries.add(countryName);
+        }
+        return player;
     }
 
     /**
      * Perform the fortification phase on the data structures
      *
+     * @param model             Main model instance to access gameplay data
      * @param sourceCountryName Move the armies from the desired country
      * @param targetCountryName Move the armies to the desired country
      * @param armiesToTransfer  Number of armies to be transferred from a country to another
      */
-    public void fortificationPhase(String sourceCountryName, String targetCountryName, int armiesToTransfer) {
+    public Player fortificationPhase(MainModel model, String sourceCountryName, String targetCountryName, int armiesToTransfer) {
         ArrayList<String> countries;
-        if (this.type != 0) {
-            this.strategy.setPlayer(this);
-            countries = this.strategy.fortificationPhase(sourceCountryName, targetCountryName, armiesToTransfer);
-            this.addArmies(countries.get(1), Integer.parseInt(countries.get(2)));
-            this.removeArmies(countries.get(0), Integer.parseInt(countries.get(2)));
-            return;
-        }
+        this.strategy.setPlayer(this);
+        this.strategy.setModel(model);
+        countries = this.strategy.fortificationPhase(sourceCountryName, targetCountryName, armiesToTransfer);
 
-        this.addArmies(targetCountryName, armiesToTransfer);
-        this.removeArmies(sourceCountryName, armiesToTransfer);
+        Player player = this.strategy.getPlayer();
+        player.modifiedCountries.clear();
+        player.setModifiedCountries(countries);
+        return player;
     }
 
     /**
@@ -326,7 +398,7 @@ public class Player {
      * @return Integer Returns the number of dice rolls determined for the player
      */
     public int getNoOfDiceRolls() {
-        return NoOfDiceRolls;
+        return this.NoOfDiceRolls;
     }
 
     /**
@@ -335,7 +407,7 @@ public class Player {
      * @param noOfDiceRolls Value of dice rolls for attack phase
      */
     public void setNoOfDiceRolls(int noOfDiceRolls) {
-        NoOfDiceRolls = noOfDiceRolls;
+        this.NoOfDiceRolls = noOfDiceRolls;
     }
 
     /**
@@ -348,20 +420,24 @@ public class Player {
      * @param defenderDices Dice rolls of the defender
      * @return Player player object of the defendant
      */
-    public Player attack(Player target, String targetCountry, String sourceCountry, ArrayList<Integer> attackerDices,
-                         ArrayList<Integer> defenderDices) {
+    public ArrayList<Player> attack(MainModel model, Player target, String targetCountry, String sourceCountry, ArrayList<Integer> attackerDices,
+                                          ArrayList<Integer> defenderDices) {
         this.strategy.setPlayer(this);
-        Player defender = this.strategy.attack(target, targetCountry, sourceCountry, attackerDices, defenderDices);
+        this.strategy.setModel(model);
+        ArrayList<Player> defender = this.strategy.attack(target, targetCountry, sourceCountry, attackerDices, defenderDices);
+
+        if (defender == null)
+            return null;
 
         Player attacker = this.strategy.getPlayer();
 
+//        if (defender.size() == 1) {
         int attackerArmies = attacker.getArmiesInCountry(sourceCountry);
-        int defenderArmies = defender.getArmiesInCountry(targetCountry);
+        int defenderArmies = defender.get(0).getArmiesInCountry(targetCountry);
 
-        target.setArmies(targetCountry, defenderArmies);
+        defender.get(0).setArmies(targetCountry, defenderArmies);
         this.setArmies(sourceCountry, attackerArmies);
 
-
-        return target;
+        return defender;
     }
 }

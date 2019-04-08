@@ -6,8 +6,8 @@ import risk.game.main.MainModel;
 import java.util.ArrayList;
 
 public class HumanBehaviour implements PlayerBehaviour {
-    Player player;
-    MainModel model;
+    private Player player;
+    private MainModel model;
 
     @Override
     public void setPlayer(Player player) {
@@ -16,17 +16,27 @@ public class HumanBehaviour implements PlayerBehaviour {
 
     @Override
     public String reinforcementPhase(String countryName, int armiesToAdd) {
-        return null;
+        this.player.addArmies(countryName, armiesToAdd);
+
+        return countryName;
     }
 
     @Override
     public ArrayList<String> fortificationPhase(String sourceCountryName, String targetCountryName, int armiesToTransfer) {
-        return null;
+        ArrayList<String> countries = new ArrayList<>();
+        this.player.addArmies(targetCountryName, armiesToTransfer);
+        this.player.removeArmies(sourceCountryName, armiesToTransfer);
+
+        countries.add(sourceCountryName);
+        countries.add(targetCountryName);
+        countries.add(String.valueOf(armiesToTransfer));
+        return countries;
     }
 
 
     @Override
-    public Player attack(Player target, String targetCountry, String sourceCountry, ArrayList<Integer> attackerDices, ArrayList<Integer> defenderDices) {
+    @SuppressWarnings("Duplicates")
+    public ArrayList<Player> attack(Player target, String targetCountry, String sourceCountry, ArrayList<Integer> attackerDices, ArrayList<Integer> defenderDices) {
         int attackerArmies = this.player.getArmiesInCountry(sourceCountry);
         int defenderArmies = target.getArmiesInCountry(targetCountry);
         attackerDices.sort((Integer o1, Integer o2) -> o2 - o1);
@@ -49,7 +59,10 @@ public class HumanBehaviour implements PlayerBehaviour {
         target.setArmies(targetCountry, defenderArmies);
         this.player.setArmies(sourceCountry, attackerArmies);
 
-        return target;
+        ArrayList<Player> defenders = new ArrayList<>();
+        defenders.add(target);
+
+        return defenders;
     }
 
     @Override

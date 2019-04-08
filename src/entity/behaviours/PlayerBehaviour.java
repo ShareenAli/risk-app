@@ -4,6 +4,7 @@ import entity.Player;
 import risk.game.main.MainModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public interface PlayerBehaviour {
 
@@ -13,7 +14,7 @@ public interface PlayerBehaviour {
 
     ArrayList<String> fortificationPhase(String sourceCountryName, String targetCountryName, int armiesToTransfer);
 
-    Player attack(Player target, String targetCountry, String sourceCountry, ArrayList<Integer> attackerDices, ArrayList<Integer> defenderDices);
+    ArrayList<Player> attack(Player target, String targetCountry, String sourceCountry, ArrayList<Integer> attackerDices, ArrayList<Integer> defenderDices);
 
     Player getPlayer();
 

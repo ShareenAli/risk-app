@@ -1,14 +1,16 @@
 package entity.behaviours;
 
+import entity.Country;
 import entity.Player;
 import risk.game.main.MainModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class BenevolentBehaviour implements PlayerBehaviour {
-    Player player;
-    MainModel model;
+    private Player player;
+    private MainModel model;
 
     @Override
     public void setPlayer(Player player) {
@@ -19,20 +21,26 @@ public class BenevolentBehaviour implements PlayerBehaviour {
     public String reinforcementPhase(String countryName, int armiesToAdd) {
         countryName = fetchWeakestCountry();
 
+        this.player.addArmies(countryName, armiesToAdd);
         return countryName;
     }
 
     @Override
     public ArrayList<String> fortificationPhase(String sourceCountryName, String targetCountryName, int armiesToTransfer) {
-        ArrayList<String> countries = new ArrayList<>();
-        sourceCountryName = fetchStrongestCountry();
+        ArrayList<String> countries = new ArrayList<>(this.player.getCountries().keySet());
 
         targetCountryName = fetchWeakestCountry();
-//            if (this.model.checkForLink(new ArrayList<>(), sourceCountryName, targetCountryName))
-//                break;
 
+        sourceCountryName = fetchStrongestCountry(targetCountryName);
 
-        armiesToTransfer = this.player.getArmiesInCountry(sourceCountryName) - 1;
+        if (sourceCountryName == null || sourceCountryName.equalsIgnoreCase("")) {
+            sourceCountryName = countries.get((new Random()).nextInt(countries.size()));
+            armiesToTransfer = 0;
+        } else
+            armiesToTransfer = this.player.getArmiesInCountry(sourceCountryName) - 1;
+
+        this.player.addArmies(targetCountryName, armiesToTransfer);
+        this.player.removeArmies(sourceCountryName, armiesToTransfer);
 
         countries.clear();
         countries.add(sourceCountryName);
@@ -43,8 +51,8 @@ public class BenevolentBehaviour implements PlayerBehaviour {
     }
 
     @Override
-    public Player attack(Player target, String targetCountry, String sourceCountry, ArrayList<Integer> attackerDices, ArrayList<Integer> defenderDices) {
-        return target;
+    public ArrayList<Player> attack(Player target, String targetCountry, String sourceCountry, ArrayList<Integer> attackerDices, ArrayList<Integer> defenderDices) {
+        return null;
     }
 
     @Override
@@ -60,7 +68,7 @@ public class BenevolentBehaviour implements PlayerBehaviour {
     private String fetchWeakestCountry() {
         ArrayList<String> countries = new ArrayList<>(this.player.getCountries().keySet());
         String weakest = "";
-        int minArmies = 50;
+        int minArmies = 99;
 
         for (String country : countries) {
             int armies = this.player.getArmiesInCountry(country);
@@ -73,18 +81,25 @@ public class BenevolentBehaviour implements PlayerBehaviour {
         return weakest;
     }
 
-    private String fetchStrongestCountry() {
-        ArrayList<String> countries = new ArrayList<>(this.player.getCountries().keySet());
+    private String fetchStrongestCountry(String weakestCountry) {
+        HashMap<String, Integer> conqueredCountries = this.player.getCountries();
+        HashMap<String, Country> countries = this.model.getCountries();
+        Country country = countries.get(weakestCountry);
+
         String strongest = "";
         int maxArmies = 1;
 
-        for (String country : countries) {
-            int armies = this.player.getArmiesInCountry(country);
+        for (String neighbour : country.getNeighbours()) {
+            if (conqueredCountries.containsKey(neighbour)) {
+                int armies = this.player.getArmiesInCountry(neighbour);
 
-            if (maxArmies < armies) {
-                maxArmies = armies;
-                strongest = country;
+                if (maxArmies < armies) {
+                    maxArmies = armies;
+                    strongest = neighbour;
+                }
             }
+
+
         }
         return strongest;
     }

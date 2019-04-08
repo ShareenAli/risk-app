@@ -2,14 +2,14 @@ package entity.behaviours;
 
 import entity.Player;
 import risk.game.main.MainModel;
-import sun.applet.Main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class RandomBehaviour implements PlayerBehaviour {
-    Player player;
-    MainModel model;
+    private Player player;
+    private MainModel model;
 
     @Override
     public void setPlayer(Player player) {
@@ -21,6 +21,7 @@ public class RandomBehaviour implements PlayerBehaviour {
         ArrayList<String> countries = new ArrayList<>(this.player.getCountries().keySet());
         countryName = countries.get((new Random()).nextInt(countries.size()));
 
+        this.player.addArmies(countryName, armiesToAdd);
         return countryName;
     }
 
@@ -38,9 +39,12 @@ public class RandomBehaviour implements PlayerBehaviour {
 
         do {
             targetCountryName = countries.get((new Random()).nextInt(countries.size()));
-//            if (this.model.checkForLink(new ArrayList<>(), sourceCountryName, targetCountryName))
-//                break;
+            if (this.model.checkForLink(new ArrayList<>(), sourceCountryName, targetCountryName))
+                break;
         } while (targetCountryName.equalsIgnoreCase(sourceCountryName));
+
+        this.player.addArmies(targetCountryName, armiesToTransfer);
+        this.player.removeArmies(sourceCountryName, armiesToTransfer);
 
         countries.clear();
         countries.add(sourceCountryName);
@@ -51,7 +55,8 @@ public class RandomBehaviour implements PlayerBehaviour {
     }
 
     @Override
-    public Player attack(Player target, String targetCountry, String sourceCountry, ArrayList<Integer> attackerDices, ArrayList<Integer> defenderDices) {
+    @SuppressWarnings("Duplicates")
+    public ArrayList<Player> attack(Player target, String targetCountry, String sourceCountry, ArrayList<Integer> attackerDices, ArrayList<Integer> defenderDices) {
         int attackerArmies = this.player.getArmiesInCountry(sourceCountry);
         int defenderArmies = target.getArmiesInCountry(targetCountry);
         attackerDices.sort((Integer o1, Integer o2) -> o2 - o1);
@@ -74,7 +79,10 @@ public class RandomBehaviour implements PlayerBehaviour {
         target.setArmies(targetCountry, defenderArmies);
         this.player.setArmies(sourceCountry, attackerArmies);
 
-        return target;
+        ArrayList<Player> defenders = new ArrayList<>();
+        defenders.add(target);
+
+        return defenders;
     }
 
     @Override
