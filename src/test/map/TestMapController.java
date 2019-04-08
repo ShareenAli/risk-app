@@ -90,4 +90,16 @@ public class TestMapController {
         assertTrue(this.mapController.validateGhostNeighboursNolink());
     }
 
+    /**
+     * Test Case method to checkInValidMapFile
+     */
+    @Test
+    public void checkInvalidMapFile(){
+        File f=new File(System.getProperty("user.dir")+"\\src\\test\\TestSuite.java");
+        boolean errorInLoading=new MapController().loadExistingMap(f);
+        assertEquals(false, errorInLoading);
+    }
+
+
+
 }

@@ -6,8 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import risk.map.MapModel;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.*;
 
 /**
  * This test class verifies map model functionality
@@ -42,8 +41,11 @@ public class TestMapModel {
         this.model.saveCountry(kenya);
     }
 
+    /**
+     * Test case method to delete a country
+     */
     @Test
-    public void deleteCountry() {
+    public void testDeleteCountry() {
         Country countryToDelete = this.model.getCountries().get("China");
         this.model.deleteCountry(countryToDelete);
 
@@ -51,11 +53,47 @@ public class TestMapModel {
         assertEquals(this.model.getCountries().get("India").getNeighbours().indexOf("China"), -1);
     }
 
+    /**
+     * Test case method to delete a continent
+     */
     @Test
-    public void deleteContinent() {
+    public void testDeleteContinent() {
         this.model.deleteContinent("Asia");
 
         assertFalse(this.model.getCountries().containsKey("China"));
         assertFalse(this.model.getCountries().containsKey("India"));
     }
+
+    /**
+     * Test case method to verify the presence of country in map
+     */
+    @Test
+    public void testCountryExist(){
+        assertTrue(this.model.getCountries().containsKey("India"));
+    }
+
+    /**
+     * Test case method to add a country
+     */
+    @Test
+    public void testAddCountry(){
+        Country russia = new Country("Russia", "Asia", 28, 51);
+        russia.addNeighbour("China");
+        this.model.saveCountry(russia);
+        assertTrue(this.model.getCountries().containsKey("Russia"));
+    }
+
+    /**
+     * Test case method to add a continent
+     */
+    @Test
+    public void testAddContinent(){
+        this.model.saveContinent(new Continent("Australia", 2));
+        Country newzealand = new Country("New Zealand", "Australia", 28, 51);
+        newzealand.addNeighbour("China");
+        this.model.saveCountry(newzealand);
+        assertTrue(this.model.getContinents().containsKey("Australia"));
+    }
+
+
 }
