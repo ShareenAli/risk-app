@@ -74,6 +74,7 @@ public class PhaseController {
     public String activePlayer() {
         return this.model.getActivePlayer();
     }
+    
 
     /**
      * Changes the active player
@@ -96,5 +97,13 @@ public class PhaseController {
      */
     public PhaseView getView() {
         return this.view;
+    }
+    
+    /**
+     * Get the model
+     * @return model
+     */
+    public PhaseModel getModel() {
+        return this.model;
     }
 }
