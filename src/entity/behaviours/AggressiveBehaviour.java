@@ -4,12 +4,13 @@ import entity.Country;
 import entity.Player;
 import risk.game.main.MainModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class AggressiveBehaviour implements PlayerBehaviour {
+public class AggressiveBehaviour implements PlayerBehaviour, Serializable {
     private Player player;
     private MainModel model;
     int gameNo = 1;

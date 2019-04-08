@@ -833,7 +833,18 @@ public class MainController extends ActivityController {
     }
 
     /**
-     * Fetch the owner of the country by given country name
+     * Saves the game state data into a file called Saved_Game_Data
+     *
+      */
+    public void saveGameState(){ this.model.saveGameState("Saved_Game_Data", this.phaseController, this.logsController); }
+
+    /**
+     * Loads the saved game state data from a file called Saved_Game_Data
+     *
+     */
+    public void loadGameState(){ this.model.saveGameState("Saved_Game_Data", this.phaseController, this.logsController); }
+
+    /** Fetch the owner of the country by given country name
      *
      * @param country Name of the country
      * @return String Name of the owner

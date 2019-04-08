@@ -4,10 +4,11 @@ import entity.Country;
 import entity.Player;
 import risk.game.main.MainModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class CheaterBehaviour implements PlayerBehaviour {
+public class CheaterBehaviour implements PlayerBehaviour, Serializable {
     private Player player;
     private MainModel model;
 

@@ -215,6 +215,13 @@ public class Player implements Serializable {
     }
 
     /**
+     * Sets the new color of the player
+     *
+     * @param a new color of the player
+     */
+    public void setColor(Color a) { color = a; }
+
+    /**
      * It returns the countries conquered by the player
      *
      * @return hash map of the countries

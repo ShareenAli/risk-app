@@ -3,11 +3,12 @@ package entity.behaviours;
 import entity.Player;
 import risk.game.main.MainModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-public class RandomBehaviour implements PlayerBehaviour {
+public class RandomBehaviour implements PlayerBehaviour, Serializable {
     private Player player;
     private MainModel model;
 

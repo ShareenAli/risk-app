@@ -51,7 +51,7 @@ public class SettingsModel {
      *
      * @param file bmp file
      */
-    void setBmpFile(File file) {
+    public void setBmpFile(File file) {
         this.bmpFile = file;
     }
 
@@ -112,7 +112,7 @@ public class SettingsModel {
      *
      * @return image file
      */
-    File getBmpFile() {
+    public File getBmpFile() {
         return bmpFile;
     }
 

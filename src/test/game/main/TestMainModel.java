@@ -7,6 +7,8 @@ import risk.game.main.MainController;
 import risk.game.main.MainModel;
 import org.junit.Before;
 import org.junit.Test;
+import risk.game.main.logs.LogsController;
+import risk.game.main.phases.PhaseController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -346,6 +348,27 @@ public class TestMainModel {
 
         ArrayList<String> cards = this.mainModel.getPlayer("dhaval").getCards();
         assertEquals(1, cards.size());
+    }
+
+    /**
+     * Verify card is updated when Attacker wins
+     */
+    @Test
+    public void checkSaveLoadFunctionality() {
+        this.mainModel.getPlayer("dhaval").setArmies("India", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("Russia", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("Russia", 1);
+        this.mainModel.getPlayer("shareen").setArmies("China", 1);
+        this.mainModel.getPlayer("shareen").setArmies("Pakistan", 3);
+        this.mainModel.getPlayer("shareen").setArmies("Mongolia", 1);
+        this.mainModel.getPlayer("shareen").addCard(CARD_TYPE_CAVALRY);
+        this.mainModel.getPlayer("shareen").addCard(CARD_TYPE_CAVALRY);
+        this.mainController.saveGameState();
+        this.mainController.loadGameState();
+        HashMap<String, Integer> countries = this.mainModel.getPlayer("shareen").getCountries();
+        int armies = countries.get("Pakistan");
+        assertEquals(3, armies);
     }
 
 }

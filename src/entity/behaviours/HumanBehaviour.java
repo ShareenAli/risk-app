@@ -3,9 +3,10 @@ package entity.behaviours;
 import entity.Player;
 import risk.game.main.MainModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class HumanBehaviour implements PlayerBehaviour {
+public class HumanBehaviour implements PlayerBehaviour, Serializable {
     private Player player;
     private MainModel model;
 
