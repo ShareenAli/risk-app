@@ -1,6 +1,7 @@
 package risk.game.main.logs;
 
 import javax.swing.JPanel;
+import java.util.ArrayList;
 
 /**
  * Handles the logs view
@@ -48,5 +49,23 @@ public class LogsController {
      */
     public LogsView getView() {
         return this.view;
+    }
+
+    /**
+     * Get the logs
+     * @return list of logs
+     */
+    public ArrayList<String> getLogs() {
+        return this.model.getLogs();
+    }
+
+    /**
+     * Dispatch the logs again
+     * @param logs list of logs
+     */
+    public void setLogs(ArrayList<String> logs) {
+        for (String log : logs) {
+            this.model.recordLog(log);
+        }
     }
 }

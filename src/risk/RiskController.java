@@ -3,6 +3,7 @@ package risk;
 import risk.game.settings.SettingsController;
 import risk.map.MapController;
 import risk.support.ActivityController;
+import risk.support.GameManager;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,7 +18,7 @@ import java.util.HashMap;
  */
 class RiskController extends ActivityController {
     private RiskView riskView;
-    private ActionListener newGameListener, newMapListener, editMapListener;
+    private ActionListener newGameLs, newMapLs, editMapLs, loadGameLs;
 
     /**
      * It initializes the controller.
@@ -45,23 +46,31 @@ class RiskController extends ActivityController {
      * It binds the useful listeners to the view.
      */
     private void bindListeners() {
-        this.riskView.bindNewGameListener(this.newGameListener);
-        this.riskView.bindNewMapListener(this.newMapListener);
-        this.riskView.bindEditMapListener(this.editMapListener);
+        this.riskView.bindNewGameListener(this.newGameLs);
+        this.riskView.bindNewMapListener(this.newMapLs);
+        this.riskView.bindEditMapListener(this.editMapLs);
+        this.riskView.bindLoadGameListener(this.loadGameLs);
     }
 
     /**
      * It initializes the useful listeners for the view.
      */
     private void initListeners() {
-        this.newGameListener = (ActionEvent e) -> RiskApp.ChangeActivityController(new SettingsController());
+        this.newGameLs = (ActionEvent e) -> RiskApp.ChangeActivityController(new SettingsController());
 
-        this.editMapListener = (ActionEvent e) -> {
+        this.editMapLs = (ActionEvent e) -> {
             HashMap<String, Object> headers = new HashMap<>();
             headers.put(RiskApp.MapIntent.KEY_EDIT, true);
             RiskApp.ChangeActivityController(this, new MapController(), headers, false);
         };
 
-        this.newMapListener = (ActionEvent e) -> RiskApp.ChangeActivityController(new MapController());
+        this.newMapLs = (ActionEvent e) -> RiskApp.ChangeActivityController(new MapController());
+
+        this.loadGameLs = (ActionEvent e) -> this.loadGame();
+    }
+
+    private void loadGame() {
+        GameManager manager = new GameManager();
+        manager.loadGame(this);
     }
 }
