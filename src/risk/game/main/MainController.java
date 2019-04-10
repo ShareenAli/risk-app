@@ -638,6 +638,7 @@ public class MainController extends ActivityController {
 
         if (this.model.isEveryoneOutOfTurns()) {
             this.logsController.log("No one won the game!");
+            System.out.println(super.isTournament);
             if (!super.isTournament) {
                 JOptionPane.showMessageDialog(new JFrame(), "No one won the game!",
                     "Draw!", JOptionPane.INFORMATION_MESSAGE);
