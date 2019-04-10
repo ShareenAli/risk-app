@@ -38,6 +38,8 @@ public class MainController extends ActivityController {
     private ActionListener buttonCountryLs, buttonChangePhaseLs, buttonSaveGameLs;
     private String fortSource, fortTarget;
     private String attackSource, attackTarget, attackerName = null, defenderName = null;
+    private boolean isGameEnded = false;
+    private String winner = null;
 
     public MainController() {
         this.view = new MainView();
@@ -433,10 +435,11 @@ public class MainController extends ActivityController {
         if (isAllOutMode)
             this.performAttack(true, isComputer);
 
-        if (this.model.hasPlayerWon(attacker)) {
+        if (!this.isGameEnded && this.model.hasPlayerWon(attacker)) {
             JOptionPane.showMessageDialog(new JFrame(), attacker.getName() + " has won the game!",
                     "Yeyy!", JOptionPane.INFORMATION_MESSAGE);
-            System.exit(0);
+            this.isGameEnded = true;
+            this.winner = attacker.getName();
         }
     }
 
@@ -609,6 +612,16 @@ public class MainController extends ActivityController {
      * Called when the phase has been changed.
      */
     private void onPhaseChanged() {
+        if (this.isGameEnded)
+            return;
+
+        if (this.model.isEveryoneOutOfTurns()) {
+            JOptionPane.showMessageDialog(new JFrame(), "No one won the game!",
+                "Draw!", JOptionPane.INFORMATION_MESSAGE);
+            this.isGameEnded = true;
+            return;
+        }
+
         switch (this.phaseController.activePhase()) {
             case PhaseModel.PHASE_REINFORCEMENT:
                 this.startCardPhase();
@@ -616,6 +629,8 @@ public class MainController extends ActivityController {
                 this.automateReinforcementPhase();
                 break;
             case PhaseModel.PHASE_FORTIFICATION:
+                Player player = this.model.getPlayer(this.phaseController.activePlayer());
+                player.takeTurn();
                 this.automateFortificationPhase();
                 break;
             case PhaseModel.PHASE_ATTACK:
@@ -776,6 +791,9 @@ public class MainController extends ActivityController {
 
         this.doAttackPhase(this.model.getPlayerNameFromCountry(anotherName) + ":" + anotherName,
                 true);
+
+        if (this.model.hasPlayerWon(this.model.getPlayer(this.phaseController.activePlayer())))
+            return;
 
         this.changePhase();
     }

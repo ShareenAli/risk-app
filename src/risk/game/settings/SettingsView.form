@@ -44,6 +44,16 @@
                 <constraints/>
                 <properties/>
               </component>
+              <component id="b7a7e" class="javax.swing.JLabel" binding="labelNoTurns">
+                <constraints/>
+                <properties>
+                  <text value="Number of turns:"/>
+                </properties>
+              </component>
+              <component id="fa0bc" class="javax.swing.JComboBox" binding="comboNoTurns">
+                <constraints/>
+                <properties/>
+              </component>
             </children>
           </grid>
           <grid id="d3f6d" binding="panelPlayers" layout-manager="GridBagLayout">

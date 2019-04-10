@@ -33,8 +33,11 @@ public class SettingsView {
     private JLabel labelBmpFile;
     private JLabel labelBmpFileName;
     private JButton buttonBmp;
+    private JLabel labelNoTurns;
+    private JComboBox comboNoTurns;
 
     private DefaultComboBoxModel<Integer> modelNoPlayers = new DefaultComboBoxModel<>();
+    private DefaultComboBoxModel<Integer> modelNoTurns = new DefaultComboBoxModel<>();
 
     private SettingsModel model = SettingsModel.getInstance();
 
@@ -44,12 +47,16 @@ public class SettingsView {
     @SuppressWarnings("unchecked")
     void initializeValues() {
         this.modelNoPlayers.removeAllElements();
+        this.modelNoTurns.removeAllElements();
 
         for (int i = 2; i < 7; i++) {
             this.modelNoPlayers.addElement(i);
+            this.modelNoTurns.addElement(i * 5);
         }
 
         this.comboNoPlayers.setModel(this.modelNoPlayers);
+        this.comboNoTurns.setModel(this.modelNoTurns);
+        this.comboNoTurns.setSelectedIndex(0);
         this.createPlayerInfoPanels();
     }
 
@@ -106,6 +113,8 @@ public class SettingsView {
     void collectData() {
         Component[] components = this.panelPlayers.getComponents();
         this.model.clearPlayers();
+        int index = this.comboNoTurns.getSelectedIndex();
+        int number = this.modelNoTurns.getElementAt(index);
 
         for (Component component : components) {
             Component[] children = ((JPanel) component).getComponents();
@@ -114,7 +123,7 @@ public class SettingsView {
             JComboBox color = (JComboBox) children[3];
             int selectedColor = color.getSelectedIndex();
 
-            this.model.addPlayer(name.getText(), type.getSelectedIndex(), COLORS_HEX[selectedColor]);
+            this.model.addPlayer(name.getText(), type.getSelectedIndex(), COLORS_HEX[selectedColor], number);
         }
     }
 
@@ -242,6 +251,11 @@ public class SettingsView {
         panelNoPlayers.add(labelNoPlayers);
         comboNoPlayers = new JComboBox();
         panelNoPlayers.add(comboNoPlayers);
+        labelNoTurns = new JLabel();
+        labelNoTurns.setText("Number of turns:");
+        panelNoPlayers.add(labelNoTurns);
+        comboNoTurns = new JComboBox();
+        panelNoPlayers.add(comboNoTurns);
         panelPlayers = new JPanel();
         panelPlayers.setLayout(new GridBagLayout());
         panelContent.add(panelPlayers, BorderLayout.CENTER);

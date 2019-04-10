@@ -20,6 +20,7 @@ import java.util.HashMap;
 public class Player implements Serializable {
     /** A human player. It can be used as player type */
     public static final int TYPE_HUMAN = 0;
+    private int noOfTurns = 15;
     /**
      * A computer player. It can be used as player type
      */
@@ -40,6 +41,18 @@ public class Player implements Serializable {
     private ArrayList<String> modifiedCountries = new ArrayList<>();
     private HashMap<Integer, ArrayList<Integer>> attackerDices = new HashMap<>();
     private HashMap<Integer, ArrayList<Integer>> defenderDices = new HashMap<>();
+
+    public void setNoOfTurns(int noOfTurns) {
+        this.noOfTurns = noOfTurns;
+    }
+
+    public boolean isOutOfTurns() {
+        return this.noOfTurns < 1;
+    }
+
+    public void takeTurn() {
+        this.noOfTurns--;
+    }
 
     /**
      * Removes one Infantry, Artillery and Cavalry cards
@@ -183,6 +196,22 @@ public class Player implements Serializable {
         this.name = name;
         this.type = type;
         this.color = color;
+
+        setStrategy(this.type);
+    }
+
+    /**
+     * It initializes the player with color and turn
+     *
+     * @param name  name of the player
+     * @param type  type of the player
+     * @param color color that the player is assigned to
+     */
+    public Player(String name, int type, Color color, int noOfTurns) {
+        this.name = name;
+        this.type = type;
+        this.color = color;
+        this.noOfTurns = noOfTurns;
 
         setStrategy(this.type);
     }

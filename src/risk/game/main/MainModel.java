@@ -310,6 +310,15 @@ public class MainModel extends Observable implements Serializable {
         }
     }
 
+    public boolean isEveryoneOutOfTurns() {
+        for (Map.Entry<String, Player> entry : this.players.entrySet()) {
+            if (!entry.getValue().isOutOfTurns())
+                return false;
+        }
+
+        return true;
+    }
+
     /**
      * Assign armies to the countries owned by the player
      */

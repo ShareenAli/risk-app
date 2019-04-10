@@ -81,6 +81,17 @@ public class SettingsModel {
     }
 
     /**
+     * It adds a player to the list.
+     *
+     * @param name  name of the player
+     * @param type  index of the player type combo box.
+     * @param color color that the player is assigned
+     */
+    void addPlayer(String name, int type, String color, int noOfTurns) {
+        this.players.add(new Player(name, type, this.hex2Rgb(color), noOfTurns));
+    }
+
+    /**
      * It returns list of players
      *
      * @return players
