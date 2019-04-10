@@ -1,9 +1,12 @@
 package risk.game.tournament.settings;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class TournamentSettingsView {
     private static final String[] COLORS = {"Red", "Purple", "Blue", "Teal", "Green", "Orange"};
@@ -27,12 +30,17 @@ public class TournamentSettingsView {
     private JPanel panelStart;
     private JPanel panelTable;
     private JTable tableTournament;
+    private JScrollPane scroll;
+    private JPanel panelLogs;
+    private JScrollPane scrollList;
+    private JList listLogs;
 
     private DefaultComboBoxModel<Integer> modelNoPlayers = new DefaultComboBoxModel<>();
     private DefaultComboBoxModel<Integer> modelNoTurns = new DefaultComboBoxModel<>();
     private DefaultComboBoxModel<Integer> modelNoMaps = new DefaultComboBoxModel<>();
     private DefaultComboBoxModel<Integer> modelNoGames = new DefaultComboBoxModel<>();
     private DefaultTableModel modelTournament = new DefaultTableModel();
+    private DefaultListModel<String> modelLogs = new DefaultListModel<>();
 
     private TournamentSettingsModel model = TournamentSettingsModel.getInstance();
 
@@ -46,7 +54,7 @@ public class TournamentSettingsView {
 
         for (int i = 2; i < 7; i++) {
             this.modelNoPlayers.addElement(i);
-            this.modelNoTurns.addElement(i * 5);
+            this.modelNoTurns.addElement(i * 10);
             this.modelNoMaps.addElement(i - 1);
             this.modelNoGames.addElement(i - 1);
         }
@@ -57,6 +65,28 @@ public class TournamentSettingsView {
         this.comboNoMaps.setModel(this.modelNoMaps);
         this.comboNoTurns.setSelectedIndex(0);
         this.createPlayerInfoPanels();
+
+        this.tableTournament.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.tableTournament.setCellSelectionEnabled(true);
+        this.tableTournament.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                modelLogs.removeAllElements();
+                int column = tableTournament.getSelectedColumn() - 1;
+                int row = tableTournament.getSelectedRow();
+                if (column < 0) {
+                    listLogs.setModel(modelLogs);
+                    return;
+                }
+
+                TournamentSettingsModel model = TournamentSettingsModel.getInstance();
+                for (String log : model.getLogs(String.valueOf(row).concat(String.valueOf(column)))) {
+                    modelLogs.add(0, log);
+                }
+                modelLogs.add(0, "Map " + (row + 1) + " Game " + (column + 1));
+                listLogs.setModel(modelLogs);
+            }
+        });
     }
 
     /**
@@ -100,6 +130,9 @@ public class TournamentSettingsView {
     void initTable() {
         int noOfMaps = this.modelNoMaps.getElementAt(this.comboNoMaps.getSelectedIndex());
         int noOfGames = this.modelNoGames.getElementAt(this.comboNoGames.getSelectedIndex());
+        for (int i = 0; i < this.modelTournament.getRowCount(); i++) {
+            this.modelTournament.removeRow(i);
+        }
         this.modelTournament.addColumn("Maps");
         for (int i = 0; i < noOfGames; i++) {
             this.modelTournament.addColumn("Game " + (i + 1));
@@ -270,8 +303,19 @@ public class TournamentSettingsView {
         panelTable = new JPanel();
         panelTable.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         panelActions.add(panelTable, BorderLayout.CENTER);
+        scroll = new JScrollPane();
+        scroll.setPreferredSize(new Dimension(454, 100));
+        panelTable.add(scroll);
         tableTournament = new JTable();
-        panelTable.add(tableTournament);
+        scroll.setViewportView(tableTournament);
+        panelLogs = new JPanel();
+        panelLogs.setLayout(new BorderLayout(0, 0));
+        panelActions.add(panelLogs, BorderLayout.SOUTH);
+        scrollList = new JScrollPane();
+        scrollList.setPreferredSize(new Dimension(300, 400));
+        panelLogs.add(scrollList, BorderLayout.CENTER);
+        listLogs = new JList();
+        scrollList.setViewportView(listLogs);
     }
 
     /**

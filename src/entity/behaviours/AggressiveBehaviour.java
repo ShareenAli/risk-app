@@ -116,7 +116,7 @@ public class AggressiveBehaviour implements PlayerBehaviour, Serializable {
     private String fetchStrongestCountry() {
         ArrayList<String> countries = new ArrayList<>(this.player.getCountries().keySet());
         String strongest = "";
-        int maxArmies = 1;
+        int maxArmies = 0;
 
         for (String country : countries) {
             int armies = this.player.getArmiesInCountry(country);

@@ -443,6 +443,7 @@ public class MainController extends ActivityController {
             this.performAttack(true, isComputer);
 
         if (!this.isGameEnded && this.model.hasPlayerWon(attacker)) {
+            this.logsController.log(attacker.getName() + " has won the game!");
             if (!super.isTournament) {
                 JOptionPane.showMessageDialog(new JFrame(), attacker.getName() + " has won the game!",
                     "Yeyy!", JOptionPane.INFORMATION_MESSAGE);
@@ -624,6 +625,7 @@ public class MainController extends ActivityController {
             return;
 
         if (this.model.isEveryoneOutOfTurns()) {
+            this.logsController.log("No one won the game!");
             if (!super.isTournament) {
                 JOptionPane.showMessageDialog(new JFrame(), "No one won the game!",
                     "Draw!", JOptionPane.INFORMATION_MESSAGE);
@@ -779,6 +781,11 @@ public class MainController extends ActivityController {
         String countryName = countryList.get((new Random()).nextInt(countryList.size()));
         ArrayList<String> countries = this.model.getPotentialCountriesForAttack(countryList);
         int trials = countries.size();
+
+        if (trials == 0) {
+            this.changePhase();
+            return;
+        }
 
         if (player.getArmiesInCountry(countryName) == 1) {
             this.logsController.log(player.getName() + " chose not to attack!");

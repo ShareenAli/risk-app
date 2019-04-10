@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -23,6 +24,7 @@ public class TournamentSettingsModel {
     private File mapFile, bmpFile;
     private ArrayList<Country> countries = new ArrayList<>();
     private ArrayList<Continent> continents = new ArrayList<>();
+    private HashMap<String, ArrayList<String>> logs = new HashMap<>();
 
     /**
      * Sets the file that hold map details
@@ -60,6 +62,14 @@ public class TournamentSettingsModel {
 
     public ArrayList<Continent> getContinents() {
         return continents;
+    }
+
+    public void putLogs(String game, ArrayList<String> logs) {
+        this.logs.put(game, logs);
+    }
+
+    ArrayList<String> getLogs(String game) {
+        return this.logs.get(game);
     }
 
     /**

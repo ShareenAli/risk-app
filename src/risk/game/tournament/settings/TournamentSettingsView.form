@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="risk.game.tournament.settings.TournamentSettingsView">
   <grid id="27dc6" binding="panelMain" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="20" y="20" width="649" height="156"/>
+      <xy x="20" y="20" width="649" height="548"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -97,10 +97,39 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="4f4d1" class="javax.swing.JTable" binding="tableTournament">
+              <scrollpane id="e5a15" binding="scroll">
                 <constraints/>
-                <properties/>
-              </component>
+                <properties>
+                  <preferredSize width="454" height="100"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <component id="4f4d1" class="javax.swing.JTable" binding="tableTournament">
+                    <constraints/>
+                    <properties/>
+                  </component>
+                </children>
+              </scrollpane>
+            </children>
+          </grid>
+          <grid id="87ee5" binding="panelLogs" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints border-constraint="South"/>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <scrollpane id="7fe2b" binding="scrollList">
+                <constraints border-constraint="Center"/>
+                <properties>
+                  <preferredSize width="300" height="400"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <component id="fbb25" class="javax.swing.JList" binding="listLogs">
+                    <constraints/>
+                    <properties/>
+                  </component>
+                </children>
+              </scrollpane>
             </children>
           </grid>
         </children>
