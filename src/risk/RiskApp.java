@@ -56,6 +56,7 @@ public class RiskApp {
         public static final String KEY_PLAYER_IDX = "playerIdx";
         public static final String KEY_LOGS = "logs";
         public static final String KEY_LOAD_FLAG = "isLoadGame";
+        public static final String KEY_TOURNAMENT = "isTournament";
     }
 
     public static abstract class MapIntent {

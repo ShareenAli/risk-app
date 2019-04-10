@@ -11,6 +11,7 @@ import java.util.HashMap;
 public abstract class ActivityController {
     protected JFrame frame = new JFrame();
     protected abstract void prepareUi();
+    protected boolean isTournament = false;
 
     /**
      * Sets up values
@@ -46,6 +47,7 @@ public abstract class ActivityController {
     public void displayUi() {
         this.frame.pack();
         this.frame.setLocationRelativeTo(null);
-        this.frame.setVisible(true);
+        if (!isTournament)
+            this.frame.setVisible(true);
     }
 }

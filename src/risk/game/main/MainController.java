@@ -49,6 +49,10 @@ public class MainController extends ActivityController {
         return this.model;
     }
 
+    public String getWinner() {
+        return winner;
+    }
+
     /**
      * Setup values when the controller is loaded into the game
      *
@@ -60,6 +64,7 @@ public class MainController extends ActivityController {
         ArrayList<Country> countries = (ArrayList<Country>) data.get(RiskApp.MainIntent.KEY_COUNTRIES);
         ArrayList<Continent> continents = (ArrayList<Continent>) data.get(RiskApp.MainIntent.KEY_CONTINENT);
         File bmpFile = (File) data.get(RiskApp.MainIntent.kEY_BMP);
+        super.isTournament = (boolean) data.getOrDefault(RiskApp.MainIntent.KEY_TOURNAMENT, false);
 
         this.model.setPlayers(players);
         this.model.setMapContent(countries, continents);
@@ -436,8 +441,10 @@ public class MainController extends ActivityController {
             this.performAttack(true, isComputer);
 
         if (!this.isGameEnded && this.model.hasPlayerWon(attacker)) {
-            JOptionPane.showMessageDialog(new JFrame(), attacker.getName() + " has won the game!",
+            if (!super.isTournament) {
+                JOptionPane.showMessageDialog(new JFrame(), attacker.getName() + " has won the game!",
                     "Yeyy!", JOptionPane.INFORMATION_MESSAGE);
+            }
             this.isGameEnded = true;
             this.winner = attacker.getName();
         }
@@ -451,7 +458,6 @@ public class MainController extends ActivityController {
      */
     public int determineDiceRolls(Player attacker, Player defender) {
         int attackerArmies = attacker.getArmiesInCountry(this.attackSource);
-        System.out.println("NAME: " + this.attackTarget);
         int defenderArmies = defender.getArmiesInCountry(this.attackTarget);
 
         int maxDiceRollsAttacker = (attackerArmies >= 3) ? 3 : attackerArmies;
@@ -616,8 +622,10 @@ public class MainController extends ActivityController {
             return;
 
         if (this.model.isEveryoneOutOfTurns()) {
-            JOptionPane.showMessageDialog(new JFrame(), "No one won the game!",
-                "Draw!", JOptionPane.INFORMATION_MESSAGE);
+            if (!super.isTournament) {
+                JOptionPane.showMessageDialog(new JFrame(), "No one won the game!",
+                    "Draw!", JOptionPane.INFORMATION_MESSAGE);
+            }
             this.isGameEnded = true;
             return;
         }
@@ -777,7 +785,6 @@ public class MainController extends ActivityController {
             trials--;
             int randomIdx = new Random().nextInt(countries.size());
             anotherName = countries.get(randomIdx);
-            System.out.println("randomIdx " + randomIdx + " " + trials + " " + anotherName + " | " + this.attackSource);
             if (this.model.checkForLink(new ArrayList<>(), this.attackSource, anotherName))
                 break;
         } while (trials != 0);

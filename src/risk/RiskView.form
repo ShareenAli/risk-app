@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="risk.RiskView">
   <grid id="27dc6" binding="panelRisk" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="20" y="20" width="444" height="69"/>
+      <xy x="20" y="20" width="648" height="69"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -51,6 +51,12 @@
             <constraints/>
             <properties>
               <text value="Load Game"/>
+            </properties>
+          </component>
+          <component id="d315b" class="javax.swing.JButton" binding="buttonTournament">
+            <constraints/>
+            <properties>
+              <text value="Tournament"/>
             </properties>
           </component>
         </children>

@@ -1,6 +1,7 @@
 package risk;
 
 import risk.game.settings.SettingsController;
+import risk.game.tournament.settings.TournamentSettingsController;
 import risk.map.MapController;
 import risk.support.ActivityController;
 import risk.support.GameManager;
@@ -18,7 +19,7 @@ import java.util.HashMap;
  */
 class RiskController extends ActivityController {
     private RiskView riskView;
-    private ActionListener newGameLs, newMapLs, editMapLs, loadGameLs;
+    private ActionListener newGameLs, newMapLs, editMapLs, loadGameLs, tournamentLs;
 
     /**
      * It initializes the controller.
@@ -50,6 +51,7 @@ class RiskController extends ActivityController {
         this.riskView.bindNewMapListener(this.newMapLs);
         this.riskView.bindEditMapListener(this.editMapLs);
         this.riskView.bindLoadGameListener(this.loadGameLs);
+        this.riskView.bindTournamentListener(this.tournamentLs);
     }
 
     /**
@@ -67,6 +69,8 @@ class RiskController extends ActivityController {
         this.newMapLs = (ActionEvent e) -> RiskApp.ChangeActivityController(new MapController());
 
         this.loadGameLs = (ActionEvent e) -> this.loadGame();
+
+        this.tournamentLs = (ActionEvent e) -> RiskApp.ChangeActivityController(new TournamentSettingsController());
     }
 
     private void loadGame() {

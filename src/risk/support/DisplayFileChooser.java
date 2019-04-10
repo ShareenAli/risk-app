@@ -21,6 +21,14 @@ public class DisplayFileChooser {
     }
 
     /**
+     * Set title
+     * @param title title of the box
+     */
+    public void setTitle(String title) {
+        this.chooser.setDialogTitle(title);
+    }
+
+    /**
      * Get the chooser ready
      */
     private void initializeChooser() {
