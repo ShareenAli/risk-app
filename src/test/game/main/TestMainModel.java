@@ -3,6 +3,7 @@ package test.game.main;
 import entity.Continent;
 import entity.Country;
 import entity.Player;
+import entity.behaviours.PlayerBehaviour;
 import risk.game.main.MainController;
 import risk.game.main.MainModel;
 import org.junit.Before;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static junit.framework.TestCase.*;
-import static risk.game.main.MainModel.CARD_TYPE_CAVALRY;
+import static risk.game.main.MainModel.*;
 
 /**
  * This test class verifies main model functionality
@@ -25,6 +26,7 @@ import static risk.game.main.MainModel.CARD_TYPE_CAVALRY;
 public class TestMainModel {
     private MainModel mainModel = new MainModel();
     private MainController mainController = new MainController();
+    private PlayerBehaviour strategy;
 
     @Before
     public void before() {
@@ -82,7 +84,7 @@ public class TestMainModel {
     }
 
     /**
-     * Test Case method for calculation of reinforcement armies after
+     * Test Case method for calculation of reinforcement armies after for human behavior
      */
     @Test
     public void calculateReinforcementArmies() {
@@ -92,10 +94,13 @@ public class TestMainModel {
         this.mainModel.getPlayer("dhaval").setArmies("India", 1);
         this.mainModel.getPlayer("dhaval").setArmies("China", 1);
         this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 1);
+        this.mainModel.getPlayer("shareen").setStrategy(0);
+        this.mainModel.getPlayer("dhaval").setStrategy(0);
         int updatedArmies = 4;
         this.mainModel.reinforcementPhase(this.mainModel.getPlayer("dhaval").getName(), this.mainModel.getCountries().get("India").getName(), 3);
         assertEquals(this.mainModel.getPlayer("dhaval").getArmiesInCountry("India"), updatedArmies);
     }
+
 
     /**
      * Test Case method to Check link between countries
@@ -155,18 +160,6 @@ public class TestMainModel {
     }
 
 
-
-    /**
-     * Test case method to check the possibility of attack
-     */
-    @Test
-    public void checkAttackPosibility() {
-        this.mainModel.getPlayer("shareen").setArmies("Russia", 10);
-        this.mainModel.getPlayer("dhaval").setArmies("India", 4);
-//        boolean result = this.mainController.isAttackPossible(this.mainModel.getPlayer("shareen").getName(), "Russia", false);
-//        assertEquals(true, result); // CHECK!!!
-    }
-
     /**
      * Test case method verify that there is no trace of a player who is out of the game after losing all the countries
      */
@@ -207,11 +200,12 @@ public class TestMainModel {
         this.mainController.setAttackerName("shareen");
         this.mainController.setDefenderName("dhaval");
         this.mainController.setModel(mainModel);
+        this.mainModel.getPlayer("shareen").setStrategy(0);
+        this.mainModel.getPlayer("dhaval").setStrategy(0);
         this.mainController.performAttack(true, true);
         HashMap<String, Integer> countryHashMap = this.mainModel.getPlayer("shareen").getCountries();
-        assertEquals(2, countryHashMap.size()); // CHECK!!!
+        assertEquals(2, countryHashMap.size());
     }
-
 
     /**
      * Test case method to verify armies of attacker after the attack
@@ -225,10 +219,12 @@ public class TestMainModel {
         this.mainController.setAttackerName("dhaval");
         this.mainController.setDefenderName("shareen");
         this.mainController.setModel(mainModel);
+        this.mainModel.getPlayer("shareen").setStrategy(0);
+        this.mainModel.getPlayer("dhaval").setStrategy(0);
         this.mainController.performAttack(true, true);
         int srcCountryArmy = this.mainModel.getPlayer("dhaval").getArmiesInCountry("India");
         boolean result = (srcCountryArmy < 25);
-        assertEquals(true, result); // CHECK!!!
+        assertEquals(true, result);
     }
 
     /**
@@ -351,7 +347,7 @@ public class TestMainModel {
     }
 
     /**
-     * Verify card is updated when Attacker wins
+     * Verify Save and load functionality
      */
     @Test
     public void checkSaveLoadFunctionality() {
@@ -370,5 +366,159 @@ public class TestMainModel {
         int armies = countries.get("Pakistan");
         assertEquals(3, armies);
     }
+
+
+    /**
+     * Test Case method for calculation of reinforcement armies after for cheater strategy
+     */
+    @Test
+    public void calculateReinforcementArmiesForCheater() {
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 4);
+        this.mainModel.getPlayer("dhaval").setArmies("China", 1);
+        this.mainModel.getPlayer("shareen").setStrategy(0);
+        this.mainModel.getPlayer("dhaval").setStrategy(3);
+        int updatedArmies = 8;
+        this.mainModel.reinforcementPhase(this.mainModel.getPlayer("dhaval").getName(), this.mainModel.getCountries().get("India").getName(), 1);
+        assertEquals(this.mainModel.getPlayer("dhaval").getArmiesInCountry("India"), updatedArmies);
+    }
+
+    /**
+     * Test Case method for calculation of reinforcement armies after for Random strategy
+     */
+    @Test
+    public void calculateReinforcementArmiesForRandom() {
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 1);
+        this.mainModel.getPlayer("shareen").setStrategy(1);
+        this.mainModel.getPlayer("dhaval").setStrategy(1);
+        int updatedArmies = 2;
+        this.mainModel.reinforcementPhase(this.mainModel.getPlayer("dhaval").getName(), this.mainModel.getCountries().get("Mongolia").getName(), 1);
+        assertEquals(this.mainModel.getPlayer("dhaval").getArmiesInCountry("Mongolia"), updatedArmies);
+    }
+    /**
+     * Test Case method for calculation of reinforcement armies after for Benevolent strategy
+     */
+    @Test
+    public void calculateReinforcementArmiesForBenevolent() {
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 1);
+        this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 5);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 2);
+        this.mainModel.getPlayer("shareen").setStrategy(4);
+        this.mainModel.getPlayer("dhaval").setStrategy(4);
+
+        int updatedArmies = 4;
+        this.mainModel.reinforcementPhase(this.mainModel.getPlayer("dhaval").getName(), this.mainModel.getCountries().get("Mongolia").getName(), 2);
+        assertEquals(this.mainModel.getPlayer("dhaval").getArmiesInCountry("India"), updatedArmies);
+    }
+    /**
+     * Test Case method for calculation of reinforcement armies after for Agressive strategy
+     */
+    @Test
+    public void calculateReinforcementArmiesForAggressive() {
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 2);
+        this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 5);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 3);
+        this.mainModel.getPlayer("shareen").setStrategy(2);
+        this.mainModel.getPlayer("dhaval").setStrategy(2);
+
+        int updatedArmies = 7;
+        this.mainModel.reinforcementPhase(this.mainModel.getPlayer("dhaval").getName(), this.mainModel.getCountries().get("India").getName(), 2);
+        assertEquals(this.mainModel.getPlayer("dhaval").getArmiesInCountry("Mongolia"), updatedArmies);
+    }
+
+
+    /**
+     * Test case method verify that the defender doesn’t have the country if he loses an incoming attack
+     */
+    @Test
+    public void verifyDefendantCountriesAfterCheatersAttack() {
+        this.mainModel.getPlayer("dhaval").setArmies("India", 10);
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 7);
+        this.mainController.setAttackSource("Russia");
+        this.mainController.setAttackTarget("India");
+        this.mainController.postAttackOperations(this.mainModel.getPlayer("dhaval"));
+        this.mainModel.getPlayer("shareen").setStrategy(3);
+        this.mainModel.getPlayer("dhaval").setStrategy(0);
+        boolean defendantCountryflag = this.mainModel.getPlayer("dhaval").getCountries().containsKey("India");
+        assertEquals(false, defendantCountryflag);
+    }
+
+
+    /**
+     * Test Case method for calculation of fortification armies for Cheater strategy
+     */
+    @Test
+    public void calculateFortificationArmiesForCheater() {
+        this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 6);
+        this.mainModel.getPlayer("dhaval").setArmies("Pakistan", 2);
+        this.mainModel.getPlayer("shareen").setArmies("China", 2);
+        this.mainModel.getPlayer("dhaval").setStrategy(3);
+        this.mainModel.fortificationPhase(this.mainModel.getPlayer("dhaval").getName(), "Mongolia", "Pakistan", 2);
+        int updatedArmies = 12;
+        assertEquals(updatedArmies, this.mainModel.getPlayer("dhaval").getArmiesInCountry("Mongolia"));
+    }
+
+    /**
+     * Test Case method for calculation of fortification armies for Benevolent strategy
+     */
+    @Test
+    public void calculateFortificationArmiesForBenevolent() {
+        this.mainModel.getPlayer("dhaval").setArmies("India", 2);
+        this.mainModel.getPlayer("dhaval").setArmies("Russia", 10);
+        this.mainModel.getPlayer("dhaval").setStrategy(4);
+        this.mainModel.fortificationPhase(this.mainModel.getPlayer("dhaval").getName(), "Russia", "India", 2);
+        int updatedArmies = 11;
+        assertEquals(updatedArmies, this.mainModel.getPlayer("dhaval").getArmiesInCountry("India"));
+    }
+
+    /**
+     * Test Case method for calculation of fortification armies for Aggressive strategy
+     */
+    @Test
+    public void calculateFortificationArmiesForAggressive() {
+        this.mainModel.getPlayer("dhaval").setArmies("Russia", 6);
+        this.mainModel.getPlayer("dhaval").setArmies("India", 3);
+        this.mainModel.getPlayer("dhaval").setStrategy(2);
+        this.mainModel.fortificationPhase(this.mainModel.getPlayer("dhaval").getName(), "Russia", "India", 2);
+        int updatedArmies = 8;
+        assertEquals(updatedArmies, this.mainModel.getPlayer("dhaval").getArmiesInCountry("Russia"));
+
+    }
+
+    /**
+     * This method Testcontrolvalue will test the getcontrolvalue method.
+     */
+    @Test
+    public void testcontrolvalue() {
+        HashMap<String, Continent> continents = this.mainModel.getContinents();
+        assertEquals(5, continents.get("Asia").getControlValue());
+    }
+
+    /**
+     * This method tests the correct placement of a country in a continent
+     */
+    @Test
+    public void testcontinent() {
+        HashMap<String, Country> countries = this.mainModel.getCountries();
+        assertEquals("Asia", countries.get("India").getContinent());
+    }
+
+
+    @Test
+    public void checkCardIsRemoved() {
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 4);
+        Player player = this.mainModel.getPlayer("shareen");
+        ArrayList<String> selectedCards = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            selectedCards.add(CARD_TYPE_CAVALRY);
+            player.addCard(CARD_TYPE_CAVALRY);
+        }
+        this.mainController.performExchange(selectedCards, this.mainModel.getPlayer("shareen"));
+        this.mainModel.resetArmiesToAssign("shareen");
+        ArrayList<String> cards = this.mainModel.getPlayer("shareen").getCards();
+        assertEquals(0, cards.size());
+    }
+
 
 }
