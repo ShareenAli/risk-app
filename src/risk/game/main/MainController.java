@@ -338,7 +338,7 @@ public class MainController extends ActivityController {
     public void performAttack(boolean isAllOutMode, boolean isComputer) {
         Player attacker = this.model.getPlayer(this.attackerName);
         Player defender = this.model.getPlayer(this.defenderName);
-        if (attacker.isAllOut() || defender.isAllOut())
+        if (defender == null || attacker.isAllOut() || defender.isAllOut())
             return;
         ArrayList<Player> defenders;
 
@@ -480,10 +480,10 @@ public class MainController extends ActivityController {
      */
     public void postAttackOperations(Player defender) {
         defender.removeCountry(this.attackTarget);
-        HashMap<String, Integer> countries = defender.getCountries();
-
-        if (countries.size() == 0)
-            this.model.removePlayer(defender.getName());
+//        HashMap<String, Integer> countries = defender.getCountries();
+//
+//        if (countries.size() == 0)
+//            this.model.removePlayer(defender.getName());
     }
 
 
@@ -624,6 +624,18 @@ public class MainController extends ActivityController {
         if (this.isGameEnded)
             return;
 
+        Player p = this.model.getPlayer(this.phaseController.activePlayer());
+
+        if (this.model.hasPlayerWon(p)) {
+            this.logsController.log(p.getName() + " won the game!");
+            if (!super.isTournament) {
+                JOptionPane.showMessageDialog(new JFrame(), p.getName() + " won the game!",
+                    "Yeyyy!", JOptionPane.INFORMATION_MESSAGE);
+            }
+            this.isGameEnded = true;
+            return;
+        }
+
         if (this.model.isEveryoneOutOfTurns()) {
             this.logsController.log("No one won the game!");
             if (!super.isTournament) {
@@ -634,7 +646,6 @@ public class MainController extends ActivityController {
             return;
         }
 
-        Player p = this.model.getPlayer(this.phaseController.activePlayer());
         if (p.isAllOut()) {
             this.changePhase();
             return;
