@@ -36,6 +36,10 @@ public class AggressiveBehaviour implements PlayerBehaviour, Serializable {
 
         do {
             sourceCountryName = countries.get((new Random()).nextInt(countries.size()));
+
+            if(sourceCountryName.equalsIgnoreCase(targetCountryName))
+                continue;
+
             if (this.model.checkForLink(new ArrayList<>(), sourceCountryName, targetCountryName))
                 break;
         } while (targetCountryName.equalsIgnoreCase(sourceCountryName));

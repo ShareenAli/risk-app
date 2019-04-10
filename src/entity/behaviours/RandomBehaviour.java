@@ -34,6 +34,9 @@ public class RandomBehaviour implements PlayerBehaviour, Serializable {
             sourceCountryName = countries.get((new Random()).nextInt(countries.size()));
             armiesToTransfer = this.player.getArmiesInCountry(sourceCountryName) - 1;
 
+            if(sourceCountryName.equalsIgnoreCase(targetCountryName))
+                continue;
+
             if (armiesToTransfer > 0)
                 break;
         } while (true);
