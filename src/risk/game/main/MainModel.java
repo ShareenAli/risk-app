@@ -380,7 +380,7 @@ public class MainModel extends Observable implements Serializable {
      * @param targetCountryName Name of the target country
      * @param armiesToTransfer  Number of armies to transfer
      */
-    ArrayList<String> fortificationPhase(String playerName, String sourceCountryName, String targetCountryName, int armiesToTransfer) {
+   public ArrayList<String> fortificationPhase(String playerName, String sourceCountryName, String targetCountryName, int armiesToTransfer) {
         Player player = this.players.get(playerName);
         player = player.fortificationPhase(this,sourceCountryName, targetCountryName, armiesToTransfer);
         this.updatePlayer(player.getName(), player);

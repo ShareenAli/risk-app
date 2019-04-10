@@ -451,11 +451,12 @@ public class TestMainModel {
     @Test
     public void calculateFortificationArmiesForCheater() {
         this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 6);
-        this.mainModel.getPlayer("dhaval").setArmies("India", 2);
+        this.mainModel.getPlayer("dhaval").setArmies("Pakistan", 2);
+        this.mainModel.getPlayer("shareen").setArmies("China", 2);
         this.mainModel.getPlayer("dhaval").setStrategy(3);
-        this.mainModel.getPlayer("dhaval").fortificationPhase(this.mainModel,"Mongolia","India",4);
+        this.mainModel.fortificationPhase(this.mainModel.getPlayer("dhaval").getName(), "Mongolia", "Pakistan", 2);
         int updatedArmies = 12;
-        assertEquals(this.mainModel.getPlayer("dhaval").getArmiesInCountry("Mongolia"), updatedArmies);
+        assertEquals(updatedArmies, this.mainModel.getPlayer("dhaval").getArmiesInCountry("Mongolia"));
     }
 
     /**
@@ -463,13 +464,12 @@ public class TestMainModel {
      */
     @Test
     public void calculateFortificationArmiesForBenevolent() {
-        this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 2);
         this.mainModel.getPlayer("dhaval").setArmies("India", 2);
-        this.mainModel.getPlayer("dhaval").setArmies("China", 10);
+        this.mainModel.getPlayer("dhaval").setArmies("Russia", 10);
         this.mainModel.getPlayer("dhaval").setStrategy(4);
-        this.mainModel.getPlayer("dhaval").fortificationPhase(this.mainModel,"China","India",2);
-        int updatedArmies =2;
-        assertEquals(updatedArmies,this.mainModel.getPlayer("dhaval").getArmiesInCountry("India"));
+        this.mainModel.fortificationPhase(this.mainModel.getPlayer("dhaval").getName(), "Russia", "India", 2);
+        int updatedArmies = 11;
+        assertEquals(updatedArmies, this.mainModel.getPlayer("dhaval").getArmiesInCountry("India"));
     }
 
     /**
@@ -477,16 +477,48 @@ public class TestMainModel {
      */
     @Test
     public void calculateFortificationArmiesForAggressive() {
-        this.mainModel.getPlayer("dhaval").setArmies("Mongolia", 6);
+        this.mainModel.getPlayer("dhaval").setArmies("Russia", 6);
         this.mainModel.getPlayer("dhaval").setArmies("India", 3);
         this.mainModel.getPlayer("dhaval").setStrategy(2);
-        this.mainModel.getPlayer("dhaval").fortificationPhase(this.mainModel,"Mongolia","India",2);
-        int updatedArmyAfterFortification= this.mainModel.getPlayer("dhaval").getArmiesInCountry("Mongolia");
-        boolean updatedArmiesFlag=(updatedArmyAfterFortification>5)&&(updatedArmyAfterFortification<=8);
-        assertTrue(updatedArmiesFlag);
+        this.mainModel.fortificationPhase(this.mainModel.getPlayer("dhaval").getName(), "Russia", "India", 2);
+        int updatedArmies = 8;
+        assertEquals(updatedArmies, this.mainModel.getPlayer("dhaval").getArmiesInCountry("Russia"));
 
     }
 
+    /**
+     * This method Testcontrolvalue will test the getcontrolvalue method.
+     */
+    @Test
+    public void testcontrolvalue() {
+        HashMap<String, Continent> continents = this.mainModel.getContinents();
+        assertEquals(5, continents.get("Asia").getControlValue());
+    }
+
+    /**
+     * This method tests the correct placement of a country in a continent
+     */
+    @Test
+    public void testcontinent() {
+        HashMap<String, Country> countries = this.mainModel.getCountries();
+        assertEquals("Asia", countries.get("India").getContinent());
+    }
+
+
+    @Test
+    public void checkCardIsRemoved() {
+        this.mainModel.getPlayer("shareen").setArmies("Russia", 4);
+        Player player = this.mainModel.getPlayer("shareen");
+        ArrayList<String> selectedCards = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            selectedCards.add(CARD_TYPE_CAVALRY);
+            player.addCard(CARD_TYPE_CAVALRY);
+        }
+        this.mainController.performExchange(selectedCards, this.mainModel.getPlayer("shareen"));
+        this.mainModel.resetArmiesToAssign("shareen");
+        ArrayList<String> cards = this.mainModel.getPlayer("shareen").getCards();
+        assertEquals(0, cards.size());
+    }
 
 
 }
