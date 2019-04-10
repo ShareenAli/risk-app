@@ -61,12 +61,14 @@ public class TournamentSettingsController extends ActivityController {
             model.addMap(map);
         }
 
-        this.view.disableStartButton();
+        this.view.initTable();
 
         for (int i = 0; i < model.getNoOfMaps(); i++) {
+            model = TournamentSettingsModel.getInstance();
+            this.view.collectData();
             model.setMapFile(model.fetchMap(i));
             model.setBmpFile(model.fetchBmp(i));
-            model.processFiles();
+            System.out.println(model.processFiles());
 
             for (int j = 0; j < model.getNoOfGames(); j++) {
                 MainController controller = new MainController();
@@ -79,6 +81,8 @@ public class TournamentSettingsController extends ActivityController {
                 headers.put(RiskApp.MainIntent.KEY_TOURNAMENT, true);
 
                 RiskApp.ChangeActivityController(this, controller, headers, false);
+                String winner = controller.getWinner();
+                this.view.addGame(i, j, (winner == null) ? "draw" : winner);
 
                 System.out.println("Done with start game : " + controller.getWinner());
             }

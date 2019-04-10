@@ -311,6 +311,10 @@ public class Player implements Serializable {
         this.attackerDices = attackerDices;
     }
 
+    public boolean isAllOut() {
+        return this.countries.size() < 1;
+    }
+
     /**
      * Get the defender dices list
      *

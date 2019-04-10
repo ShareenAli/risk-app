@@ -338,6 +338,8 @@ public class MainController extends ActivityController {
     public void performAttack(boolean isAllOutMode, boolean isComputer) {
         Player attacker = this.model.getPlayer(this.attackerName);
         Player defender = this.model.getPlayer(this.defenderName);
+        if (attacker.isAllOut() || defender.isAllOut())
+            return;
         ArrayList<Player> defenders;
 
         ArrayList<Integer> attackerDices = new ArrayList<>();
@@ -627,6 +629,12 @@ public class MainController extends ActivityController {
                     "Draw!", JOptionPane.INFORMATION_MESSAGE);
             }
             this.isGameEnded = true;
+            return;
+        }
+
+        Player p = this.model.getPlayer(this.phaseController.activePlayer());
+        if (p.isAllOut()) {
+            this.changePhase();
             return;
         }
 

@@ -1,6 +1,7 @@
 package risk.game.tournament.settings;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
@@ -23,11 +24,15 @@ public class TournamentSettingsView {
     private JLabel labelNoTurns;
     private JPanel panelActions;
     private JButton buttonStart;
+    private JPanel panelStart;
+    private JPanel panelTable;
+    private JTable tableTournament;
 
     private DefaultComboBoxModel<Integer> modelNoPlayers = new DefaultComboBoxModel<>();
     private DefaultComboBoxModel<Integer> modelNoTurns = new DefaultComboBoxModel<>();
     private DefaultComboBoxModel<Integer> modelNoMaps = new DefaultComboBoxModel<>();
     private DefaultComboBoxModel<Integer> modelNoGames = new DefaultComboBoxModel<>();
+    private DefaultTableModel modelTournament = new DefaultTableModel();
 
     private TournamentSettingsModel model = TournamentSettingsModel.getInstance();
 
@@ -89,6 +94,29 @@ public class TournamentSettingsView {
             gbc.fill = GridBagConstraints.BOTH;
 
             panelPlayers.add(panelPlayer, gbc);
+        }
+    }
+
+    void initTable() {
+        int noOfMaps = this.modelNoMaps.getElementAt(this.comboNoMaps.getSelectedIndex());
+        int noOfGames = this.modelNoGames.getElementAt(this.comboNoGames.getSelectedIndex());
+        this.modelTournament.addColumn("Maps");
+        for (int i = 0; i < noOfGames; i++) {
+            this.modelTournament.addColumn("Game " + (i + 1));
+        }
+
+        for (int i = 0; i < noOfMaps; i++) {
+            String[] row = {"Map" + (i + 1)};
+            this.modelTournament.addRow(row);
+        }
+
+        this.tableTournament.setModel(this.modelTournament);
+    }
+
+    void addGame(int map, int game, String winner) {
+        if (this.modelTournament.getValueAt(map, game + 1) == null) {
+            this.modelTournament.setValueAt(winner, map, game + 1);
+            this.tableTournament.setModel(this.modelTournament);
         }
     }
 
@@ -231,11 +259,19 @@ public class TournamentSettingsView {
         panelPlayers.setLayout(new GridBagLayout());
         panelPlayer.add(panelPlayers, BorderLayout.CENTER);
         panelActions = new JPanel();
-        panelActions.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        panelActions.setLayout(new BorderLayout(0, 0));
         panelMain.add(panelActions, BorderLayout.SOUTH);
+        panelStart = new JPanel();
+        panelStart.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        panelActions.add(panelStart, BorderLayout.NORTH);
         buttonStart = new JButton();
         buttonStart.setText("Start Tournament");
-        panelActions.add(buttonStart);
+        panelStart.add(buttonStart);
+        panelTable = new JPanel();
+        panelTable.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        panelActions.add(panelTable, BorderLayout.CENTER);
+        tableTournament = new JTable();
+        panelTable.add(tableTournament);
     }
 
     /**

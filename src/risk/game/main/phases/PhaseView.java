@@ -140,6 +140,8 @@ public class PhaseView implements Observer {
             int row = playerNames.indexOf(entry.getKey());
             String values[] = entry.getValue();
 
+            if (row == -1)
+                continue;
             this.modelPlayers.setValueAt(values[0], row, 0);
             this.modelPlayers.setValueAt(values[1], row, 1);
             this.modelPlayers.setValueAt(values[2], row, 2);
